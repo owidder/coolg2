@@ -30,7 +30,7 @@ bottle.factory("Stock", function(container) {
                 });
                 lastPeriod.length = 0;
                 timeslice.forEach(function(day) {
-                    lastPeriod.push(day[propertyName]);
+                    lastPeriod.push(Number(day[propertyName]));
                 });
 
                 return lastPeriod;

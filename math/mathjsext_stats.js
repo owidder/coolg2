@@ -23,10 +23,21 @@
     }
 
     function correlation(X, Y) {
-        var stdX = math.std(X);
-        var stdY = math.std(Y);
-        var cov = covariance(X, Y);
-        var corr = cov/(stdX*stdY);
+        var lx = X.length;
+        var ly = Y.length;
+        if(lx != ly) {
+            console.log("X and Y do not have the same length (" + lx + " <-> " + ly + ")");
+            X.length = math.min(lx, ly);
+            Y.length = math.min(lx, ly);
+        }
+
+        var sx = math.std(X);
+        var sy = math.std(Y);
+        var mx = math.mean(X);
+        var my = math.mean(Y);
+        var xy = math.dot(X, Y);
+
+        var corr = (xy - (lx * mx * my)) / ((lx - 1) * sx * sy);
 
         return corr;
     }
