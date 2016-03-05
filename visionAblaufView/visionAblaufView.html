@@ -1,0 +1,110 @@
+<section>
+    <link rel="stylesheet" type="text/css" href="css/material-icons.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/Materialize/dist/css/materialize.css"
+          media="screen,projection"/>
+
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            background-color: #fff;
+            width: 960px;
+            height: 700px;
+            margin-top: 10px;
+        }
+
+        #main {
+            float: left;
+            width: 750px;
+        }
+
+        #sidebar {
+            float: right;
+            width: 100px;
+        }
+
+        #sequence {
+            width: 600px;
+            height: 70px;
+        }
+
+        #legend {
+            padding: 10px 0 0 3px;
+        }
+
+        #sequence text, #legend text {
+            font-weight: 600;
+            fill: black;
+        }
+
+        .breadcrumb-step {
+            opacity: 0.5;
+        }
+
+        #chart {
+            position: relative;
+        }
+
+        #chart path {
+            stroke: #fff;
+        }
+
+        #explanation {
+            position: absolute;
+            text-align: center;
+            color: #666;
+            z-index: -1;
+            font-size: 0.5em;
+        }
+
+        .explanation-rect {
+            fill: gray;
+            opacity: 0.5;
+        }
+
+        .explanation-text-line {
+            font-size: 10em;
+        }
+
+        #percentage {
+            font-size: 2.5em;
+        }
+    </style>
+
+    <div id="main">
+        <span class="xs">[<a href="#/calendar">Simulator</a>]</span>
+        <span ng-show="showSimulatorWithVpLink()" class="xs">[<a href="#/calendar?suffix={{suffix}}&vp={{vp}}">{{vp}}</a>]</span>
+        <span class="xs">[<a href="#/auftrag?suffix={{suffix}}">Home</a>]</span>
+        <span class="xxs">[<a href="#/visionAblauf?auftr={{auftrag}}&view=mzAkt&suffix={{suffix}}">MZ/Akt</a>]</span>
+        <span class="xxs">[<a href="#/visionAblauf?auftr={{auftrag}}&view=taAkt&suffix={{suffix}}">TA/Akt</a>]</span>
+        <span class="xxs">[<a href="#/visionAblauf?auftr={{auftrag}}&view=ta&suffix={{suffix}}">TA</a>]</span>
+
+        <span class="xs">[<a href="#/visionAblauf?auftr={{auftrag}}&view={{view}}&suffix=2014">2014</a>]</span>
+        <span class="xs">[<a href="#/visionAblauf?auftr={{auftrag}}&view={{view}}&suffix=2015">2015</a>]</span>
+
+        <h5>{{title}}</h5>
+        <b>Anzahl Abläufe: {{anzahlAblaeufe}}</b> ----
+        <b>Anzahl Verpflichtungen: {{anzahlVerpflichtungen}}</b><br>
+        <a title="Grafik runter" ng-click="translateDown()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">keyboard_arrow_down</i></a>
+        <a title="Grafik hoch" ng-click="translateUp()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">keyboard_arrow_up</i></a>
+        <a title="Grafik links" ng-click="translateLeft()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">keyboard_arrow_left</i></a>
+        <a title="Grafik rechts" ng-click="translateRight()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">keyboard_arrow_right</i></a>
+        <a title="Grafik in die Mitte" ng-click="translateToDefault()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">games</i></a>
+        <a title="Selektion aufheben" ng-click="unclick()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">all_out</i></a>
+
+        &nbsp;&nbsp;
+
+        <a title="Grafik an/aus" ng-click="toggleElement('vis')" class="btn-floating btn-small waves-effect waves-light {{buttonColors.vis}}"><i class="material-icons">track_changes</i></a>
+        <a title="Anzeige Mahnzellen und Aktivitäten an/aus" ng-click="toggleElement('trail')" class="btn-floating btn-small waves-effect waves-light {{buttonColors.trail}}"><i class="material-icons">list</i></a>
+        <a title="Navigator an/aus" ng-click="toggleElement('navigator')" class="btn-floating btn-small waves-effect waves-light {{buttonColors.navigator}}"><i class="material-icons">picture_in_picture</i></a>
+        <a title="Legende an/aus" ng-click="toggleElement('legende')" class="btn-floating btn-small waves-effect waves-light {{buttonColors.legende}}"><i class="material-icons">lightbulb_outline</i></a>
+        <div id="slider"></div>
+        <div ng-show="loading">
+            <h1>Bitte Warten....</h1>
+            <img style="-webkit-user-select: none" src="img/spinning-wheel.gif">
+        </div>
+        <div id="chart">
+        </div>
+    </div>
+</section>

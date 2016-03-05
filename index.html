@@ -1,0 +1,83 @@
+<html ng-app="visionAblauf" ng-controller="RootController">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!--
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-->
+
+    <link rel="stylesheet" href="bower_components/ng-table/dist/ng-table.css"/>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="bower_components/angular-ui-grid/ui-grid.css">
+
+    <link rel="stylesheet" href="css/style.css"/>
+
+    <title>Ablauf</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script>
+    var com_eosItServices_fx = com_eosItServices_fx || {
+                moduleName: 'visionAblauf',
+                subModule: function(name) {
+                    return com_eosItServices_fx.moduleName + "." + name;
+                }
+            };
+</script>
+
+<script src="env/initEnv.js"></script>
+<script src="env/env.js"></script>
+
+<div ng-view></div>
+
+<script src="bower_components/jquery/dist/jquery.js"></script>
+
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-route/angular-route.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/sprintf/src/sprintf.js"></script>
+<script src="bower_components/ng-table/dist/ng-table.js"></script>
+<script src="bower_components/angular-ui-grid/ui-grid.js"></script>
+
+<script src="lib/Blob.js"></script>
+<script src="lib/FileSaver.js"></script>
+
+<script src="app-module.js"></script>
+
+<script src="components/version/version.js"></script>
+<script src="components/version/version-directive.js"></script>
+<script src="components/version/interpolate-filter.js"></script>
+
+<script src="util/dimensions.js"></script>
+<script src="util/funcs.js"></script>
+<script src="util/sha256.js"></script>
+<script src="util/svgUtil.js"></script>
+<script src="util/mathUtil.js"></script>
+<script src="util/colorUtil.js"></script>
+<script src="util/httpUtil.js"></script>
+<script src="util/fileUtil.js"></script>
+<script src="util/util.js"></script>
+<script src="util/constants.js"></script>
+<script src="util/dateUtil.js"></script>
+
+<script src="model/_auftrag.js"></script>
+<script src="model/eventsUndMassnahmen.js"></script>
+<script src="model/ablauf.js"></script>
+<script src="model/vpAblauf.js"></script>
+<script src="model/nachrichten.js"></script>
+
+<script src="server/ruleEngine.js"></script>
+
+<script src="rootController.js"></script>
+<script src="visionAblaufView/visionAblaufController.js"></script>
+<script src="auftragView/auftragController.js"></script>
+<script src="simulator/calendarController.js"></script>
+
+<script src="app-config.js"></script>
+
+</body>
+</html>

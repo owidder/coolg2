@@ -1,0 +1,26 @@
+<section>
+
+    <a href="#/calendar"><span class="xs">Simulator</span></a>
+    <span class="xs">[<a href="#/auftrag">2014</a>]</span>
+    <span class="xs">[<a href="#/auftrag?suffix=2015">2015</a>]</span>
+
+    <h1>{{title}}</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <table ng-table="tableParams" show-filter="true" class="table">
+                    <tr ng-repeat="row in tableRows">
+                        <td data-title="'Auftrad ID'" sortable="'auftrId'" filter="{ 'auftrId': 'text' }">{{row.auftrId}}</td>
+                        <td data-title="'Auftrag'" sortable="'auftrName'" filter="{ 'auftrName': 'text' }">{{row.auftrName}}
+                            <a href="#/visionAblauf?auftr={{row.auftrId}}&view=mzAkt&suffix={{suffix}}"><span class="xxs">MZ/Akt</span></a>
+                            <a href="#/visionAblauf?auftr={{row.auftrId}}&view=taAkt&suffix={{suffix}}"><span class="xxs">TA/Akt</span></a>
+                            <a href="#/visionAblauf?auftr={{row.auftrId}}&view=ta&suffix={{suffix}}"><span class="xxs">TA</span></a>
+                        </td>
+                        <td data-title="'Mandant'" sortable="'mdName'" filter="{ 'mdName': 'text' }">{{row.mdName}}</td>
+                        <td data-title="'VPs'" sortable="'vpCount'">{{row.vpCount}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
