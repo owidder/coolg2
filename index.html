@@ -1,4 +1,4 @@
-<html ng-app="visionAblauf" ng-controller="RootController">
+<html ng-app="coolg" ng-controller="RootController">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,7 +19,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+
+<script src="bower_components/bottlejs/dist/bottle.js"></script>
 <script>
+    var bottle = new Bottle();
     var com_geekAndPoke_coolg = com_geekAndPoke_coolg || {
                 moduleName: 'coolg',
                 subModule: function(name) {
@@ -41,21 +44,27 @@
 <script src="bower_components/sprintf/src/sprintf.js"></script>
 <script src="bower_components/mathjs/dist/math.js"></script>
 
+<script src="math/mathjsext_stats.js"></script>
+
 <script src="app-module.js"></script>
 
-<script src="util/dimensions.js"></script>
-<script src="util/funcs.js"></script>
-<script src="util/sha256.js"></script>
-<script src="util/svgUtil.js"></script>
-<script src="util/mathUtil.js"></script>
-<script src="util/colorUtil.js"></script>
-<script src="util/httpUtil.js"></script>
-<script src="util/fileUtil.js"></script>
-<script src="util/util.js"></script>
-<script src="util/constants.js"></script>
-<script src="util/dateUtil.js"></script>
+<script src="bottle-util/SimplePromise.js"></script>
+<script src="model/Stock.js"></script>
 
-<script src="stockView/stockController.js"></script>
+<script src="ang-util/dimensions.js"></script>
+<script src="ang-util/funcs.js"></script>
+<script src="ang-util/sha256.js"></script>
+<script src="ang-util/svgUtil.js"></script>
+<script src="ang-util/mathUtil.js"></script>
+<script src="ang-util/colorUtil.js"></script>
+<script src="ang-util/httpUtil.js"></script>
+<script src="ang-util/fileUtil.js"></script>
+<script src="ang-util/util.js"></script>
+<script src="ang-util/constants.js"></script>
+<script src="ang-util/dateUtil.js"></script>
+
+<script src="rootController.js"></script>
+<script src="views/stockView/stockController.js"></script>
 
 <script src="app-config.js"></script>
 

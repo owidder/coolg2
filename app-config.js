@@ -1,12 +1,19 @@
 'use strict';
 
-// Declare app level module which depends on views, and components
 angular.module(com_geekAndPoke_coolg.moduleName)
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/stock', {
-                templateUrl: 'stockView/stockView.html',
+                templateUrl: 'views/stockView/stockView.html',
                 controller: com_geekAndPoke_coolg.STOCK_CONTROLLER
             })
             .otherwise({redirectTo: '/stock'});
-    }]);
+    }])
+    .run(function(dateUtil, funcs) {
+        bottle.factory('dateUtil', function(container) {
+            return dateUtil;
+        });
+        bottle.factory('funcs', function(container) {
+            return funcs;
+        });
+    });
