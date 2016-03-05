@@ -1,23 +1,12 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module(com_eosItServices_fx.moduleName)
+angular.module(com_geekAndPoke_coolg.moduleName)
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
-            .when('/visionAblauf', {
-                templateUrl: 'visionAblaufView/visionAblaufView.html',
-                controller: com_eosItServices_fx.VISION_ABLAUF_CONTROLLER,
-                reloadOnSearch: false
+            .when('/stock', {
+                templateUrl: 'stockView/stockView.html',
+                controller: com_geekAndPoke_coolg.STOCK_CONTROLLER
             })
-            .when('/auftrag', {
-                templateUrl: 'auftragView/auftragView.html',
-                controller: com_eosItServices_fx.ABLAUF_CONTROLLER,
-                reloadOnSearch: false
-            })
-            .when('/calendar', {
-                templateUrl: 'simulator/calendarView.html',
-                controller: com_eosItServices_fx.CALENDAR_CONTROLLER,
-                reloadOnSearch: false
-            })
-            .otherwise({redirectTo: '/calendar'});
+            .otherwise({redirectTo: '/stock'});
     }]);

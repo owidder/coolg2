@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory('funcs', function() {
+angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
     function _if(boolean, trueBody) {
         if(boolean) {
             trueBody();

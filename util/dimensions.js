@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory('dimensions', function(funcs) {
+angular.module(com_geekAndPoke_coolg.moduleName).factory('dimensions', function(funcs) {
     var screenDimensions = {
         width: $(window).width(),
         height: $(window).height()

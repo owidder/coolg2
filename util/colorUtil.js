@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory("colorUtil", function(mathUtil) {
+angular.module(com_geekAndPoke_coolg.moduleName).factory("colorUtil", function(mathUtil) {
 
     /**
      * Thanks to http://www.javascripter.net/faq/rgb2cmyk.htm

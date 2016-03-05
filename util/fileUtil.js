@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory("fileUtil", function() {
+angular.module(com_geekAndPoke_coolg.moduleName).factory("fileUtil", function() {
 
     function createRowParser(delim) {
         return (function parseRow(line) {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory("httpUtil", function(funcs, $routeParams, $location) {
+angular.module(com_geekAndPoke_coolg.moduleName).factory("httpUtil", function(funcs, $routeParams, $location) {
 
     function isParamSet(paramName) {
         return funcs.isDefined($routeParams[paramName]);

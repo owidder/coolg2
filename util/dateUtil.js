@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory("dateUtil", function(funcs) {
+angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(funcs) {
 
     /**
      *

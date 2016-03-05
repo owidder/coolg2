@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory('util', function (funcs) {
+angular.module(com_geekAndPoke_coolg.moduleName).factory('util', function (funcs) {
     function createUrlParameters($location, obj, prefix) {
         if (!funcs.isDefined(prefix)) {
             prefix = '';

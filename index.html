@@ -20,10 +20,10 @@
 </head>
 <body>
 <script>
-    var com_eosItServices_fx = com_eosItServices_fx || {
-                moduleName: 'visionAblauf',
+    var com_geekAndPoke_coolg = com_geekAndPoke_coolg || {
+                moduleName: 'coolg',
                 subModule: function(name) {
-                    return com_eosItServices_fx.moduleName + "." + name;
+                    return com_geekAndPoke_coolg.moduleName + "." + name;
                 }
             };
 </script>
@@ -37,20 +37,11 @@
 
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/d3/d3.js"></script>
 <script src="bower_components/sprintf/src/sprintf.js"></script>
-<script src="bower_components/ng-table/dist/ng-table.js"></script>
-<script src="bower_components/angular-ui-grid/ui-grid.js"></script>
-
-<script src="lib/Blob.js"></script>
-<script src="lib/FileSaver.js"></script>
+<script src="bower_components/mathjs/dist/math.js"></script>
 
 <script src="app-module.js"></script>
-
-<script src="components/version/version.js"></script>
-<script src="components/version/version-directive.js"></script>
-<script src="components/version/interpolate-filter.js"></script>
 
 <script src="util/dimensions.js"></script>
 <script src="util/funcs.js"></script>
@@ -64,18 +55,7 @@
 <script src="util/constants.js"></script>
 <script src="util/dateUtil.js"></script>
 
-<script src="model/_auftrag.js"></script>
-<script src="model/eventsUndMassnahmen.js"></script>
-<script src="model/ablauf.js"></script>
-<script src="model/vpAblauf.js"></script>
-<script src="model/nachrichten.js"></script>
-
-<script src="server/ruleEngine.js"></script>
-
-<script src="rootController.js"></script>
-<script src="visionAblaufView/visionAblaufController.js"></script>
-<script src="auftragView/auftragController.js"></script>
-<script src="simulator/calendarController.js"></script>
+<script src="stockView/stockController.js"></script>
 
 <script src="app-config.js"></script>
 

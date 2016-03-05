@@ -1,7 +1,7 @@
 'use strict';
 
-com_eosItServices_fx.ROOT_CONTROLLER = 'RootController';
+com_geekAndPoke_coolg.ROOT_CONTROLLER = 'RootController';
 
-angular.module(com_eosItServices_fx.moduleName).controller(com_eosItServices_fx.ROOT_CONTROLLER,
+angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.ROOT_CONTROLLER,
     function () {
     });

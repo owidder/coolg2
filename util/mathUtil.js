@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module(com_eosItServices_fx.moduleName).factory("mathUtil", function() {
+angular.module(com_geekAndPoke_coolg.moduleName).factory("mathUtil", function() {
 
     function hexToDec(hex) {
         return parseInt(hex, 16).toString(10);
