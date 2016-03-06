@@ -146,13 +146,24 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
 // Returns an array of tick angles and labels, given a group.
         function groupTicks(d) {
             var k = (d.endAngle - d.startAngle) / d.value;
-            return d3.range(0, d.value, 1000).map(function(v, i) {
-                var label = i == 0 ? scope.stockNames[d.index] : v / 1000 + "";
-                return {
-                    angle: v * k + d.startAngle,
-                    label: label
-                };
-            });
+            var range = d3.range(0, d.value, 1000);
+            var gt;
+            if(range.length > 0) {
+                gt = d3.range(0, d.value, 1000).map(function(v, i) {
+                    var label = i == 0 ? scope.stockNames[d.index] : v / 1000 + "";
+                    return {
+                        angle: v * k + d.startAngle,
+                        label: label
+                    };
+                });
+            }
+            else {
+                gt = [{
+                    angle: d.startAngle,
+                    label: scope.stockNames[d.index]
+                }]
+            }
+            return gt;
         }
 
 // Returns an event handler for fading a given chord group.
