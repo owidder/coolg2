@@ -77,9 +77,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             function groupTicks(d) {
                 var k = (d.endAngle - d.startAngle) / d.value;
                 return d3.range(0, d.value, 1000).map(function(v, i) {
+                    var label = i == 0 ? scope.stockNames[d.index] : v / 1000 + "";
                     return {
                         angle: v * k + d.startAngle,
-                        label: v / 1000 + ""
+                        label: label
                     };
                 });
             }
