@@ -69,7 +69,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.currentYYYY_MM_DD = "1980-01-01";
     function step() {
         $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
-        if($scope.currentYYYY_MM_DD < "2016-01-01") {
+        if($scope.currentYYYY_MM_DD < "1980-03-01") {
             $timeout(step, 2000);
         }
     }

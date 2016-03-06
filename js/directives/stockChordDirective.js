@@ -57,34 +57,38 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
              * ticks
              */
 
-            var tickGroupsData = tickG.selectAll("g")
+            var tickGroupsData = tickG.selectAll("g.tickGroup")
                 .data(chord.groups);
 
-            var groupTicksG = tickGroupsData.enter()
-                .append("g");
+            var tickGroupsEnter = tickGroupsData.enter()
+                .append("g")
+                .attr("class", "tickGroup");
+
+            var tickGroupsAll = tickG.selectAll("g.tickGroup");
 
             tickGroupsData.exit().remove();
 
-            var groupTicksData = groupTicksG.selectAll("g")
+            var ticksData = tickGroupsAll.selectAll("g.tick")
                 .data(groupTicks);
 
-            var ticksGEnter = groupTicksData.enter()
-                .append("g");
+            var ticksEnter = ticksData.enter()
+                .append("g")
+                .attr("class", "tick");
 
-            var ticksGAll = groupTicksG.selectAll("g")
+            var ticksAll = tickGroupsAll.selectAll("g.tick")
                 .attr("transform", function(d) {
                     return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
                         + "translate(" + outerRadius + ",0)";
                 });
 
-            ticksGEnter.append("line")
+            ticksEnter.append("line")
                 .attr("x1", 1)
                 .attr("y1", 0)
                 .attr("x2", 5)
                 .attr("y2", 0)
                 .style("stroke", "#000");
 
-            ticksGEnter.append("text")
+            ticksEnter.append("text")
                 .attr("x", 8)
                 .attr("dy", ".35em")
                 .attr("transform", function(d) {
@@ -97,13 +101,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                     return d.label;
                 });
 
-            var ticksGAll = groupTicksG.selectAll("g")
-                .attr("transform", function(d) {
-                    return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-                        + "translate(" + outerRadius + ",0)";
-                });
-
-            groupTicksData.exit().remove();
+            ticksData.exit().remove();
 
             /**
              * chords
