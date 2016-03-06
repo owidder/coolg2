@@ -4,7 +4,7 @@ angular.module(com_geekAndPoke_coolg.moduleName)
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/stock', {
-                templateUrl: 'views/stockView/stockView.html',
+                templateUrl: 'js/views/stockView/stockView.html',
                 controller: com_geekAndPoke_coolg.STOCK_CONTROLLER
             })
             .otherwise({redirectTo: '/stock'});
