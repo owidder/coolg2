@@ -25,10 +25,12 @@
     function correlation(X, Y) {
         var lx = X.length;
         var ly = Y.length;
+        var n = lx;
         if(lx != ly) {
             console.log("X and Y do not have the same length (" + lx + " <-> " + ly + ")");
-            X.length = math.min(lx, ly);
-            Y.length = math.min(lx, ly);
+            n = math.min(lx, ly);
+            X.length = n;
+            Y.length = n;
         }
 
         var sx = math.std(X);
@@ -37,7 +39,7 @@
         var my = math.mean(Y);
         var xy = math.dot(X, Y);
 
-        var corr = (xy - (lx * mx * my)) / ((lx - 1) * sx * sy);
+        var corr = (xy - (n * mx * my)) / ((n - 1) * sx * sy);
 
         return corr;
     }

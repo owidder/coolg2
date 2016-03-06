@@ -1,4 +1,20 @@
 <section>
-    <h1>stock</h1>
+    <h1>stock correlations</h1>
 
+    <table class="bordered">
+        <thead>
+        <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>Corr.</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="c in correlations">
+            <td>{{c.nameA}}</td>
+            <td>{{c.nameB}}</td>
+            <td>{{c.correlation}}</td>
+        </tr>
+        </tbody>
+    </table>
 </section>
