@@ -5,6 +5,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
     function link(scope) {
 
         scope.ready.then(function() {
+
+
+            function posNeg(d) {
+                return scope.posNegMatrix[d.source.index][d.target.index];
+            }
+
             var chord = d3.layout.chord()
                 .padding(.05)
                 .sortSubgroups(d3.descending)
@@ -28,8 +34,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             svg.append("g").selectAll("path")
                 .data(chord.groups)
                 .enter().append("path")
-                .style("fill", function(d) { return fill(d.index); })
-                .style("stroke", function(d) { return fill(d.index); })
+                .attr("class", function(d) {
+                    return "group + stock-" + scope.stockNames[d.index];
+                })
                 .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
                 .on("mouseover", fade(.1))
                 .on("mouseout", fade(1));
@@ -71,8 +78,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 .data(chord.chords)
                 .enter().append("path")
                 .attr("d", d3.svg.chord().radius(innerRadius))
-                .style("fill", function(d) {
-                    return fill(d.target.index);
+                .attr("class", function(d) {
+                    if(posNeg(d) < 0) {
+                        return "chord-neg";
+                    }
+                    return "chord-pos";
                 })
                 .style("opacity", 1);
 
@@ -80,7 +90,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 .text(function(d) {
                     var nameA = scope.stockNames[d.source.index];
                     var nameB = scope.stockNames[d.target.index];
-                    return nameA + " <-> " + nameB;
+                    var value = math.round(d.source.value/1000, 2) * posNeg(d);
+                    return nameA + " <-> " + nameB + ": " +  value;
                 });
 
 // Returns an array of tick angles and labels, given a group.
@@ -112,6 +123,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
         scope: {
             stockNames: "=",
             correlationsMatrix: "=",
+            posNegMatrix: "=",
             ready: "="
         },
         restrict: "E",

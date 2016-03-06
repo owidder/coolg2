@@ -25,11 +25,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var correlations = [];
     var correlationsMatrix = math.zero2DimArray(stockNames.length);
+    var posNegMatrix = math.zero2DimArray(stockNames.length);
     var ready = new SimplePromise();
 
     initStocks();
 
     $scope.correlationsMatrix = correlationsMatrix;
+    $scope.posNegMatrix = posNegMatrix;
     $scope.stockNames = stockNames;
 
     $scope.ready = ready.promise;
@@ -44,6 +46,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
                     var indexA = indexFromStockName(stockA.name);
                     var indexB = indexFromStockName(stockB.name);
                     correlationsMatrix[indexA][indexB] = Math.abs(correlation * 1000);
+                    posNegMatrix[indexA][indexB] = Math.sign(correlation);
                     correlations.push({
                         nameA: stockA.name,
                         nameB: stockB.name,
