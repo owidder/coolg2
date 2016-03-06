@@ -10,6 +10,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var dateUtil = bottle.container.dateUtil;
 
     var stockNames = ["aapl", "dai-de", "ge", "nyt", "fb", "goog", "xom"];
+    var fullStockNames = ["Apple", "Daimler (DE)", "General Electric", "New York Times", "Facebook", "Google", "Exxon Mobile"];
+
     var stocks = [];
     var stockPromises = [];
 
@@ -32,19 +34,20 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     initStocks();
 
-    var pauseFlag = false;
+    $scope.pauseFlag = false;
 
     function pause() {
-        pauseFlag = true;
+        $scope.pauseFlag = true;
     }
 
     function play() {
-        pauseFlag = false;
+        $scope.pauseFlag = false;
     }
 
     $scope.correlationsMatrix = correlationsMatrix;
     $scope.posNegMatrix = posNegMatrix;
     $scope.stockNames = stockNames;
+    $scope.fullStockNames = fullStockNames;
 
     $scope.redrawEvent = redrawEvent;
     $scope.ready = ready.promise;
@@ -70,7 +73,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     }
 
     function drawMonth(yyyy_mm_dd) {
-        var yyyy_mm_dd_plus1m = dateUtil.incByOneMonth(yyyy_mm_dd);
+        var yyyy_mm_dd_plus1m = dateUtil.incByOneYear(yyyy_mm_dd);
         computePeriod(yyyy_mm_dd, yyyy_mm_dd_plus1m);
         redrawEvent.listenersReady.then(function() {
             redrawEvent.start();
@@ -81,10 +84,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.currentYYYY_MM_DD = "1980-01-01";
     function step() {
-        if(!pauseFlag) {
+        if(!$scope.pauseFlag) {
             $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
         }
-        if($scope.currentYYYY_MM_DD > "2016-03-01") {
+        if($scope.currentYYYY_MM_DD > "2015-03-01") {
             $scope.currentYYYY_MM_DD = "1980-01-01";
         }
         $timeout(step, 50);

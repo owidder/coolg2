@@ -1,10 +1,19 @@
 <section>
     <h1>stock correlations</h1>
+    <h6>Correlations between the daily share prices of two stocks over one year beginning at the date below.</h6>
 
     <h3>{{currentYYYY_MM_DD}}</h3>
 
-    <a title="Pause" ng-click="pause()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">pause</i></a>
-    <a title="Play" ng-click="play()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">play_arrow</i></a>
-    <stock-chord redraw-event="redrawEvent" ready="ready" stock-names="stockNames" pos-neg-matrix="posNegMatrix" correlations-matrix="correlationsMatrix"></stock-chord>
+    <a title="Pause" ng-show="!pauseFlag" ng-click="pause()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">pause</i></a>
+    <a title="Play" ng-show="pauseFlag" ng-click="play()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">play_arrow</i></a>
+
+    <stock-chord
+            redraw-event="redrawEvent"
+            ready="ready"
+            stock-names="stockNames"
+            full-stock-names="fullStockNames"
+            pos-neg-matrix="posNegMatrix"
+            correlations-matrix="correlationsMatrix">
+    </stock-chord>
 
 </section>

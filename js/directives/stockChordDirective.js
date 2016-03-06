@@ -125,8 +125,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
 
             chordPathAll.select("title")
                 .text(function(d) {
-                    var nameA = scope.stockNames[d.source.index];
-                    var nameB = scope.stockNames[d.target.index];
+                    var nameA = scope.fullStockNames[d.source.index];
+                    var nameB = scope.fullStockNames[d.target.index];
                     var value = math.round(d.source.value/1000, 2) * posNeg(d);
                     return nameA + " <-> " + nameB + ": " +  value;
                 });
@@ -175,6 +175,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
         link: link,
         scope: {
             stockNames: "=",
+            fullStockNames: "=",
             correlationsMatrix: "=",
             posNegMatrix: "=",
             ready: "=",
