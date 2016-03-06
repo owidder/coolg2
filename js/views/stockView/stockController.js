@@ -66,10 +66,15 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         return yyyy_mm_dd_plus1m;
     }
 
+    $scope.currentYYYY_MM_DD = "1980-01-01";
+    function step() {
+        $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
+        if($scope.currentYYYY_MM_DD < "2016-01-01") {
+            $timeout(step, 2000);
+        }
+    }
+
     Promise.all(stockPromises).then(function() {
-        var nextYYYY_MM_DD = drawMonth("1980-01-01");
-        $timeout(function() {
-            drawMonth("2014-01-01");
-        }, 5000);
+        step();
     });
 });
