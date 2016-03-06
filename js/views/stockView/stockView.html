@@ -1,22 +1,6 @@
 <section>
     <h1>stock correlations</h1>
 
-    <stock-chord ready="ready" stock-names="stockNames" pos-neg-matrix="posNegMatrix" correlations-matrix="correlationsMatrix"></stock-chord>
+    <stock-chord redraw-event="redrawEvent" ready="ready" stock-names="stockNames" pos-neg-matrix="posNegMatrix" correlations-matrix="correlationsMatrix"></stock-chord>
 
-    <table class="bordered">
-        <thead>
-        <tr>
-            <th>A</th>
-            <th>B</th>
-            <th>Corr.</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="c in correlations">
-            <td>{{c.nameA}}</td>
-            <td>{{c.nameB}}</td>
-            <td>{{c.correlation}}</td>
-        </tr>
-        </tbody>
-    </table>
 </section>

@@ -6,6 +6,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var Stock = bottle.container.Stock;
     var SimplePromise = bottle.container.SimplePromise;
+    var SimpleEvent = bottle.container.SimpleEvent;
 
     var stockNames = ["aapl", "dai-de", "ge", "nyt", "fb", "goog", "xom"];
     var stocks = [];
@@ -23,10 +24,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         return stockNames.indexOf(name);
     }
 
-    var correlations = [];
     var correlationsMatrix = math.zero2DimArray(stockNames.length);
     var posNegMatrix = math.zero2DimArray(stockNames.length);
     var ready = new SimplePromise();
+    var redrawEvent = new SimpleEvent();
 
     initStocks();
 
@@ -34,30 +35,34 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.posNegMatrix = posNegMatrix;
     $scope.stockNames = stockNames;
 
+    $scope.redrawEvent = redrawEvent;
     $scope.ready = ready.promise;
 
-    Promise.all(stockPromises).then(function() {
+    function computePeriod(fromYYYY_MM_DD, toYYYY_MM_DD) {
         stocks.forEach(function(stockA) {
-            var periodA = stockA.period("1980-01-01", "1980-02-01", "Close");
+            var periodA = stockA.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
             stocks.forEach(function(stockB) {
+                var correlation = 0;
+                var indexA = indexFromStockName(stockA.name);
+                var indexB = indexFromStockName(stockB.name);
                 if(stockA.name != stockB.name) {
-                    var periodB = stockB.period("1980-01-01", "1980-02-01", "Close");
-                    var correlation = math.correlation(periodA, periodB);
-                    var indexA = indexFromStockName(stockA.name);
-                    var indexB = indexFromStockName(stockB.name);
-                    correlationsMatrix[indexA][indexB] = Math.abs(correlation * 1000);
-                    posNegMatrix[indexA][indexB] = Math.sign(correlation);
-                    correlations.push({
-                        nameA: stockA.name,
-                        nameB: stockB.name,
-                        correlation: correlation
-                    })
+                    var periodB = stockB.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
+                    correlation = math.correlation(periodA, periodB);
                 }
+                correlationsMatrix[indexA][indexB] = Math.abs(correlation * 1000);
+                posNegMatrix[indexA][indexB] = Math.sign(correlation);
             });
         });
-        ready.resolve();
-        $timeout(function() {
-            $scope.correlations = correlations;
+    }
+
+    function drawYear(yyyy) {
+        computePeriod(yyyy + "-01-01", (yyyy) + "-02-01");
+        redrawEvent.listenersReady.then(function() {
+            redrawEvent.start();
         });
+    }
+
+    Promise.all(stockPromises).then(function() {
+        drawYear(1980);
     });
 });

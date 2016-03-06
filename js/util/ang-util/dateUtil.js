@@ -89,6 +89,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
         return getYYYY_MM_DDfromDate(date);
     }
 
+    function incByOneMonth(yyyy_mm_dd) {
+        var date = getDateFromYYYY_MM_DD(yyyy_mm_dd);
+        date.setMonth(date.getMonth() + 1);
+        return getYYYY_MM_DDfromDate(date);
+    }
+
     /**
      * Find the last entry in the given array with entry.yyyy_mm_dd <= yyyy_mm_dd
      *
@@ -163,6 +169,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
         daysBetweenDates: daysBetweenDates,
         datumFromZeitpunkt: datumFromZeitpunkt,
         incByOneDay: incByOneDay,
+        incByOneMonth: incByOneMonth,
         isYoungerThanTheLast: isYoungerThanTheLast,
         findNearestBelow: findNearestBelow,
         createYYYY_MM_DDcomparator: createYYYY_MM_DDcomparator
