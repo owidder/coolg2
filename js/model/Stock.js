@@ -29,9 +29,11 @@ bottle.factory("Stock", function(container) {
                     return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
                 });
                 lastPeriod.length = 0;
-                timeslice.forEach(function(day) {
-                    lastPeriod.push(Number(day[propertyName]));
-                });
+                if(history[0].Date <= start_yyyy_mm_dd && history[history.length-1].Date >= end_yyyy_mm_dd) {
+                    timeslice.forEach(function(day) {
+                        lastPeriod.push(Number(day[propertyName]));
+                    });
+                }
 
                 return lastPeriod;
             }

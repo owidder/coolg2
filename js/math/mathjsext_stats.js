@@ -22,7 +22,6 @@
         }
         var n = lx;
         if(lx != ly) {
-            console.log("X and Y do not have the same length (" + lx + " <-> " + ly + ")");
             n = math.min(lx, ly);
             X.length = n;
             Y.length = n;

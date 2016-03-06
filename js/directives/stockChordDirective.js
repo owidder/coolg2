@@ -47,7 +47,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 .on("mouseout", fade(1));
 
             var groupPathAll = rootG.selectAll("path")
-                .transition()
                 .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius));
 
             groupPathData.exit().remove();
@@ -116,7 +115,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             chordPathEnter.append("title");
 
             var chordPathAll = chordG.selectAll("path")
-                .transition()
                 .attr("d", d3.svg.chord().radius(innerRadius))
                 .attr("class", function(d) {
                     if(posNeg(d) < 0) {

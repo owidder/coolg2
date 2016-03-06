@@ -32,12 +32,25 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     initStocks();
 
+    var pauseFlag = false;
+
+    function pause() {
+        pauseFlag = true;
+    }
+
+    function play() {
+        pauseFlag = false;
+    }
+
     $scope.correlationsMatrix = correlationsMatrix;
     $scope.posNegMatrix = posNegMatrix;
     $scope.stockNames = stockNames;
 
     $scope.redrawEvent = redrawEvent;
     $scope.ready = ready.promise;
+
+    $scope.pause = pause;
+    $scope.play = play;
 
     function computePeriod(fromYYYY_MM_DD, toYYYY_MM_DD) {
         stocks.forEach(function(stockA) {
@@ -63,15 +76,18 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             redrawEvent.start();
         });
 
-        return yyyy_mm_dd_plus1m;
+        return dateUtil.incByOneDay(yyyy_mm_dd);
     }
 
     $scope.currentYYYY_MM_DD = "1980-01-01";
     function step() {
-        $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
-        if($scope.currentYYYY_MM_DD < "2016-01-01") {
-            $timeout(step, 1000);
+        if(!pauseFlag) {
+            $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
         }
+        if($scope.currentYYYY_MM_DD > "2016-03-01") {
+            $scope.currentYYYY_MM_DD = "1980-01-01";
+        }
+        $timeout(step, 50);
     }
 
     Promise.all(stockPromises).then(function() {
