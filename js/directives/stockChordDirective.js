@@ -21,17 +21,120 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 innerRadius = Math.min(width, height) * .41,
                 outerRadius = innerRadius * 1.1;
 
-            var fill = d3.scale.ordinal()
-                .domain(d3.range(4))
-                .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
-
             var svg = d3.select("#chord").append("svg")
                 .attr("width", width)
                 .attr("height", height)
                 .append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-            svg.append("g").selectAll("path")
+            var rootG = svg.append("g");
+            var tickG = svg.append("g");
+            var chordG = svg.append("g")
+                .attr("class", "chord");
+
+
+            function redrawChord() {
+                
+                /**
+                 * group
+                 */
+                var groupPathData = rootG.selectAll("path")
+                    .data(chord.groups);
+
+                groupPathData.enter()
+                    .append("path")
+                    .attr("class", function(d) {
+                        return "group + stock-" + scope.stockNames[d.index];
+                    })
+                    .on("mouseover", fade(.1))
+                    .on("mouseout", fade(1));
+
+                rootG.selectAll("path")
+                    .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius));
+
+                groupPathData.exit();
+
+                /**
+                 * ticks
+                 */
+
+                var tickGroupsData = tickG.selectAll("g")
+                    .data(chord.groups);
+
+                var groupTicksG = tickGroupsData.enter()
+                    .append("g");
+
+                var groupTicksData = groupTicksG.selectAll("g")
+                    .data(groupTicks);
+
+                var ticksGEnter = groupTicksData.enter()
+                    .append("g");
+
+                var ticksGAll = groupTicksG.selectAll("g")
+                    .attr("transform", function(d) {
+                        return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                            + "translate(" + outerRadius + ",0)";
+                    });
+
+                ticksGEnter.append("line")
+                    .attr("x1", 1)
+                    .attr("y1", 0)
+                    .attr("x2", 5)
+                    .attr("y2", 0)
+                    .style("stroke", "#000");
+
+                ticksGEnter.append("text")
+                    .attr("x", 8)
+                    .attr("dy", ".35em")
+                    .attr("transform", function(d) {
+                        return d.angle > Math.PI ? "rotate(180)translate(-16)" : null;
+                    })
+                    .style("text-anchor", function(d) {
+                        return d.angle > Math.PI ? "end" : null;
+                    })
+                    .text(function(d) {
+                        return d.label;
+                    });
+
+                var ticksGAll = groupTicksG.selectAll("g")
+                    .attr("transform", function(d) {
+                        return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                            + "translate(" + outerRadius + ",0)";
+                    });
+
+                /**
+                 * chords
+                 */
+
+                var chordData = gChord.selectAll("path")
+                    .data(chord.chords);
+
+                var chordPathEnter = chordData.enter()
+                    .append("path")
+                    .style("opacity", 1);
+
+                chordPathEnter.append("title");
+
+                var chordPathAll = gChord.selectAll("path")
+                    .attr("d", d3.svg.chord().radius(innerRadius))
+                    .attr("class", function(d) {
+                        if(posNeg(d) < 0) {
+                            return "chord-neg";
+                        }
+                        return "chord-pos";
+                    });
+
+                chordPathAll.select("title")
+                    .text(function(d) {
+                        var nameA = scope.stockNames[d.source.index];
+                        var nameB = scope.stockNames[d.target.index];
+                        var value = math.round(d.source.value/1000, 2) * posNeg(d);
+                        return nameA + " <-> " + nameB + ": " +  value;
+                    });
+
+            }
+
+            rootG.selectAll("path")
                 .data(chord.groups)
                 .enter().append("path")
                 .attr("class", function(d) {
@@ -41,7 +144,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 .on("mouseover", fade(.1))
                 .on("mouseout", fade(1));
 
-            var ticks = svg.append("g").selectAll("g")
+            var ticks = tickG.selectAll("g")
                 .data(chord.groups)
                 .enter().append("g").selectAll("g")
                 .data(groupTicks)
@@ -71,10 +174,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                     return d.label;
                 });
 
-            var gChord = svg.append("g")
-                .attr("class", "chord");
-
-            var chordPath = gChord.selectAll("path")
+            var chordPath = chordG.selectAll("path")
                 .data(chord.chords)
                 .enter().append("path")
                 .attr("d", d3.svg.chord().radius(innerRadius))
