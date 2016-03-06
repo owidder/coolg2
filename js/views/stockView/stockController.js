@@ -7,6 +7,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var Stock = bottle.container.Stock;
     var SimplePromise = bottle.container.SimplePromise;
     var SimpleEvent = bottle.container.SimpleEvent;
+    var dateUtil = bottle.container.dateUtil;
 
     var stockNames = ["aapl", "dai-de", "ge", "nyt", "fb", "goog", "xom"];
     var stocks = [];
@@ -55,14 +56,17 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         });
     }
 
-    function drawYear(yyyy) {
-        computePeriod(yyyy + "-01-01", (yyyy) + "-02-01");
+    function drawMonth(yyyy_mm_dd) {
+        var yyyy_mm_dd_plus1m = dateUtil.incByOneMonth(yyyy_mm_dd);
+        computePeriod(yyyy_mm_dd, yyyy_mm_dd_plus1m);
         redrawEvent.listenersReady.then(function() {
             redrawEvent.start();
         });
+
+        return yyyy_mm_dd_plus1m;
     }
 
     Promise.all(stockPromises).then(function() {
-        drawYear(1980);
+        var nextYYYY_MM_DD = drawMonth("1980-01-01");
     });
 });
