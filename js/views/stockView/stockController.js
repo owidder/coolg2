@@ -5,18 +5,34 @@ com_geekAndPoke_coolg.STOCK_CONTROLLER = "stockController";
 angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function($scope, $timeout, funcs) {
 
     var Stock = bottle.container.Stock;
+    var SimplePromise = bottle.container.SimplePromise;
 
     var stockNames = ["aapl", "dai-de", "ge", "nyt", "fb", "goog", "xom"];
     var stocks = [];
     var stockPromises = [];
 
-    stockNames.forEach(function(stockName) {
-        var stock = new Stock(stockName);
-        stocks.push(stock);
-        stockPromises.push(stock.ready);
-    });
+    function initStocks() {
+        stockNames.forEach(function(stockName) {
+            var stock = new Stock(stockName);
+            stocks.push(stock);
+            stockPromises.push(stock.ready);
+        });
+    }
+
+    function indexFromStockName(name) {
+        return stockNames.indexOf(name);
+    }
 
     var correlations = [];
+    var correlationsMatrix = math.zero2DimArray(stockNames.length);
+    var ready = new SimplePromise();
+
+    initStocks();
+
+    $scope.correlationsMatrix = correlationsMatrix;
+    $scope.stockNames = stockNames;
+
+    $scope.ready = ready.promise;
 
     Promise.all(stockPromises).then(function() {
         stocks.forEach(function(stockA) {
@@ -25,6 +41,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
                 if(stockA.name != stockB.name) {
                     var periodB = stockB.period("2014-01-01", "2014-02-01", "Close");
                     var correlation = math.correlation(periodA, periodB);
+                    var indexA = indexFromStockName(stockA.name);
+                    var indexB = indexFromStockName(stockB.name);
+                    correlationsMatrix[indexA][indexB] = Math.abs(correlation * 1000);
                     correlations.push({
                         nameA: stockA.name,
                         nameB: stockB.name,
@@ -32,8 +51,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
                     })
                 }
             });
-            correlations.sort(funcs.createAccessorFunction("correlation"));
         });
+        ready.resolve();
         $timeout(function() {
             $scope.correlations = correlations;
         });

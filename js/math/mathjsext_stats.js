@@ -14,14 +14,6 @@
         return centeredX;
     }
 
-    function covariance(X, Y) {
-        var CX = center(X);
-        var CY = center(Y);
-        var cov = math.dot(CX, CY);
-
-        return cov;
-    }
-
     function correlation(X, Y) {
         var lx = X.length;
         var ly = Y.length;
@@ -46,7 +38,6 @@
 
     math.import({
         center: center,
-        covariance: covariance,
         correlation: correlation
     });
 })();
