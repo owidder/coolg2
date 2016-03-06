@@ -64,14 +64,24 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                     return d.label;
                 });
 
-            svg.append("g")
-                .attr("class", "chord")
-                .selectAll("path")
+            var gChord = svg.append("g")
+                .attr("class", "chord");
+
+            var chordPath = gChord.selectAll("path")
                 .data(chord.chords)
                 .enter().append("path")
                 .attr("d", d3.svg.chord().radius(innerRadius))
-                .style("fill", function(d) { return fill(d.target.index); })
+                .style("fill", function(d) {
+                    return fill(d.target.index);
+                })
                 .style("opacity", 1);
+
+            chordPath.append("title")
+                .text(function(d) {
+                    var nameA = scope.stockNames[d.source.index];
+                    var nameB = scope.stockNames[d.target.index];
+                    return nameA + " <-> " + nameB;
+                });
 
 // Returns an array of tick angles and labels, given a group.
             function groupTicks(d) {
