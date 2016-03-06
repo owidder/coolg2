@@ -2,7 +2,7 @@
 
 com_geekAndPoke_coolg.STOCK_CONTROLLER = "stockController";
 
-angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function($scope, $timeout, funcs) {
+angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function($scope, $timeout) {
 
     var Stock = bottle.container.Stock;
     var SimplePromise = bottle.container.SimplePromise;
@@ -68,5 +68,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     Promise.all(stockPromises).then(function() {
         var nextYYYY_MM_DD = drawMonth("1980-01-01");
+        $timeout(function() {
+            drawMonth("2014-01-01");
+        }, 5000);
     });
 });
