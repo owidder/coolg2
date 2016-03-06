@@ -38,10 +38,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     Promise.all(stockPromises).then(function() {
         stocks.forEach(function(stockA) {
-            var periodA = stockA.period("2014-01-01", "2014-02-01", "Close");
+            var periodA = stockA.period("1980-01-01", "1980-02-01", "Close");
             stocks.forEach(function(stockB) {
                 if(stockA.name != stockB.name) {
-                    var periodB = stockB.period("2014-01-01", "2014-02-01", "Close");
+                    var periodB = stockB.period("1980-01-01", "1980-02-01", "Close");
                     var correlation = math.correlation(periodA, periodB);
                     var indexA = indexFromStockName(stockA.name);
                     var indexB = indexFromStockName(stockB.name);

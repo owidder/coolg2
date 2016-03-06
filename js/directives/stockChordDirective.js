@@ -11,11 +11,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 return scope.posNegMatrix[d.source.index][d.target.index];
             }
 
-            var chord = d3.layout.chord()
-                .padding(.05)
-                .sortSubgroups(d3.descending)
-                .matrix(scope.correlationsMatrix);
-
             var width = 960,
                 height = 500,
                 innerRadius = Math.min(width, height) * .41,
@@ -33,15 +28,20 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 .attr("class", "chord");
 
 
-            function redrawChord() {
-                
+            function redrawChord(correlationsmatrix) {
+
+                var chord = d3.layout.chord()
+                    .padding(.05)
+                    .sortSubgroups(d3.descending)
+                    .matrix(scope.correlationsMatrix);
+
                 /**
                  * group
                  */
                 var groupPathData = rootG.selectAll("path")
                     .data(chord.groups);
 
-                groupPathData.enter()
+                var groupPathEnter = groupPathData.enter()
                     .append("path")
                     .attr("class", function(d) {
                         return "group + stock-" + scope.stockNames[d.index];
@@ -49,10 +49,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                     .on("mouseover", fade(.1))
                     .on("mouseout", fade(1));
 
-                rootG.selectAll("path")
+                var groupPathAll = rootG.selectAll("path")
                     .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius));
 
-                groupPathData.exit();
+                groupPathData.exit().remove();
 
                 /**
                  * ticks
@@ -63,6 +63,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
 
                 var groupTicksG = tickGroupsData.enter()
                     .append("g");
+
+                tickGroupsData.exit().remove();
 
                 var groupTicksData = groupTicksG.selectAll("g")
                     .data(groupTicks);
@@ -102,11 +104,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                             + "translate(" + outerRadius + ",0)";
                     });
 
+                groupTicksData.exit().remove();
+
                 /**
                  * chords
                  */
 
-                var chordData = gChord.selectAll("path")
+                var chordData = chordG.selectAll("path")
                     .data(chord.chords);
 
                 var chordPathEnter = chordData.enter()
@@ -115,7 +119,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
 
                 chordPathEnter.append("title");
 
-                var chordPathAll = gChord.selectAll("path")
+                var chordPathAll = chordG.selectAll("path")
                     .attr("d", d3.svg.chord().radius(innerRadius))
                     .attr("class", function(d) {
                         if(posNeg(d) < 0) {
@@ -132,67 +136,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                         return nameA + " <-> " + nameB + ": " +  value;
                     });
 
+                chordData.exit().remove();
+
             }
 
-            rootG.selectAll("path")
-                .data(chord.groups)
-                .enter().append("path")
-                .attr("class", function(d) {
-                    return "group + stock-" + scope.stockNames[d.index];
-                })
-                .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
-                .on("mouseover", fade(.1))
-                .on("mouseout", fade(1));
-
-            var ticks = tickG.selectAll("g")
-                .data(chord.groups)
-                .enter().append("g").selectAll("g")
-                .data(groupTicks)
-                .enter().append("g")
-                .attr("transform", function(d) {
-                    return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-                        + "translate(" + outerRadius + ",0)";
-                });
-
-            ticks.append("line")
-                .attr("x1", 1)
-                .attr("y1", 0)
-                .attr("x2", 5)
-                .attr("y2", 0)
-                .style("stroke", "#000");
-
-            ticks.append("text")
-                .attr("x", 8)
-                .attr("dy", ".35em")
-                .attr("transform", function(d) {
-                    return d.angle > Math.PI ? "rotate(180)translate(-16)" : null;
-                })
-                .style("text-anchor", function(d) {
-                    return d.angle > Math.PI ? "end" : null;
-                })
-                .text(function(d) {
-                    return d.label;
-                });
-
-            var chordPath = chordG.selectAll("path")
-                .data(chord.chords)
-                .enter().append("path")
-                .attr("d", d3.svg.chord().radius(innerRadius))
-                .attr("class", function(d) {
-                    if(posNeg(d) < 0) {
-                        return "chord-neg";
-                    }
-                    return "chord-pos";
-                })
-                .style("opacity", 1);
-
-            chordPath.append("title")
-                .text(function(d) {
-                    var nameA = scope.stockNames[d.source.index];
-                    var nameB = scope.stockNames[d.target.index];
-                    var value = math.round(d.source.value/1000, 2) * posNeg(d);
-                    return nameA + " <-> " + nameB + ": " +  value;
-                });
+            redrawChord();
 
 // Returns an array of tick angles and labels, given a group.
             function groupTicks(d) {

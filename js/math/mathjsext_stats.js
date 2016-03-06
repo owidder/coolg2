@@ -17,6 +17,9 @@
     function correlation(X, Y) {
         var lx = X.length;
         var ly = Y.length;
+        if(lx == 0 || ly == 0) {
+            return 0;
+        }
         var n = lx;
         if(lx != ly) {
             console.log("X and Y do not have the same length (" + lx + " <-> " + ly + ")");
