@@ -2,7 +2,7 @@
 
 com_geekAndPoke_coolg.STOCK_CONTROLLER = "stockController";
 
-angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function($scope, $timeout) {
+angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function($scope, $timeout, $interval) {
 
     var Stock = bottle.container.Stock;
     var SimplePromise = bottle.container.SimplePromise;
@@ -33,6 +33,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var ready = new SimplePromise();
     var redrawEvent = new SimpleEvent();
 
+
     initStocks();
 
     $scope.pauseFlag = false;
@@ -43,6 +44,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function play() {
         $scope.pauseFlag = false;
+        Promise.all(stockPromises).then(function() {
+            step();
+        });
+
     }
 
     $scope.correlationsMatrix = correlationsMatrix;
@@ -95,19 +100,18 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             $scope.current_period_start = dateUtil.incByOneDay($scope.current_period_start);
             var numberOfDaysSinceStart = dateUtil.daysBetweenDates(constants.START_DATE, $scope.current_period_start);
             dateChangedEvent.startWhenListenersReady(numberOfDaysSinceStart);
+            if($scope.current_period_start > constants.END_DATE) {
+                $scope.current_period_start = constants.START_DATE;
+            }
+            $timeout(step, 50);
         }
-        if($scope.current_period_start > constants.END_DATE) {
-            $scope.current_period_start = constants.START_DATE;
-        }
-        $timeout(step, 50);
     }
-
-    Promise.all(stockPromises).then(function() {
-        step();
-    });
 
     function dateSliderChanged(value) {
-        console.log(value);
+        $scope.current_period_start = dateUtil.addDaysToDate(constants.START_DATE, value);
+        draw();
     }
+
+    play();
 
 });

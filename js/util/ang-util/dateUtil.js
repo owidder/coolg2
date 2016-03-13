@@ -83,10 +83,16 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
         return yyyy_mm_dd;
     }
 
-    function incByOneDay(yyyy_mm_dd) {
+    function addDaysToDate(yyyy_mm_dd, numberOfDaysToAdd) {
         var date = getDateFromYYYY_MM_DD(yyyy_mm_dd);
-        date.setDate(date.getDate() + 1);
+        var oldDay = date.getDate();
+        var newDay = Number(oldDay) + Number(numberOfDaysToAdd);
+        date.setDate(newDay);
         return getYYYY_MM_DDfromDate(date);
+    }
+
+    function incByOneDay(yyyy_mm_dd) {
+        return addDaysToDate(yyyy_mm_dd, 1);
     }
 
     function addMonthsToDate(yyyy_mm_dd, numberOfMonthsToAdd) {
@@ -96,13 +102,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
     }
 
     function incByOneMonth(yyyy_mm_dd) {
-        addMonthsToDate(yyyy_mm_dd, 1);
+        return addMonthsToDate(yyyy_mm_dd, 1);
     }
 
     function incByOneYear(yyyy_mm_dd) {
-        var date = getDateFromYYYY_MM_DD(yyyy_mm_dd);
-        date.setYear(date.getYear() + 1);
-        return getYYYY_MM_DDfromDate(date);
+        return addMonthsToDate(yyyy_mm_dd, 12);
     }
 
     /**
@@ -181,6 +185,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
         incByOneDay: incByOneDay,
         incByOneMonth: incByOneMonth,
         incByOneYear: incByOneYear,
+        addDaysToDate: addDaysToDate,
+        addMonthsToDate: addMonthsToDate,
         isYoungerThanTheLast: isYoungerThanTheLast,
         findNearestBelow: findNearestBelow,
         createYYYY_MM_DDcomparator: createYYYY_MM_DDcomparator
