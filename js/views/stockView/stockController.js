@@ -82,24 +82,22 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
 
-    function drawMonth(yyyy_mm_dd) {
-        var yyyy_mm_dd_plus1m = dateUtil.incByOneYear(yyyy_mm_dd);
-        computePeriod(yyyy_mm_dd, yyyy_mm_dd_plus1m);
+    function draw() {
+        $scope.current_period_end = dateUtil.incByOneYear($scope.current_period_start);
+        computePeriod($scope.current_period_start, $scope.current_period_end);
         redrawEvent.startWhenListenersReady();
-
-        return dateUtil.incByOneDay(yyyy_mm_dd);
     }
 
-    $scope.currentYYYY_MM_DD = constants.START_DATE;
+    $scope.current_period_start = constants.START_DATE;
     function step() {
         if(!$scope.pauseFlag) {
-            var oldCurrentYYYY_MM_DD = $scope.currentYYYY_MM_DD;
-            $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
-            var days = dateUtil.daysBetweenDates(oldCurrentYYYY_MM_DD, $scope.currentYYYY_MM_DD);
-            dateChangedEvent.startWhenListenersReady(days);
+            draw();
+            $scope.current_period_start = dateUtil.incByOneDay($scope.current_period_start);
+            var numberOfDaysSinceStart = dateUtil.daysBetweenDates(constants.START_DATE, $scope.current_period_start);
+            dateChangedEvent.startWhenListenersReady(numberOfDaysSinceStart);
         }
-        if($scope.currentYYYY_MM_DD > constants.END_DATE) {
-            $scope.currentYYYY_MM_DD = constants.START_DATE;
+        if($scope.current_period_start > constants.END_DATE) {
+            $scope.current_period_start = constants.START_DATE;
         }
         $timeout(step, 50);
     }
