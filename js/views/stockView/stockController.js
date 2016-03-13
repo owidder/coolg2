@@ -32,7 +32,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var posNegMatrix = math.zero2DimArray(stockNames.length);
     var ready = new SimplePromise();
     var redrawEvent = new SimpleEvent();
-
+    var periodLengthInDays = 365;
 
     initStocks();
 
@@ -86,7 +86,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function draw() {
         $timeout(function() {
-            $scope.current_period_end = dateUtil.incByOneYear($scope.current_period_start);
+            $scope.current_period_end = dateUtil.addDaysToDate($scope.current_period_start, periodLengthInDays);
             computePeriod($scope.current_period_start, $scope.current_period_end);
             redrawEvent.startWhenListenersReady();
         });
