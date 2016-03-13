@@ -7,6 +7,15 @@
     <a title="Pause" ng-show="!pauseFlag" ng-click="pause()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">pause</i></a>
     <a title="Play" ng-show="pauseFlag" ng-click="play()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">play_arrow</i></a>
 
+    <range-slider
+        range-min="0"
+        range-max="{{dateSliderMax}}"
+        slider-changed-event-out="dateSliderChangedEvent"
+        value-changed-event-in=""
+    >
+
+    </range-slider>
+
     <stock-chord
             redraw-event="redrawEvent"
             ready="ready"

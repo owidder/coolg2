@@ -8,6 +8,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var SimplePromise = bottle.container.SimplePromise;
     var SimpleEvent = bottle.container.SimpleEvent;
     var dateUtil = bottle.container.dateUtil;
+    var constants = bottle.container.constants;
 
     var stockNames = ["aapl", "dai-de", "ge", "nyt", "fb", "goog", "xom"];
     var fullStockNames = ["Apple", "Daimler (DE)", "General Electric", "New York Times", "Facebook", "Google", "Exxon Mobile"];
@@ -72,23 +73,33 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         });
     }
 
+    var dateSliderChangedEvent = new SimpleEvent();
+    dateSliderChangedEvent.on(dateSliderChanged);
+    $scope.dateSliderChangedEvent = dateSliderChangedEvent;
+
+    var dateChangedEvent = new SimpleEvent();
+    $scope.dateChangedEvent = dateChangedEvent;
+
+    $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
+
     function drawMonth(yyyy_mm_dd) {
         var yyyy_mm_dd_plus1m = dateUtil.incByOneYear(yyyy_mm_dd);
         computePeriod(yyyy_mm_dd, yyyy_mm_dd_plus1m);
-        redrawEvent.listenersReady.then(function() {
-            redrawEvent.start();
-        });
+        redrawEvent.startWhenListenersReady();
 
         return dateUtil.incByOneDay(yyyy_mm_dd);
     }
 
-    $scope.currentYYYY_MM_DD = "1980-01-01";
+    $scope.currentYYYY_MM_DD = constants.START_DATE;
     function step() {
         if(!$scope.pauseFlag) {
+            var oldCurrentYYYY_MM_DD = $scope.currentYYYY_MM_DD;
             $scope.currentYYYY_MM_DD = drawMonth($scope.currentYYYY_MM_DD);
+            var days = dateUtil.daysBetweenDates(oldCurrentYYYY_MM_DD, $scope.currentYYYY_MM_DD);
+            dateChangedEvent.startWhenListenersReady(days);
         }
-        if($scope.currentYYYY_MM_DD > "2015-03-01") {
-            $scope.currentYYYY_MM_DD = "1980-01-01";
+        if($scope.currentYYYY_MM_DD > constants.END_DATE) {
+            $scope.currentYYYY_MM_DD = constants.START_DATE;
         }
         $timeout(step, 50);
     }
@@ -96,4 +107,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     Promise.all(stockPromises).then(function() {
         step();
     });
+
+    function dateSliderChanged(value) {
+        console.log(value);
+    }
+
 });

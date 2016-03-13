@@ -89,10 +89,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
         return getYYYY_MM_DDfromDate(date);
     }
 
-    function incByOneMonth(yyyy_mm_dd) {
+    function addMonthsToDate(yyyy_mm_dd, numberOfMonthsToAdd) {
         var date = getDateFromYYYY_MM_DD(yyyy_mm_dd);
-        date.setMonth(date.getMonth() + 1);
+        date.setMonth(date.getMonth() + numberOfMonthsToAdd);
         return getYYYY_MM_DDfromDate(date);
+    }
+
+    function incByOneMonth(yyyy_mm_dd) {
+        addMonthsToDate(yyyy_mm_dd, 1);
     }
 
     function incByOneYear(yyyy_mm_dd) {
