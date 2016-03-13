@@ -36,7 +36,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     initStocks();
 
-    $scope.pauseFlag = false;
+    $scope.pauseFlag = true;
 
     function pause() {
         $scope.pauseFlag = true;
@@ -44,10 +44,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function play() {
         $scope.pauseFlag = false;
-        Promise.all(stockPromises).then(function() {
-            step();
-        });
-
+        step();
     }
 
     $scope.correlationsMatrix = correlationsMatrix;
@@ -88,9 +85,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
 
     function draw() {
-        $scope.current_period_end = dateUtil.incByOneYear($scope.current_period_start);
-        computePeriod($scope.current_period_start, $scope.current_period_end);
-        redrawEvent.startWhenListenersReady();
+        $timeout(function() {
+            $scope.current_period_end = dateUtil.incByOneYear($scope.current_period_start);
+            computePeriod($scope.current_period_start, $scope.current_period_end);
+            redrawEvent.startWhenListenersReady();
+        });
     }
 
     $scope.current_period_start = constants.START_DATE;
@@ -112,6 +111,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         draw();
     }
 
-    play();
-
+    Promise.all(stockPromises).then(function() {
+        $scope.current_period_start = constants.START_DATE;
+        draw();
+    });
 });
