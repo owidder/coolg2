@@ -20,6 +20,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", functi
         if(funcs.isDefined(scope.valueChangedEventIn)) {
             scope.valueChangedEventIn.on(valueChanged);
         }
+
+        scope.onChange();
     }
 
     return {

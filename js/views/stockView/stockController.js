@@ -83,6 +83,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.dateChangedEvent = dateChangedEvent;
 
     var periodLengthSliderChangeEvent = new SimpleEvent();
+    periodLengthSliderChangeEvent.on(periodLengthSliderChanged);
     $scope.periodLengthSliderChangeEvent = periodLengthSliderChangeEvent;
 
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
@@ -111,6 +112,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function dateSliderChanged(value) {
         $scope.current_period_start = dateUtil.addDaysToDate(constants.START_DATE, value);
+        draw();
+    }
+
+    function periodLengthSliderChanged(value) {
+        periodLengthInDays = value;
         draw();
     }
 
