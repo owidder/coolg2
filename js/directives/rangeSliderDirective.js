@@ -2,6 +2,7 @@
 
 angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", function() {
     var dateUtil = bottle.container.dateUtil;
+    var funcs = bottle.container.funcs;
 
     function link(scope) {
         scope.rangeValue = scope.rangeMin;
@@ -11,10 +12,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", functi
         }
 
         scope.onChange = function() {
-            scope.sliderChangedEventOut.startWhenListenersReady(scope.rangeValue);
+            if(funcs.isDefined(scope.sliderChangedEventOut)) {
+                scope.sliderChangedEventOut.startWhenListenersReady(scope.rangeValue);
+            }
         };
 
-        scope.valueChangedEventIn.on(valueChanged);
+        if(funcs.isDefined(scope.valueChangedEventIn)) {
+            scope.valueChangedEventIn.on(valueChanged);
+        }
     }
 
     return {

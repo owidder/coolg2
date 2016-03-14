@@ -4,7 +4,7 @@
 
     <span class="container">
         <div class="row">
-            <div class="col s12 m1 l1" align="center">
+            <div class="col s12 m1 l1 vac" align="center">
                 <a title="Pause" ng-show="!pauseFlag" ng-click="pause()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">pause</i></a>
                 <a title="Play" ng-show="pauseFlag" ng-click="play()" class="btn-floating btn-small waves-effect waves-light blue"><i class="material-icons">play_arrow</i></a><br>
             </div>
@@ -12,6 +12,12 @@
                 <range-slider
                         range-min="0"
                         range-max="{{dateSliderMax}}"
+                        slider-changed-event-out="dateSliderChangedEvent"
+                        value-changed-event-in="dateChangedEvent">
+                </range-slider>
+                <range-slider
+                        range-min="30"
+                        range-max="365"
                         slider-changed-event-out="dateSliderChangedEvent"
                         value-changed-event-in="dateChangedEvent">
                 </range-slider>
