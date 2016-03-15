@@ -14,7 +14,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var stocks = [];
     var stockPromises = [];
     var stockList;
-    
+
     var initializedPromise = new SimplePromise();
 
     function initStocks() {
