@@ -23,13 +23,17 @@
             </div>
         </div>
         <div class="row">
+            <div class="col s12 m12 l12">
+                <span></span>
+            </div>
+        </div>
+        <div class="row">
             <div class="col s12 m12 l12" align="center">
                 <span class="l">{{current_period_start}} - {{current_period_end}}</span>
                 <stock-chord
                         redraw-event="redrawEvent"
                         ready="ready"
-                        stock-names="stockNames"
-                        full-stock-names="fullStockNames"
+                        stock-list="stockList"
                         pos-neg-matrix="posNegMatrix"
                         correlations-matrix="correlationsMatrix">
                 </stock-chord>

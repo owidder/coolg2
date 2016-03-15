@@ -4,7 +4,7 @@ bottle.factory("Stock", function(container) {
     var SimplePromise = container.SimplePromise;
     var dateUtil = container.dateUtil;
 
-    function Stock(name) {
+    function Stock(symbol) {
         var that = this;
         var simplePromise = new SimplePromise();
 
@@ -39,13 +39,13 @@ bottle.factory("Stock", function(container) {
             }
         }
 
-        $.get("rsrc/" + name + ".csv", function(data) {
+        $.get("rsrc/" + symbol + ".csv", function(data) {
             history = d3.csv.parse(data);
             history.sort(dateUtil.createYYYY_MM_DDcomparator("Date"));
             simplePromise.resolve();
         });
 
-        that.name = name;
+        that.symbol = symbol;
         that.ready = simplePromise.promise;
         that.period = period;
     }

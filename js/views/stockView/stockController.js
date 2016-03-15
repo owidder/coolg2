@@ -13,21 +13,28 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var stocks = [];
     var stockPromises = [];
-    var stockNames = [];
-    var fullStockNames = [];
-
+    var stockList;
+    
     var initializedPromise = new SimplePromise();
 
     function initStocks() {
-        stockNames.forEach(function(stockName) {
-            var stock = new Stock(stockName);
+        stockList.forEach(function(entry) {
+            var stock = new Stock(entry.symbol);
             stocks.push(stock);
             stockPromises.push(stock.ready);
         });
     }
 
-    function indexFromStockName(name) {
-        return stockNames.indexOf(name);
+    function indexFromStockSymbol(symbol) {
+        var i, index, entry;
+        for(i = 0; i < stockList.length; i++) {
+            entry = stockList[i];
+            if(entry.symbol == symbol) {
+                index = i;
+            }
+        }
+
+        return index;
     }
 
     var correlationsMatrix = [];
@@ -35,8 +42,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var ready = new SimplePromise();
     var redrawEvent = new SimpleEvent();
     var periodLengthInDays = 365;
-
-    initStocks();
 
     $scope.pauseFlag = true;
 
@@ -51,8 +56,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.correlationsMatrix = correlationsMatrix;
     $scope.posNegMatrix = posNegMatrix;
-    $scope.stockNames = stockNames;
-    $scope.fullStockNames = fullStockNames;
 
     $scope.redrawEvent = redrawEvent;
     $scope.ready = ready.promise;
@@ -65,9 +68,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             var periodA = stockA.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
             stocks.forEach(function(stockB) {
                 var correlation = 0;
-                var indexA = indexFromStockName(stockA.name);
-                var indexB = indexFromStockName(stockB.name);
-                if(stockA.name != stockB.name) {
+                var indexA = indexFromStockSymbol(stockA.symbol);
+                var indexB = indexFromStockSymbol(stockB.symbol);
+                if(stockA.symbol != stockB.symbol) {
                     var periodB = stockB.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
                     correlation = math.correlation(periodA, periodB);
                 }
@@ -130,14 +133,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function init() {
         $.get("rsrc/stocks.csv", function(data) {
-            var stockList = d3.csv.parse(data);
+            stockList = d3.csv.parse(data);
             stockList.sort(funcs.createComparator("symbol"));
-            stockList.forEach(function(entry) {
-                stockNames.push(entry.symbol);
-                fullStockNames.push(entry.name);
-            });
-            math.zero2DimArray(stockNames.length, stockNames.length, correlationsMatrix);
-            math.zero2DimArray(stockNames.length, stockNames.length, posNegMatrix);
+            $scope.stockList = stockList;
+
+            math.zero2DimArray(stockList.length, stockList.length, correlationsMatrix);
+            math.zero2DimArray(stockList.length, stockList.length, posNegMatrix);
 
             $scope.current_period_start = constants.START_DATE;
             initStocks();

@@ -41,7 +41,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             var groupPathEnter = groupPathData.enter()
                 .append("path")
                 .attr("class", function(d) {
-                    return "group + stock-" + scope.stockNames[d.index];
+                    return "group + stock-" + scope.stockList[d.index].symbol;
                 })
                 .on("mouseover", fade(.1))
                 .on("mouseout", fade(1));
@@ -125,8 +125,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
 
             chordPathAll.select("title")
                 .text(function(d) {
-                    var nameA = scope.fullStockNames[d.source.index];
-                    var nameB = scope.fullStockNames[d.target.index];
+                    var nameA = scope.stockList[d.source.index].name;
+                    var nameB = scope.stockList[d.target.index].name;
                     var value = math.round(d.source.value/1000, 2) * posNeg(d);
                     return nameA + " <-> " + nameB + ": " +  value;
                 });
@@ -144,7 +144,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             var gt;
             if(range.length > 0) {
                 gt = d3.range(0, d.value, 1000).map(function(v, i) {
-                    var label = i == 0 ? scope.stockNames[d.index] : v / 1000 + "";
+                    var label = i == 0 ? scope.stockList[d.index].symbol : v / 1000 + "";
                     return {
                         angle: v * k + d.startAngle,
                         label: label
@@ -154,7 +154,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             else {
                 gt = [{
                     angle: d.startAngle,
-                    label: scope.stockNames[d.index]
+                    label: scope.stockList[d.index].symbol
                 }]
             }
             return gt;
@@ -174,8 +174,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
     return {
         link: link,
         scope: {
-            stockNames: "=",
-            fullStockNames: "=",
+            stockList: "=",
             correlationsMatrix: "=",
             posNegMatrix: "=",
             ready: "=",
