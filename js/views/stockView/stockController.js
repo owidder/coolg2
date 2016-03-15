@@ -9,12 +9,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var SimpleEvent = bottle.container.SimpleEvent;
     var dateUtil = bottle.container.dateUtil;
     var constants = bottle.container.constants;
-
-    var stockNames = ["aapl", "dai-de", "ge", "nyt", "fb", "goog", "xom"];
-    var fullStockNames = ["Apple", "Daimler (DE)", "General Electric", "New York Times", "Facebook", "Google", "Exxon Mobile"];
+    var funcs = bottle.container.funcs;
 
     var stocks = [];
     var stockPromises = [];
+    var stockNames = [];
+    var fullStockNames = [];
+
+    var initializedPromise = new SimplePromise();
 
     function initStocks() {
         stockNames.forEach(function(stockName) {
@@ -28,8 +30,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         return stockNames.indexOf(name);
     }
 
-    var correlationsMatrix = math.zero2DimArray(stockNames.length);
-    var posNegMatrix = math.zero2DimArray(stockNames.length);
+    var correlationsMatrix = [];
+    var posNegMatrix = [];
     var ready = new SimplePromise();
     var redrawEvent = new SimpleEvent();
     var periodLengthInDays = 365;
@@ -110,18 +112,42 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         }
     }
 
+    function drawWhenInitialized() {
+        initializedPromise.promise.then(function() {
+            draw();
+        });
+    }
+
     function dateSliderChanged(value) {
         $scope.current_period_start = dateUtil.addDaysToDate(constants.START_DATE, value);
-        draw();
+        drawWhenInitialized();
     }
 
     function periodLengthSliderChanged(value) {
         periodLengthInDays = value;
-        draw();
+        drawWhenInitialized();
     }
 
-    Promise.all(stockPromises).then(function() {
-        $scope.current_period_start = constants.START_DATE;
-        draw();
-    });
+    function init() {
+        $.get("rsrc/stocks.csv", function(data) {
+            var stockList = d3.csv.parse(data);
+            stockList.sort(funcs.createComparator("symbol"));
+            stockList.forEach(function(entry) {
+                stockNames.push(entry.symbol);
+                fullStockNames.push(entry.name);
+            });
+            math.zero2DimArray(stockNames.length, stockNames.length, correlationsMatrix);
+            math.zero2DimArray(stockNames.length, stockNames.length, posNegMatrix);
+
+            $scope.current_period_start = constants.START_DATE;
+            initStocks();
+            Promise.all(stockPromises).then(function() {
+                initializedPromise.resolve();
+            });
+            drawWhenInitialized();
+        });
+    }
+
+    init();
+
 });

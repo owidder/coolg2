@@ -2,11 +2,16 @@
 
 (function () {
 
-    function zero2DimArray(dim1, dim2) {
+    function zero2DimArray(dim1, dim2, zeroArray) {
         if(!(dim2 > 0)) {
             dim2 = dim1;
         }
-        var zeroArray = [];
+        if(typeof (zeroArray) == 'undefined') {
+            zeroArray = [];
+        }
+        else if(zeroArray.constructor.name == 'Array') {
+            zeroArray.length = 0;
+        }
         var i, j;
         for(i = 0; i < dim1; i++) {
             zeroArray.push([]);

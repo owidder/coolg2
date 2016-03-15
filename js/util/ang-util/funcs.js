@@ -253,6 +253,21 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         return accessorFunction;
     }
 
+    function createComparator(accessor) {
+        var accessorFunction = createAccessorFunction(accessor);
+        return function(a,b) {
+            var valA = accessorFunction(a);
+            var valB = accessorFunction(b);
+            if(valA < valB) {
+                return -1;
+            }
+            else if (valA == valB) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+
     return {
         hashCode: hashCode,
         if: _if,
@@ -278,6 +293,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         putInArrayMap: putInArrayMap,
         setPropertyIfValueNotEmpty: setPropertyIfValueNotEmpty,
         get: get,
-        createAccessorFunction: createAccessorFunction
+        createAccessorFunction: createAccessorFunction,
+        createComparator: createComparator
     };
 });

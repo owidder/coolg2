@@ -5,7 +5,7 @@ bottle.factory("Stock", function(container) {
     var dateUtil = container.dateUtil;
 
     function Stock(name) {
-        var self = this;
+        var that = this;
         var simplePromise = new SimplePromise();
 
         var history;
@@ -45,9 +45,9 @@ bottle.factory("Stock", function(container) {
             simplePromise.resolve();
         });
 
-        self.name = name;
-        self.ready = simplePromise.promise;
-        self.period = period;
+        that.name = name;
+        that.ready = simplePromise.promise;
+        that.period = period;
     }
 
     return Stock;

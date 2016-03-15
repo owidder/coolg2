@@ -162,17 +162,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
 
     function createYYYY_MM_DDcomparator(accessor) {
         var accessorFunction = createDateAccessorFunction(accessor);
-        return function(a,b) {
-            var datumA = accessorFunction(a);
-            var datumB = accessorFunction(b);
-            if(datumA < datumB) {
-                return -1;
-            }
-            else if (datumA == datumB) {
-                return 0;
-            }
-            return 1;
-        }
+        return funcs.createComparator(accessorFunction);
     }
 
     return {

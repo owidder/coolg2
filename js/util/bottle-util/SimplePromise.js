@@ -3,20 +3,20 @@
 bottle.factory("SimplePromise", function(container) {
 
     function SimplePromise() {
-        var self = this;
+        var that = this;
         var _resolve;
         var _reject;
 
-        self.promise = new Promise(function(resolve, reject) {
+        that.promise = new Promise(function(resolve, reject) {
             _resolve = resolve;
             _reject = reject;
         });
 
-        self.resolve = function (data) {
+        that.resolve = function (data) {
             _resolve(data);
         };
 
-        self.reject = function(data) {
+        that.reject = function(data) {
             _reject(data);
         };
     }
