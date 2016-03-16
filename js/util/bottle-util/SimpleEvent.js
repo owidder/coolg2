@@ -8,13 +8,12 @@ bottle.factory("SimpleEvent", function(container) {
         var listeners = [];
 
         var firstListenerReadyPromise = new SimplePromise();
+        var allListenersReadyPromise = new SimplePromise();
 
         self.on = function(listener) {
             listeners.push(listener);
             firstListenerReadyPromise.resolve();
         };
-
-        self.firstListenerReady = firstListenerReadyPromise.promise;
 
         self.start = function(data) {
             listeners.forEach(function(listener) {
@@ -23,7 +22,7 @@ bottle.factory("SimpleEvent", function(container) {
         };
 
         self.startWhenFirstListenerReady = function(data) {
-            self.firstListenerReady.then(function() {
+            firstListenerReadyPromise.promise.then(function() {
                 self.start(data);
             });
         }
