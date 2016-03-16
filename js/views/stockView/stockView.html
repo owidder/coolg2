@@ -10,6 +10,28 @@
             width: 5px;
             height: 5px;
         }
+
+        div.stock {
+            box-sizing: border-box;
+        }
+
+        div.stock > a {
+            line-height: 2em;
+            padding: 1px;
+        }
+
+        div.stock-on {
+            font-weight: bold;
+        }
+
+        div.stock-on > a {
+            color: #000;
+        }
+
+        div.stock-off {
+            color: lightgrey;
+            opacity: 0.5;
+        }
     </style>
 
     <h1>stock correlations</h1>
@@ -36,10 +58,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s6 m4 l1" ng-repeat="stock in stockList">
-                <span class="xxs">
+            <div ng-repeat="stock in stockList" class="col s6 m4 l1 stock stock-on stock-onoff-{{stock.symbol}}" align="center">
+                <a class="xxs waves-effect waves-teal btn-flat" ng-click="switchStockOnOff(stock.symbol)">
                     {{stock.symbol}}
-                </span>
+                </a>
             </div>
         </div>
         <div class="row">

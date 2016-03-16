@@ -131,6 +131,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         drawWhenInitialized();
     }
 
+    function switchStockOnOff(symbol) {
+        $("div.stock-onoff-" + symbol).toggleClass("stock-on");
+        $("div.stock-onoff-" + symbol).toggleClass("stock-off");
+    }
+    $scope.switchStockOnOff = switchStockOnOff;
+
     function init() {
         $.get("rsrc/stocks.csv", function(data) {
             stockList = d3.csv.parse(data);
