@@ -98,7 +98,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         $timeout(function() {
             $scope.current_period_end = dateUtil.addDaysToDate($scope.current_period_start, periodLengthInDays);
             computePeriod($scope.current_period_start, $scope.current_period_end);
-            redrawEvent.startWhenListenersReady();
+            redrawEvent.startWhenFirstListenerReady();
         });
     }
 
@@ -108,7 +108,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             draw();
             $scope.current_period_start = dateUtil.incByOneDay($scope.current_period_start);
             var numberOfDaysSinceStart = dateUtil.daysBetweenDates(constants.START_DATE, $scope.current_period_start);
-            dateChangedEvent.startWhenListenersReady(numberOfDaysSinceStart);
+            dateChangedEvent.startWhenFirstListenerReady(numberOfDaysSinceStart);
             if($scope.current_period_start > constants.END_DATE) {
                 $scope.current_period_start = constants.START_DATE;
             }

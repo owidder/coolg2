@@ -13,7 +13,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", functi
 
         scope.onChange = function() {
             if(funcs.isDefined(scope.sliderChangedEventOut)) {
-                scope.sliderChangedEventOut.startWhenListenersReady(scope.rangeValue);
+                scope.sliderChangedEventOut.startWhenFirstListenerReady(scope.rangeValue);
             }
         };
 
