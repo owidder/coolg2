@@ -1,13 +1,13 @@
-symbol,name
-aapl,Apple
-dai-de,Daimler (DE)
-ge,General Electric
-nyt,New York Times
-fb,Facebook
-goog,Alphabet
-xom,Exxon Mobile
-amzn,Amazon
-t,AT&T
-hpq,Hewlett & Packard
-amd,Advanced Micro Devices
-aig,American International Group
+symbol,name,onByDefault
+aapl,Apple,0
+dai-de,Daimler (DE),0
+ge,General Electric,1
+nyt,New York Times,1
+fb,Facebook,0
+goog,Alphabet,0
+xom,Exxon Mobile,1
+amzn,Amazon,0
+t,AT&T,0
+hpq,Hewlett & Packard,0
+amd,Advanced Micro Devices,0
+aig,American International Group,0

@@ -12,6 +12,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var funcs = bottle.container.funcs;
 
     var stocks = [];
+    var stockSwitches = [];
     var stockPromises = [];
     var stockList;
 
@@ -131,16 +132,21 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         drawWhenInitialized();
     }
 
-    function switchStockOnOff(symbol) {
-        $("div.stock-onoff-" + symbol).toggleClass("stock-on");
-        $("div.stock-onoff-" + symbol).toggleClass("stock-off");
+    function initStockSwitches() {
+        stockList.forEach(function(entry) {
+            stockSwitches[entry.symbol] = (entry.onByDefault == 1);
+        });
     }
-    $scope.switchStockOnOff = switchStockOnOff;
+
+    function switchStockOnOff(symbol) {
+        stockSwitches[symbol] = !stockSwitches[symbol];
+    }
 
     function init() {
         $.get("rsrc/stocks.csv", function(data) {
             stockList = d3.csv.parse(data);
             stockList.sort(funcs.createComparator("symbol"));
+            initStockSwitches();
             $scope.stockList = stockList;
 
             math.zero2DimArray(stockList.length, stockList.length, correlationsMatrix);
@@ -154,6 +160,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             drawWhenInitialized();
         });
     }
+
+    $scope.switchStockOnOff = switchStockOnOff;
+    $scope.stockSwitches = stockSwitches;
 
     init();
 

@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="row">
-            <div ng-repeat="stock in stockList" class="col s6 m4 l1 stock stock-on stock-onoff-{{stock.symbol}}" align="center">
+            <div ng-repeat="stock in stockList" class="col s6 m4 l1 stock {{stockSwitches[stock.symbol] ? 'stock-on' : 'stock-off'}} stock-onoff-{{stock.symbol}}" align="center">
                 <a class="xxs waves-effect waves-teal btn-flat" ng-click="switchStockOnOff(stock.symbol)">
                     {{stock.symbol}}
                 </a>
