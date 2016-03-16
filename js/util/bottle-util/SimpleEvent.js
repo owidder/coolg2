@@ -4,28 +4,38 @@ bottle.factory("SimpleEvent", function(container) {
     var SimplePromise = bottle.container.SimplePromise;
 
     function SimpleEvent() {
-        var self = this;
+        var that = this;
         var listeners = [];
 
         var firstListenerReadyPromise = new SimplePromise();
         var allListenersReadyPromise = new SimplePromise();
 
-        self.on = function(listener) {
+        that.on = function(listener) {
             listeners.push(listener);
             firstListenerReadyPromise.resolve();
         };
 
-        self.start = function(data) {
+        that.allListenersReady = function() {
+            allListenersReadyPromise.resolve();
+        };
+
+        that.start = function(data) {
             listeners.forEach(function(listener) {
                 listener(data);
             });
         };
 
-        self.startWhenFirstListenerReady = function(data) {
+        that.startWhenFirstListenerReady = function(data) {
             firstListenerReadyPromise.promise.then(function() {
-                self.start(data);
+                that.start(data);
             });
-        }
+        };
+
+        that.startWhenAllListenersReady = function(data) {
+            allListenersReadyPromise.promise.then(function() {
+                that.start(data);
+            });
+        };
     }
 
     return SimpleEvent;
