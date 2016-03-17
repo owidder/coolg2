@@ -12,6 +12,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var funcs = bottle.container.funcs;
 
     var stockMap = {};
+    var currentShownStocks = [];
     var stockSwitches = {};
     var stockPromises = [];
     var stockList;
@@ -21,14 +22,16 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     function initStocks() {
         var stock, index = 0;
         stockPromises.length = 0;
+        currentShownStocks.length = 0;
         stockList.forEach(function(entry) {
             if(stockSwitches[entry.symbol]) {
                 stock = stockMap[entry.symbol];
                 if(!funcs.isDefined(stock)) {
-                    stock = new Stock(entry.symbol);
+                    stock = new Stock(entry.symbol, entry.name);
                     stockMap[entry.symbol] = stock;
                     stockPromises.push(stock.ready);
                 }
+                currentShownStocks.push(stock);
                 stock.index = index++;
             }
         });
@@ -152,7 +155,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
             $scope.stockList = stockList;
             $scope.current_period_start = constants.START_DATE;
-            
+
             initStocks();
             Promise.all(stockPromises).then(function() {
                 initializedPromise.resolve();
@@ -163,6 +166,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.switchStockOnOff = switchStockOnOff;
     $scope.stockSwitches = stockSwitches;
+    $scope.currentShownStocks = currentShownStocks;
 
     init();
 

@@ -4,7 +4,7 @@ bottle.factory("Stock", function(container) {
     var SimplePromise = container.SimplePromise;
     var dateUtil = container.dateUtil;
 
-    function Stock(symbol) {
+    function Stock(symbol, name) {
         var that = this;
         var simplePromise = new SimplePromise();
 
@@ -46,6 +46,7 @@ bottle.factory("Stock", function(container) {
         });
 
         that.symbol = symbol;
+        that.name = name;
         that.ready = simplePromise.promise;
         that.period = period;
     }
