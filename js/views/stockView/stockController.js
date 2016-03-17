@@ -11,31 +11,29 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var constants = bottle.container.constants;
     var funcs = bottle.container.funcs;
 
-    var stocks = [];
-    var stockSwitches = [];
+    var stockMap = {};
+    var stockSwitches = {};
     var stockPromises = [];
     var stockList;
 
     var initializedPromise = new SimplePromise();
 
     function initStocks() {
+        var stock, index = 0;
+        stockPromises.length = 0;
         stockList.forEach(function(entry) {
-            var stock = new Stock(entry.symbol);
-            stocks.push(stock);
-            stockPromises.push(stock.ready);
-        });
-    }
-
-    function indexFromStockSymbol(symbol) {
-        var i, index, entry;
-        for(i = 0; i < stockList.length; i++) {
-            entry = stockList[i];
-            if(entry.symbol == symbol) {
-                index = i;
+            if(stockSwitches[entry.symbol]) {
+                stock = stockMap[entry.symbol];
+                if(!funcs.isDefined(stock)) {
+                    stock = new Stock(entry.symbol);
+                    stockMap[entry.symbol] = stock;
+                    stockPromises.push(stock.ready);
+                }
+                stock.index = index++;
             }
-        }
-
-        return index;
+        });
+        math.zero2DimArray(index, index, correlationsMatrix);
+        math.zero2DimArray(index, index, posNegMatrix);
     }
 
     var correlationsMatrix = [];
@@ -65,19 +63,23 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.play = play;
 
     function computePeriod(fromYYYY_MM_DD, toYYYY_MM_DD) {
-        stocks.forEach(function(stockA) {
-            var periodA = stockA.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
-            stocks.forEach(function(stockB) {
-                var correlation = 0;
-                var indexA = indexFromStockSymbol(stockA.symbol);
-                var indexB = indexFromStockSymbol(stockB.symbol);
-                if(stockA.symbol != stockB.symbol) {
-                    var periodB = stockB.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
-                    correlation = math.correlation(periodA, periodB);
-                }
-                correlationsMatrix[indexA][indexB] = Math.abs(correlation * 1000);
-                posNegMatrix[indexA][indexB] = Math.sign(correlation);
-            });
+        funcs.forEachKeyAndVal(stockMap, function(symbolA, stockA) {
+            if(stockSwitches[symbolA]) {
+                funcs.forEachKeyAndVal(stockMap, function(symbolB, stockB) {
+                    if(stockSwitches[symbolB]) {
+                        var correlation = 0;
+                        var indexA = stockA.index;
+                        var indexB = stockB.index;
+                        if(stockA.symbol != stockB.symbol) {
+                            var periodA = stockA.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
+                            var periodB = stockB.period(fromYYYY_MM_DD, toYYYY_MM_DD, "Close");
+                            correlation = math.correlation(periodA, periodB);
+                        }
+                        correlationsMatrix[indexA][indexB] = Math.abs(correlation * 1000);
+                        posNegMatrix[indexA][indexB] = Math.sign(correlation);
+                    }
+                });
+            }
         });
     }
 
@@ -147,12 +149,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             stockList = d3.csv.parse(data);
             stockList.sort(funcs.createComparator("symbol"));
             initStockSwitches();
+
             $scope.stockList = stockList;
-
-            math.zero2DimArray(stockList.length, stockList.length, correlationsMatrix);
-            math.zero2DimArray(stockList.length, stockList.length, posNegMatrix);
-
             $scope.current_period_start = constants.START_DATE;
+            
             initStocks();
             Promise.all(stockPromises).then(function() {
                 initializedPromise.resolve();
