@@ -20,22 +20,30 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
         var rootG = svg.append("g");
-        var tickG = svg.append("g");
-        var chordG = svg.append("g")
-            .attr("class", "chord");
+        var groupG;
+        var tickG;
+        var chordG;
+
+        function reset() {
+            rootG.selectAll("g").remove();
+            groupG = rootG.append("g");
+            tickG = rootG.append("g");
+            chordG = rootG.append("g")
+                .attr("class", "chord");
+        }
 
 
-        function redrawChord() {
+        function redrawChord(correlationsMatrix) {
 
             var chord = d3.layout.chord()
                 .padding(.05)
                 .sortSubgroups(d3.descending)
-                .matrix(scope.correlationsMatrix);
+                .matrix(correlationsMatrix);
 
             /**
              * group
              */
-            var groupPathData = rootG.selectAll("path")
+            var groupPathData = groupG.selectAll("path")
                 .data(chord.groups);
 
             var groupPathEnter = groupPathData.enter()
@@ -46,7 +54,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
                 .on("mouseover", fade(.1))
                 .on("mouseout", fade(1));
 
-            var groupPathAll = rootG.selectAll("path")
+            var groupPathAll = groupG.selectAll("path")
                 .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius));
 
             groupPathData.exit().remove();
@@ -135,7 +143,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
 
         }
 
-        scope.redrawEvent.on(redrawChord);
+        scope.redrawEvent.on(function() {
+            redrawChord(scope.correlationsMatrix);
+        });
+
+        scope.newStocksEvent.on(function() {
+            reset();
+            redrawChord(scope.correlationsMatrix);
+        });
 
 // Returns an array of tick angles and labels, given a group.
         function groupTicks(d) {
@@ -178,7 +193,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("stockChord", functio
             correlationsMatrix: "=",
             posNegMatrix: "=",
             ready: "=",
-            redrawEvent: "="
+            redrawEvent: "=",
+            newStocksEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/stockChordDirective.html"

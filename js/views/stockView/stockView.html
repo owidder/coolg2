@@ -69,6 +69,7 @@
                 <span class="l">{{current_period_start}} - {{current_period_end}}</span>
                 <stock-chord
                         redraw-event="redrawEvent"
+                        new-stocks-event="stocksChangedEvent"
                         ready="ready"
                         stocks="currentShownStocks"
                         pos-neg-matrix="posNegMatrix"

@@ -42,6 +42,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var ready = new SimplePromise();
     var redrawEvent = new SimpleEvent();
     var periodLengthInDays = 365;
+    var stocksChangedFlag = true;
 
     $scope.pauseFlag = true;
 
@@ -91,6 +92,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var dateChangedEvent = new SimpleEvent();
     $scope.dateChangedEvent = dateChangedEvent;
 
+    var stocksChangedEvent = new SimpleEvent();
+    $scope.stocksChangedEvent = stocksChangedEvent;
+
     var periodLengthSliderChangeEvent = new SimpleEvent();
     periodLengthSliderChangeEvent.on(periodLengthSliderChanged);
     $scope.periodLengthSliderChangeEvent = periodLengthSliderChangeEvent;
@@ -101,7 +105,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         $timeout(function() {
             $scope.current_period_end = dateUtil.addDaysToDate($scope.current_period_start, periodLengthInDays);
             computePeriod($scope.current_period_start, $scope.current_period_end);
-            redrawEvent.startWhenFirstListenerReady();
+            if(stocksChangedFlag) {
+                stocksChangedEvent.startWhenFirstListenerReady();
+                stocksChangedFlag = false;
+            }
+            else {
+                redrawEvent.startWhenFirstListenerReady();
+            }
         });
     }
 
@@ -148,6 +158,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function switchStockOnOff(symbol) {
         stockSwitches[symbol] = !stockSwitches[symbol];
+        stocksChangedFlag = true;
+        initAfterStockChange();
     }
 
     function init() {
