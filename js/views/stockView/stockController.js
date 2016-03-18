@@ -17,8 +17,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var stockPromises = [];
     var stockList;
 
-    var initializedPromise = new SimplePromise();
-
     function initStocks() {
         var stock, index = 0;
         stockPromises.length = 0;
@@ -122,7 +120,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     }
 
     function drawWhenInitialized() {
-        initializedPromise.promise.then(function() {
+        Promise.all(stockPromises).then(function() {
             draw();
         });
     }
@@ -143,6 +141,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         });
     }
 
+    function initAfterStockChange() {
+        initStocks();
+        drawWhenInitialized();
+    }
+
     function switchStockOnOff(symbol) {
         stockSwitches[symbol] = !stockSwitches[symbol];
     }
@@ -156,11 +159,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             $scope.stockList = stockList;
             $scope.current_period_start = constants.START_DATE;
 
-            initStocks();
-            Promise.all(stockPromises).then(function() {
-                initializedPromise.resolve();
-            });
-            drawWhenInitialized();
+            initAfterStockChange();
         });
     }
 
