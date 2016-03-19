@@ -21,19 +21,19 @@ bottle.factory("SimpleEvent", function(container) {
 
         that.start = function(data) {
             listeners.forEach(function(listener) {
-                listener(data);
+                listener(arguments);
             });
         };
 
-        that.startWhenFirstListenerReady = function(data) {
+        that.startWhenFirstListenerReady = function() {
             firstListenerReadyPromise.promise.then(function() {
-                that.start(data);
+                that.start(arguments);
             });
         };
 
-        that.startWhenAllListenersReady = function(data) {
+        that.startWhenAllListenersReady = function() {
             allListenersReadyPromise.promise.then(function() {
-                that.start(data);
+                that.start(arguments);
             });
         };
     }

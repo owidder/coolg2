@@ -268,6 +268,27 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         }
     }
 
+    /**
+     *
+     * @param arr1
+     * @param arr2
+     * @param destination -> [[arr1[0],arr2[0]], [arr1[0],arr2[0]], ...]
+     * @return destination
+     */
+    function combineArrays(arr1, arr2, destination) {
+        var minLength = Math.min(arr1.length, arr2.length);
+        var i;
+        if(!isArray(destination)) {
+            destination = [];
+        }
+        destination.legth = 0;
+        for(i = 0; i < minLength; i++) {
+            destination.push([arr1[i], arr2[i]]);
+        }
+
+        return destination;
+    }
+
     return {
         hashCode: hashCode,
         if: _if,
@@ -294,6 +315,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         setPropertyIfValueNotEmpty: setPropertyIfValueNotEmpty,
         get: get,
         createAccessorFunction: createAccessorFunction,
-        createComparator: createComparator
+        createComparator: createComparator,
+        combineArrays: combineArrays
     };
 });

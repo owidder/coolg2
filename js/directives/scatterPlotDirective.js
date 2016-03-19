@@ -4,82 +4,102 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
     function link(scope) {
 
-        function redraw() {
+        var svg = d3.select("#scatter").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
 
-        }
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-        var x = d3.scale.linear()
-            .range([0, width]);
+        var x, y, xAxis, yAxis;
+        var rootG, xG, yG;
 
-        var y = d3.scale.linear()
-            .range([height, 0]);
+        function reset() {
+            svg.selectAll("g").remove();
+            rootG = svg.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+            x.domain(d3.extent(scope.allValues, function(d) {
+                return d[0];
+            })).nice();
+            y.domain(d3.extent(scope.allValues, function(d) {
+                return d[1];
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
+            })).nice();
 
-        var svg = d3.select("#scatter").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            x = d3.scale.linear()
+                .range([0, width]);
 
-        x.domain(d3.extent(scope.values, function(d) {
-            return d[0];
-        })).nice();
-        y.domain(d3.extent(data, function(d) {
-            return d[1];
-        })).nice();
+            y = d3.scale.linear()
+                .range([height, 0]);
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end")
-            .text(scope.names[0]);
+            xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(scope.names[1])
+            yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
 
-        svg.selectAll(".dot")
-            .data(scope.values)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("r", 3.5)
-            .attr("cx", function(d) {
-                return x(d[0]);
-            })
-            .attr("cy", function(d) {
-                return y(d[1]);
-            })
-            .style("fill", "lightgray");
+            xG = svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .append("text")
+                .attr("class", "label")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("text-anchor", "end")
+                .text(scope.names[0]);
+
+            yG = svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(scope.names[1])
+        }
+
+        function redraw() {
+            var data = rootG.selectAll(".dot")
+                .data(scope.periodValues);
+
+            data.enter()
+                .append("circle")
+                .attr("class", "dot")
+                .attr("r", 3.5);
+
+            rootG.selectAll(".dot")
+                .attr("cx", function(d) {
+                    return x(d[0]);
+                })
+                .attr("cy", function(d) {
+                    return y(d[1]);
+                });
+
+            data.exit().remove();
+        }
+
+        scope.redrawEvent.on(redraw);
+        scope.resetEvent.on(function() {
+            reset();
+            redraw();
+        });
     }
 
     return {
         link: link,
         scope: {
-            values: "=",
+            allValues: "=",
+            periodValues: "=",
             names: "=",
-            redrawEvent: "="
+            redrawEvent: "=",
+            resetEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/scatterPlotDirective.html"

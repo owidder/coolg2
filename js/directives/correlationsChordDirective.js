@@ -129,6 +129,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                         return "chord-neg";
                     }
                     return "chord-pos";
+                })
+                .on("click", function(d) {
+                    var symbolA = scope.objects[d.source.index].symbol;
+                    var symbolB = scope.objects[d.target.index].symbol;
+                    scope.clickOnChordEvent.startWhenFirstListenerReady(symbolA, symbolB);
                 });
 
             chordPathAll.select("title")
@@ -194,7 +199,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             posNegMatrix: "=",
             ready: "=",
             redrawEvent: "=",
-            newObjectsEvent: "="
+            newObjectsEvent: "=",
+            clickOnChordEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/correlationsChordDirective.html"
