@@ -67,14 +67,14 @@
         <div class="row">
             <div class="col s12 m12 l12" align="center">
                 <span class="l">{{current_period_start}} - {{current_period_end}}</span>
-                <stock-chord
+                <correlations-chord
                         redraw-event="redrawEvent"
-                        new-stocks-event="stocksChangedEvent"
+                        new-objects-event="stocksChangedEvent"
                         ready="ready"
-                        stocks="currentShownStocks"
+                        objects="currentShownStocks"
                         pos-neg-matrix="posNegMatrix"
                         correlations-matrix="correlationsMatrix">
-                </stock-chord>
+                </correlations-chord>
             </div>
         </div>
     </span>
