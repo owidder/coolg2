@@ -268,6 +268,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         }
     }
 
+    function createArrayOfNthElements(arrayOfArrays, n) {
+        return arrayOfArrays.map(function(arr) {
+            return arr[n];
+        });
+    }
+
     /**
      *
      * @param arr1
@@ -282,12 +288,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
             });
         }
 
-        function createArrayOfNthElements(n) {
-            return arrayOfArrays.map(function(arr) {
-                return arr[n];
-            });
-        }
-
         var arrayOfLengths = createArrayOfLengths();
         var minLength = Math.min.apply(undefined, arrayOfLengths);
         var arrayOfNthElements;
@@ -297,7 +297,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         }
         destination.length = 0;
         for(i = 0; i < minLength; i++) {
-            arrayOfNthElements = createArrayOfNthElements(i);
+            arrayOfNthElements = createArrayOfNthElements(arrayOfArrays, i);
             destination.push(arrayOfNthElements);
         }
 
@@ -331,6 +331,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         get: get,
         createAccessorFunction: createAccessorFunction,
         createComparator: createComparator,
-        combineArrays: combineArrays
+        combineArrays: combineArrays,
+        createArrayOfNthElements: createArrayOfNthElements
     };
 });

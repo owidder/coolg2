@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", function() {
+    var funcs = bottle.container.funcs;
 
     function link(scope) {
 
@@ -67,6 +68,19 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         }
 
         function redraw() {
+            var arrA = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 0);
+            var arrB = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 1);
+            var meanA = math.mean(arrA);
+            var meanB = math.mean(arrB);
+
+            function redOrGreen(valA, valB) {
+                if((valA <= meanA && valB <= meanB) || (valA >= meanA && valB >= meanB)) {
+                    return "green";
+                }
+
+                return "red";
+            }
+
             var data = rootG.selectAll(".dot")
                 .data(scope.periodValuesWithDates);
 
@@ -83,11 +97,17 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                     return y(d[1]);
                 });
 
+            all.attr("class", function(d) {
+                return "dot " + "dot-" + redOrGreen(d[0], d[1]);
+            });
+
             enter.append("title");
 
             all.select("title")
                 .text(function(d) {
-                    return scope.names[0] + "(" + d[2] + "): " + d[0] + " <-> " + scope.names[1]+ "(" + d[3] + "): " + d[1];
+                    var valA = math.round(d[0], 2);
+                    var valB = math.round(d[1], 2);
+                    return scope.names[0] + "(" + d[2] + "): " + valA + " <-> " + scope.names[1]+ "(" + d[3] + "): " + valB;
                 });
 
             data.exit().remove();

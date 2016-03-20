@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", function(funcs) {
+angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", function() {
+    var funcs = bottle.container.funcs;
 
     function link(scope) {
 
