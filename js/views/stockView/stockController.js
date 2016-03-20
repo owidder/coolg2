@@ -147,6 +147,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     function periodLengthSliderChanged(value) {
         periodLengthInDays = value;
         drawWhenInitialized();
+        updateScatterPlot();
     }
 
     function initStockSwitches() {
@@ -186,29 +187,51 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var scatterPlotAllValues = [];
     var scatterPlotPeriodValues = [];
     var scatterPlotNames = [];
+    var scatterPlotShownFlag = false;
+    var currentShownSymbol1;
+    var currentShownSymbol2;
     $scope.scatterPlotRedrawEvent = scatterPlotRedrawEvent;
     $scope.scatterPlotResetEvent = scatterPlotResetEvent;
     $scope.scatterPlotAllValues = scatterPlotAllValues;
     $scope.scatterPlotPeriodValues = scatterPlotPeriodValues;
     $scope.scatterPlotNames = scatterPlotNames;
 
+    function updatePeriodValues() {
+        var stock1 = stockMap[currentShownSymbol1];
+        var stock2 = stockMap[currentShownSymbol2];
+
+        var periodValues1 = stock1.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
+        var periodValues2 = stock2.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
+        funcs.combineArrays([periodValues1, periodValues2, periodValues1.dates, periodValues2.dates], scatterPlotPeriodValues);
+    }
+
+    function updateScatterPlot() {
+        if(scatterPlotShownFlag) {
+            updatePeriodValues();
+            scatterPlotRedrawEvent.startWhenFirstListenerReady();
+        }
+    }
+
     function showScatterPlot(symbol1, symbol2) {
+        currentShownSymbol1 = symbol1;
+        currentShownSymbol2 = symbol2;
+
         var stock1 = stockMap[symbol1];
         var stock2 = stockMap[symbol2];
 
         var allValues1 = stock1.period(constants.START_DATE, constants.END_DATE, constants.STOCK_PROPERTY_NAME);
         var allValues2 = stock2.period(constants.START_DATE, constants.END_DATE, constants.STOCK_PROPERTY_NAME);
 
-        var periodValues1 = stock1.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
-        var periodValues2 = stock2.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
-
         scatterPlotNames.length = 0;
         Array.prototype.push.apply(scatterPlotNames, [stock1.name, stock2.name]);
 
         funcs.combineArrays([allValues1, allValues2], scatterPlotAllValues);
-        funcs.combineArrays([periodValues1, periodValues2, periodValues1.dates, periodValues2.dates], scatterPlotPeriodValues);
+
+        updatePeriodValues();
 
         scatterPlotResetEvent.startWhenFirstListenerReady();
+
+        scatterPlotShownFlag = true;
     }
 
     $scope.switchStockOnOff = switchStockOnOff;
