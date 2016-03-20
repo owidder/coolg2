@@ -281,7 +281,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         if(!isArray(destination)) {
             destination = [];
         }
-        destination.legth = 0;
+        destination.length = 0;
         for(i = 0; i < minLength; i++) {
             destination.push([arr1[i], arr2[i]]);
         }

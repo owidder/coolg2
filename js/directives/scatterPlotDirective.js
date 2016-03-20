@@ -4,21 +4,28 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
     function link(scope) {
 
+        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
         var svg = d3.select("#scatter").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        rootG = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var x, y, xAxis, yAxis;
         var rootG, xG, yG;
 
         function reset() {
-            svg.selectAll("g").remove();
-            rootG = svg.append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            rootG.selectAll("g").remove();
+
+            x = d3.scale.linear()
+                .range([0, width]);
+
+            y = d3.scale.linear()
+                .range([height, 0]);
 
             x.domain(d3.extent(scope.allValues, function(d) {
                 return d[0];
@@ -28,12 +35,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
             })).nice();
 
-            x = d3.scale.linear()
-                .range([0, width]);
-
-            y = d3.scale.linear()
-                .range([height, 0]);
-
             xAxis = d3.svg.axis()
                 .scale(x)
                 .orient("bottom");
@@ -42,7 +43,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 .scale(y)
                 .orient("left");
 
-            xG = svg.append("g")
+            xG = rootG.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis)
@@ -53,7 +54,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 .style("text-anchor", "end")
                 .text(scope.names[0]);
 
-            yG = svg.append("g")
+            yG = rootG.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
                 .append("text")
@@ -72,7 +73,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             data.enter()
                 .append("circle")
                 .attr("class", "dot")
-                .attr("r", 3.5);
+                .attr("r", 3);
 
             rootG.selectAll(".dot")
                 .attr("cx", function(d) {

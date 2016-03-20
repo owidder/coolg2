@@ -203,7 +203,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         var periodValues2 = stock2.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
 
         scatterPlotNames.length = 0;
-        scatterPlotNames.push([stock1.name, stock2.name]);
+        Array.prototype.push.apply(scatterPlotNames, [stock1.name, stock2.name]);
 
         funcs.combineArrays(allValues1, allValues2, scatterPlotAllValues);
         funcs.combineArrays(periodValues1, periodValues2, scatterPlotPeriodValues);
