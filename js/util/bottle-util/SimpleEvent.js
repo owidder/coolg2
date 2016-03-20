@@ -19,21 +19,24 @@ bottle.factory("SimpleEvent", function(container) {
             allListenersReadyPromise.resolve();
         };
 
-        that.start = function(data) {
+        that.start = function() {
+            var args = arguments;
             listeners.forEach(function(listener) {
-                listener(arguments);
+                listener.apply(undefined, args);
             });
         };
 
         that.startWhenFirstListenerReady = function() {
+            var args = arguments;
             firstListenerReadyPromise.promise.then(function() {
-                that.start(arguments);
+                that.start.apply(that, args);
             });
         };
 
         that.startWhenAllListenersReady = function() {
+            var args = arguments;
             allListenersReadyPromise.promise.then(function() {
-                that.start(arguments);
+                that.start.apply(that, args);
             });
         };
     }
