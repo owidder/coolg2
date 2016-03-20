@@ -10,7 +10,9 @@ bottle.factory("Stock", function(container) {
 
         var history;
 
-        var lastStart_yyyy_mm_dd, lastEnd_yyyy_mm_dd, lastPropertyName, lastPeriod = [];
+        var lastStart_yyyy_mm_dd, lastEnd_yyyy_mm_dd, lastPropertyName;
+        var lastPeriod = [];
+        lastPeriod.dates = [];
 
         /**
          *
@@ -29,9 +31,11 @@ bottle.factory("Stock", function(container) {
                     return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
                 });
                 lastPeriod.length = 0;
+                lastPeriod.dates.length = 0;
                 if(history[0].Date <= start_yyyy_mm_dd && history[history.length-1].Date >= end_yyyy_mm_dd) {
                     timeslice.forEach(function(day) {
                         lastPeriod.push(Number(day[propertyName]));
+                        lastPeriod.dates.push(day.Date);
                     });
                 }
 

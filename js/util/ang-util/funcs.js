@@ -272,18 +272,33 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
      *
      * @param arr1
      * @param arr2
-     * @param destination -> [[arr1[0],arr2[0]], [arr1[0],arr2[0]], ...]
+     * @param destination -> [[arrayOfArrays[0][0],arrayOfArrays[1][0]], [arrayOfArrays[0][1],arrayOfArrays[1][1]], ...]
      * @return destination
      */
-    function combineArrays(arr1, arr2, destination) {
-        var minLength = Math.min(arr1.length, arr2.length);
+    function combineArrays(arrayOfArrays, destination) {
+        function createArrayOfLengths() {
+            return  arrayOfArrays.map(function(arr) {
+                return arr.length;
+            });
+        }
+
+        function createArrayOfNthElements(n) {
+            return arrayOfArrays.map(function(arr) {
+                return arr[n];
+            });
+        }
+
+        var arrayOfLengths = createArrayOfLengths();
+        var minLength = Math.min.apply(undefined, arrayOfLengths);
+        var arrayOfNthElements;
         var i;
         if(!isArray(destination)) {
             destination = [];
         }
         destination.length = 0;
         for(i = 0; i < minLength; i++) {
-            destination.push([arr1[i], arr2[i]]);
+            arrayOfNthElements = createArrayOfNthElements(i);
+            destination.push(arrayOfNthElements);
         }
 
         return destination;

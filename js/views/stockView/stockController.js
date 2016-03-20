@@ -205,8 +205,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         scatterPlotNames.length = 0;
         Array.prototype.push.apply(scatterPlotNames, [stock1.name, stock2.name]);
 
-        funcs.combineArrays(allValues1, allValues2, scatterPlotAllValues);
-        funcs.combineArrays(periodValues1, periodValues2, scatterPlotPeriodValues);
+        funcs.combineArrays([allValues1, allValues2], scatterPlotAllValues);
+        funcs.combineArrays([periodValues1, periodValues2, periodValues1.dates, periodValues2.dates], scatterPlotPeriodValues);
 
         scatterPlotResetEvent.startWhenFirstListenerReady();
     }

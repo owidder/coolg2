@@ -68,19 +68,26 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
         function redraw() {
             var data = rootG.selectAll(".dot")
-                .data(scope.periodValues);
+                .data(scope.periodValuesWithDates);
 
-            data.enter()
+            var enter = data.enter()
                 .append("circle")
                 .attr("class", "dot")
                 .attr("r", 3);
 
-            rootG.selectAll(".dot")
+            var all = rootG.selectAll(".dot")
                 .attr("cx", function(d) {
                     return x(d[0]);
                 })
                 .attr("cy", function(d) {
                     return y(d[1]);
+                });
+
+            enter.append("title");
+
+            all.select("title")
+                .text(function(d) {
+                    return scope.names[0] + "(" + d[2] + "): " + d[0] + " <-> " + scope.names[1]+ "(" + d[3] + "): " + d[1];
                 });
 
             data.exit().remove();
@@ -97,7 +104,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         link: link,
         scope: {
             allValues: "=",
-            periodValues: "=",
+            periodValuesWithDates: "=",
             names: "=",
             redrawEvent: "=",
             resetEvent: "="

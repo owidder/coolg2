@@ -162,8 +162,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory("dateUtil", function(fu
 
     function createYYYY_MM_DDcomparator(accessor) {
         var accessorFunction = createDateAccessorFunction(accessor);
-        return funcs.createComparator(accessorFunction);
-    }
+        return funcs.createComparator(accessorFunction);}
 
     return {
         getMonthNameFromYYYY_MM_DD: getMonthNameFromYYYY_MM_DD,
