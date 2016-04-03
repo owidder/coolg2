@@ -9,11 +9,14 @@ angular.module(com_geekAndPoke_coolg.moduleName)
             })
             .otherwise({redirectTo: '/stock'});
     }])
-    .run(function(dateUtil, funcs) {
-        bottle.factory('dateUtil', function(container) {
+    .run(function(dateUtil, funcs, dimensions) {
+        bottle.factory('dateUtil', function() {
             return dateUtil;
         });
-        bottle.factory('funcs', function(container) {
+        bottle.factory('funcs', function() {
             return funcs;
+        });
+        bottle.factory('dimensions', function() {
+            return dimensions;
         });
     });

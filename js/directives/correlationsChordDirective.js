@@ -9,8 +9,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             return scope.posNegMatrix[d.source.index][d.target.index];
         }
 
-        var width = 960,
-            height = 500,
+        var width = scope.width,
+            height = scope.height,
             innerRadius = Math.min(width, height) * .41,
             outerRadius = innerRadius * 1.1;
 
@@ -195,6 +195,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
     return {
         link: link,
         scope: {
+            width: "@",
+            height: "@",
             objects: "=",
             correlationsMatrix: "=",
             posNegMatrix: "=",

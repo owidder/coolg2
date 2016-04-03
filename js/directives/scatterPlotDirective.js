@@ -6,8 +6,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
     function link(scope) {
 
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            width = scope.width - margin.left - margin.right,
+            height = scope.height - margin.top - margin.bottom;
 
         var svg = d3.select("#scatter").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -123,6 +123,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
     return {
         link: link,
         scope: {
+            width: "@",
+            height: "@",
             allValues: "=",
             periodValuesWithDates: "=",
             names: "=",

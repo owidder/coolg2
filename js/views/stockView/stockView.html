@@ -45,12 +45,14 @@
             </div>
             <div class="col s12 m11 l11">
                 <range-slider
+                        start="0"
                         range-min="0"
                         range-max="{{dateSliderMax}}"
                         slider-changed-event-out="dateSliderChangedEvent"
                         value-changed-event-in="dateChangedEvent">
                 </range-slider>
                 <range-slider
+                        start="{{startPeriodLength}}"
                         range-min="30"
                         range-max="365"
                         slider-changed-event-out="periodLengthSliderChangeEvent">
@@ -65,22 +67,24 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s12 m12 l12" align="center">
+            <div class="col s6 m6 l6" align="center">
                 <span class="l">{{current_period_start}} - {{current_period_end}}</span>
                 <correlations-chord
-                        redraw-event="redrawEvent"
-                        new-objects-event="stocksChangedEvent"
-                        click-on-chord-event="clickOnChordEvent"
-                        ready="ready"
-                        objects="currentShownStocks"
-                        pos-neg-matrix="posNegMatrix"
-                        correlations-matrix="correlationsMatrix">
+                    width="{{width/2}}"
+                    height="{{height/2}}"
+                    redraw-event="redrawEvent"
+                    new-objects-event="stocksChangedEvent"
+                    click-on-chord-event="clickOnChordEvent"
+                    ready="ready"
+                    objects="currentShownStocks"
+                    pos-neg-matrix="posNegMatrix"
+                    correlations-matrix="correlationsMatrix">
                 </correlations-chord>
             </div>
-        </div>
-        <div class="row">
-            <div class="col s12 m12 l12" align="center">
+            <div class="col s6 m6 l6" align="center">
                 <scatter-plot
+                    width="{{width/2}}"
+                    height="{{height/2}}"
                     all-values="scatterPlotAllValues"
                     period-values-with-dates="scatterPlotPeriodValues"
                     names="scatterPlotNames"

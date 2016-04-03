@@ -10,6 +10,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var dateUtil = bottle.container.dateUtil;
     var constants = bottle.container.constants;
     var funcs = bottle.container.funcs;
+    var dimensions = bottle.container.dimensions;
 
     var stockMap = {};
     var currentShownStocks = [];
@@ -41,7 +42,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var posNegMatrix = [];
     var ready = new SimplePromise();
     var redrawEvent = new SimpleEvent();
-    var periodLengthInDays = 365;
+    var periodLengthInDays = 30;
     var stocksChangedFlag = true;
 
     $scope.pauseFlag = true;
@@ -105,9 +106,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
 
+    function setPeriodEnd() {
+        $scope.current_period_end = dateUtil.addDaysToDate($scope.current_period_start, periodLengthInDays);
+    }
+
     function draw() {
         $timeout(function() {
-            $scope.current_period_end = dateUtil.addDaysToDate($scope.current_period_start, periodLengthInDays);
+            setPeriodEnd();
             computePeriod($scope.current_period_start, $scope.current_period_end);
             if(stocksChangedFlag) {
                 stocksChangedEvent.startWhenFirstListenerReady();
@@ -119,10 +124,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         });
     }
 
-    $scope.current_period_start = constants.START_DATE;
     function step() {
         if(!$scope.pauseFlag) {
             draw();
+            setPeriodEnd();
+            updateScatterPlot();
             $scope.current_period_start = dateUtil.incByOneDay($scope.current_period_start);
             var numberOfDaysSinceStart = dateUtil.daysBetweenDates(constants.START_DATE, $scope.current_period_start);
             dateChangedEvent.startWhenFirstListenerReady(numberOfDaysSinceStart);
@@ -141,11 +147,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     function dateSliderChanged(value) {
         $scope.current_period_start = dateUtil.addDaysToDate(constants.START_DATE, value);
+        setPeriodEnd();
         drawWhenInitialized();
+        updateScatterPlot();
     }
 
     function periodLengthSliderChanged(value) {
         periodLengthInDays = value;
+        setPeriodEnd();
         drawWhenInitialized();
         updateScatterPlot();
     }
@@ -190,11 +199,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var scatterPlotShownFlag = false;
     var currentShownSymbol1;
     var currentShownSymbol2;
-    $scope.scatterPlotRedrawEvent = scatterPlotRedrawEvent;
-    $scope.scatterPlotResetEvent = scatterPlotResetEvent;
-    $scope.scatterPlotAllValues = scatterPlotAllValues;
-    $scope.scatterPlotPeriodValues = scatterPlotPeriodValues;
-    $scope.scatterPlotNames = scatterPlotNames;
 
     function updatePeriodValues() {
         var stock1 = stockMap[currentShownSymbol1];
@@ -234,9 +238,22 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         scatterPlotShownFlag = true;
     }
 
+    $scope.current_period_start = constants.START_DATE;
+    setPeriodEnd();
+
+    $scope.scatterPlotRedrawEvent = scatterPlotRedrawEvent;
+    $scope.scatterPlotResetEvent = scatterPlotResetEvent;
+    $scope.scatterPlotAllValues = scatterPlotAllValues;
+    $scope.scatterPlotPeriodValues = scatterPlotPeriodValues;
+    $scope.scatterPlotNames = scatterPlotNames;
+
     $scope.switchStockOnOff = switchStockOnOff;
     $scope.stockSwitches = stockSwitches;
     $scope.currentShownStocks = currentShownStocks;
+    $scope.width = dimensions.width();
+    $scope.height = dimensions.height();
+
+    $scope.startPeriodLength = periodLengthInDays;
 
     init();
 

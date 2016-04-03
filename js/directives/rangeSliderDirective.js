@@ -5,7 +5,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", functi
     var funcs = bottle.container.funcs;
 
     function link(scope) {
-        scope.rangeValue = scope.rangeMin;
+        scope.rangeValue = scope.start;
 
         function valueChanged(newValue) {
             scope.rangeValue = newValue;
@@ -27,6 +27,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", functi
     return {
         link: link,
         scope: {
+            start: "@",
             rangeMin: "@",
             rangeMax: "@",
             sliderChangedEventOut: "=",
