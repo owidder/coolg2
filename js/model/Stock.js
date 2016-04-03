@@ -21,26 +21,19 @@ bottle.factory("Stock", function(container) {
          * @returns {*}
          */
         function period(start_yyyy_mm_dd, end_yyyy_mm_dd, propertyName) {
-            if(lastStart_yyyy_mm_dd == start_yyyy_mm_dd && lastEnd_yyyy_mm_dd == end_yyyy_mm_dd && propertyName == lastPropertyName) {
-                return lastPeriod;
-            }
-            else {
-                lastStart_yyyy_mm_dd = start_yyyy_mm_dd;
-                lastEnd_yyyy_mm_dd = end_yyyy_mm_dd;
-                var timeslice = history.filter(function(element) {
-                    return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
+            var period = [];
+            period.dates = [];
+            var timeslice = history.filter(function(element) {
+                return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
+            });
+            if(history[0].Date <= start_yyyy_mm_dd && history[history.length-1].Date >= end_yyyy_mm_dd) {
+                timeslice.forEach(function(day) {
+                    period.push(Number(day[propertyName]));
+                    period.dates.push(day.Date);
                 });
-                lastPeriod.length = 0;
-                lastPeriod.dates.length = 0;
-                if(history[0].Date <= start_yyyy_mm_dd && history[history.length-1].Date >= end_yyyy_mm_dd) {
-                    timeslice.forEach(function(day) {
-                        lastPeriod.push(Number(day[propertyName]));
-                        lastPeriod.dates.push(day.Date);
-                    });
-                }
-
-                return lastPeriod;
             }
+
+            return period;
         }
 
         $.get("rsrc/" + symbol + ".csv", function(data) {
