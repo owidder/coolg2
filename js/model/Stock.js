@@ -26,12 +26,10 @@ bottle.factory("Stock", function(container) {
             var timeslice = history.filter(function(element) {
                 return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
             });
-            if(history[0].Date <= start_yyyy_mm_dd && history[history.length-1].Date >= end_yyyy_mm_dd) {
-                timeslice.forEach(function(day) {
-                    period.push(Number(day[propertyName]));
-                    period.dates.push(day.Date);
-                });
-            }
+            timeslice.forEach(function(day) {
+                period.push(Number(day[propertyName]));
+                period.dates.push(day.Date);
+            });
 
             return period;
         }
