@@ -11,12 +11,20 @@
             stroke-width: .5px;
         }
 
-        .chord-pos {
+        .chord-pos.none, .chord-pos.selected {
             fill: green;
         }
 
-        .chord-neg {
+        .chord-neg.none, .chord-neg.selected {
             fill: red;
+        }
+
+        .chord-neg.unselected {
+            fill: gray;
+        }
+
+        .chord-pos.unselected {
+            fill: lightgray;
         }
 
         .group {

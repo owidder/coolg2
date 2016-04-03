@@ -101,7 +101,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.periodLengthSliderChangeEvent = periodLengthSliderChangeEvent;
 
     var clickOnChordEvent = new SimpleEvent();
-    clickOnChordEvent.on(showScatterPlot);
+    clickOnChordEvent.on(function(symbolA, symbolB) {
+        drawWhenInitialized();
+        showScatterPlot(symbolA, symbolB);
+    });
     $scope.clickOnChordEvent = clickOnChordEvent;
 
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
@@ -216,12 +219,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         }
     }
 
-    function showScatterPlot(symbol1, symbol2) {
-        currentShownSymbol1 = symbol1;
-        currentShownSymbol2 = symbol2;
+    function showScatterPlot(symbolA, symbolB) {
+        currentShownSymbol1 = symbolA;
+        currentShownSymbol2 = symbolB;
 
-        var stock1 = stockMap[symbol1];
-        var stock2 = stockMap[symbol2];
+        var stock1 = stockMap[symbolA];
+        var stock2 = stockMap[symbolB];
 
         var allValues1 = stock1.period(constants.START_DATE, constants.END_DATE, constants.STOCK_PROPERTY_NAME);
         var allValues2 = stock2.period(constants.START_DATE, constants.END_DATE, constants.STOCK_PROPERTY_NAME);

@@ -25,6 +25,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
         var tickG;
         var chordG;
 
+        var selectedSymbolA;
+        var selectedSymbolB;
+
         function reset() {
             rootG.selectAll("g").remove();
             groupG = rootG.append("g");
@@ -118,23 +121,42 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 .data(chord.chords);
 
             var chordPathEnter = chordData.enter()
-                .append("path")
-                .style("opacity", 1);
+                .append("path");
 
             chordPathEnter.append("title");
+
+            function getSelectedClass(d) {
+                var selectedClass = "none";
+                if(funcs.isDefined(selectedSymbolA) && funcs.isDefined(selectedSymbolB)) {
+                    if((selectedSymbolA == scope.objects[d.source.index].symbol && selectedSymbolB == scope.objects[d.target.index].symbol) ||
+                        (selectedSymbolB == scope.objects[d.source.index].symbol && selectedSymbolA == scope.objects[d.target.index].symbol)) {
+                        selectedClass = "selected";
+                    }
+                    else {
+                        selectedClass = "unselected";
+                    }
+                }
+
+                return selectedClass;
+            }
 
             var chordPathAll = chordG.selectAll("path")
                 .attr("d", d3.svg.chord().radius(innerRadius))
                 .attr("class", function(d) {
+                    var clazz = getSelectedClass(d);
                     if(posNeg(d) < 0) {
-                        return "chord-neg";
+                        clazz += " chord-neg";
                     }
-                    return "chord-pos";
+                    else {
+                        clazz += " chord-pos";
+                    }
+
+                    return clazz;
                 })
                 .on("click", function(d) {
-                    var symbolA = scope.objects[d.source.index].symbol;
-                    var symbolB = scope.objects[d.target.index].symbol;
-                    scope.clickOnChordEvent.startWhenFirstListenerReady(symbolA, symbolB);
+                    selectedSymbolA = scope.objects[d.source.index].symbol;
+                    selectedSymbolB = scope.objects[d.target.index].symbol;
+                    scope.clickOnChordEvent.startWhenFirstListenerReady(selectedSymbolA, selectedSymbolB);
                 });
 
             chordPathAll.select("title")
