@@ -215,7 +215,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     function updateScatterPlot() {
         if(scatterPlotShownFlag) {
             updatePeriodValues();
-            scatterPlotRedrawEvent.startWhenFirstListenerReady();
+            // scatterPlotRedrawEvent.startWhenFirstListenerReady();
+            scatterPlotResetEvent.startWhenFirstListenerReady(true);
         }
     }
 

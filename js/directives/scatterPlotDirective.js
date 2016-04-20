@@ -19,7 +19,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         var x, y, xAxis, yAxis;
         var rootG, xG, yG;
 
-        function reset() {
+        function reset(periodValues) {
             rootG.selectAll("g").remove();
 
             x = d3.scale.linear()
@@ -28,10 +28,19 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            x.domain(d3.extent(scope.allValues, function(d) {
+            var domainValues;
+
+            if(periodValues) {
+                domainValues = scope.periodValuesWithDates;
+            }
+            else {
+                domainValues = scope.allValues;
+            }
+
+            x.domain(d3.extent(domainValues, function(d) {
                 return d[0];
             })).nice();
-            y.domain(d3.extent(scope.allValues, function(d) {
+            y.domain(d3.extent(domainValues, function(d) {
                 return d[1];
 
             })).nice();
@@ -114,8 +123,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         }
 
         scope.redrawEvent.on(redraw);
-        scope.resetEvent.on(function() {
-            reset();
+        scope.resetEvent.on(function(periodValues) {
+            reset(periodValues);
             redraw();
         });
     }
