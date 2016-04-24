@@ -113,21 +113,31 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 return "red";
             }
 
+            function position(selection) {
+                selection
+                    .attr("cx", function(d) {
+                        return x(d[0]);
+                    })
+                    .attr("cy", function(d) {
+                        return y(d[1]);
+                    });
+            }
+
             var data = rootG.selectAll(".dot")
-                .data(scope.periodValuesWithDates);
+                .data(scope.periodValuesWithDates, function(d) {
+                    return d[2] + "_" + d[3];
+                });
 
             var enter = data.enter()
                 .append("circle")
                 .attr("class", "dot")
-                .attr("r", 3);
+                .attr("r", 3)
+                .call(position);
 
-            var all = rootG.selectAll(".dot")
-                .attr("cx", function(d) {
-                    return x(d[0]);
-                })
-                .attr("cy", function(d) {
-                    return y(d[1]);
-                });
+            var rootGTransition = rootG.transition();
+
+            var all = rootGTransition.selectAll(".dot")
+                .call(position);
 
             all.attr("class", function(d) {
                 return "dot " + "dot-" + redOrGreen(d[0], d[1]);
