@@ -11,6 +11,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var constants = bottle.container.constants;
     var funcs = bottle.container.funcs;
     var dimensions = bottle.container.dimensions;
+    var mathUtil = bottle.container.mathUtil;
 
     var stockMap = {};
     var currentShownStocks = [];
@@ -196,7 +197,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var scatterPlotRedrawEvent = new SimpleEvent();
     var scatterPlotResetEvent = new SimpleEvent();
-    var scatterPlotReAxisEvent = new SimpleEvent();
 
     var scatterPlotAllValues = [];
     var scatterPlotPeriodValues = [];
@@ -214,12 +214,19 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         funcs.combineArrays([periodValues1, periodValues2, periodValues1.dates, periodValues2.dates], scatterPlotPeriodValues);
     }
 
+    function currentCorrCoeff() {
+        var stock1 = stockMap[currentShownSymbol1];
+        var stock2 = stockMap[currentShownSymbol2];
+        var corrCoeff = correlationsMatrix[stock1.index][stock2.index] * posNegMatrix[stock1.index][stock2.index];
+
+        return mathUtil.round(corrCoeff/1000, 2);
+    }
+
     function updateScatterPlot() {
         if(scatterPlotShownFlag) {
             updatePeriodValues();
-            // scatterPlotRedrawEvent.startWhenFirstListenerReady();
-            // scatterPlotResetEvent.startWhenFirstListenerReady(true);
-            scatterPlotReAxisEvent.startWhenFirstListenerReady();
+
+            scatterPlotRedrawEvent.startWhenFirstListenerReady(currentCorrCoeff());
         }
     }
 
@@ -240,7 +247,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
         updatePeriodValues();
 
-        scatterPlotResetEvent.startWhenFirstListenerReady();
+        scatterPlotResetEvent.startWhenFirstListenerReady(currentCorrCoeff());
 
         scatterPlotShownFlag = true;
     }
@@ -250,7 +257,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.scatterPlotRedrawEvent = scatterPlotRedrawEvent;
     $scope.scatterPlotResetEvent = scatterPlotResetEvent;
-    $scope.scatterPlotReAxisEvent = scatterPlotReAxisEvent;
 
     $scope.scatterPlotAllValues = scatterPlotAllValues;
     $scope.scatterPlotPeriodValues = scatterPlotPeriodValues;

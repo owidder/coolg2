@@ -9,7 +9,7 @@ angular.module(com_geekAndPoke_coolg.moduleName)
             })
             .otherwise({redirectTo: '/stock'});
     }])
-    .run(function(dateUtil, funcs, dimensions) {
+    .run(function(dateUtil, funcs, dimensions, mathUtil) {
         bottle.factory('dateUtil', function() {
             return dateUtil;
         });
@@ -18,5 +18,8 @@ angular.module(com_geekAndPoke_coolg.moduleName)
         });
         bottle.factory('dimensions', function() {
             return dimensions;
+        });
+        bottle.factory('mathUtil', function() {
+            return mathUtil;
         });
     });

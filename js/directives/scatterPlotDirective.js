@@ -18,8 +18,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
         var x, y, xAxis, yAxis;
         var rootG, xG, yG;
+        var currentCorrCoeff;
 
-        function reset(periodValues) {
+        function reset() {
             rootG.selectAll("g").remove();
 
             x = d3.scale.linear()
@@ -28,19 +29,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            var domainValues;
-
-            if(periodValues) {
-                domainValues = scope.periodValuesWithDates;
-            }
-            else {
-                domainValues = scope.allValues;
-            }
-
-            x.domain(d3.extent(domainValues, function(d) {
+            x.domain(d3.extent(scope.periodValuesWithDates, function(d) {
                 return d[0];
             })).nice();
-            y.domain(d3.extent(domainValues, function(d) {
+            y.domain(d3.extent(scope.periodValuesWithDates, function(d) {
                 return d[1];
 
             })).nice();
@@ -52,6 +44,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left");
+
+            currentCorrCoeff = rootG.append("g")
+                .append("text")
+                .attr("class", "corrCoeff")
+                .attr("x", scope.width/10)
+                .attr("y", scope.height/2);
 
             xG = rootG.append("g")
                 .attr("class", "x axis")
@@ -99,7 +97,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             t.selectAll(".y.axis").call(yAxis);
         }
 
-        function redraw() {
+        function redraw(corrCoeff) {
             var arrA = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 0);
             var arrB = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 1);
             var meanA = math.mean(arrA);
@@ -153,16 +151,29 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 });
 
             data.exit().remove();
+
+            rootG.select(".corrCoeff")
+                .attr("class", function() {
+                    var clazz = "corrCoeff";
+                    if(corrCoeff < 0) {
+                        clazz += " neg";
+                    }
+                    else {
+                        clazz += " pos";
+                    }
+
+                    return clazz;
+                })
+                .text(corrCoeff);
         }
 
-        scope.redrawEvent.on(redraw);
-        scope.resetEvent.on(function(periodValues) {
-            reset(periodValues);
-            redraw();
+        scope.resetEvent.on(function(corrCoeff) {
+            reset();
+            redraw(corrCoeff);
         });
-        scope.reAxisEvent.on(function() {
+        scope.redrawEvent.on(function(corrCoeff) {
             reAxis();
-            redraw();
+            redraw(corrCoeff);
         })
     }
 
@@ -175,8 +186,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             periodValuesWithDates: "=",
             names: "=",
             redrawEvent: "=",
-            resetEvent: "=",
-            reAxisEvent: '='
+            resetEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/scatterPlotDirective.html"
