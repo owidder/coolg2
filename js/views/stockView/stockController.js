@@ -196,6 +196,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var scatterPlotRedrawEvent = new SimpleEvent();
     var scatterPlotResetEvent = new SimpleEvent();
+    var scatterPlotReAxisEvent = new SimpleEvent();
+
     var scatterPlotAllValues = [];
     var scatterPlotPeriodValues = [];
     var scatterPlotNames = [];
@@ -216,7 +218,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         if(scatterPlotShownFlag) {
             updatePeriodValues();
             // scatterPlotRedrawEvent.startWhenFirstListenerReady();
-            scatterPlotResetEvent.startWhenFirstListenerReady(true);
+            // scatterPlotResetEvent.startWhenFirstListenerReady(true);
+            scatterPlotReAxisEvent.startWhenFirstListenerReady();
         }
     }
 
@@ -247,6 +250,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.scatterPlotRedrawEvent = scatterPlotRedrawEvent;
     $scope.scatterPlotResetEvent = scatterPlotResetEvent;
+    $scope.scatterPlotReAxisEvent = scatterPlotReAxisEvent;
+
     $scope.scatterPlotAllValues = scatterPlotAllValues;
     $scope.scatterPlotPeriodValues = scatterPlotPeriodValues;
     $scope.scatterPlotNames = scatterPlotNames;

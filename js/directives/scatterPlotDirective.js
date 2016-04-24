@@ -76,6 +76,29 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 .text(scope.names[1])
         }
 
+        function reAxis() {
+            var t = svg.transition();
+
+            x.domain(d3.extent(scope.periodValuesWithDates, function(d) {
+                return d[0];
+            })).nice();
+            y.domain(d3.extent(scope.periodValuesWithDates, function(d) {
+                return d[1];
+
+            })).nice();
+
+            xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
+
+            yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+            t.selectAll(".x.axis").call(xAxis);
+            t.selectAll(".y.axis").call(yAxis);
+        }
+
         function redraw() {
             var arrA = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 0);
             var arrB = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 1);
@@ -127,6 +150,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             reset(periodValues);
             redraw();
         });
+        scope.reAxisEvent.on(function() {
+            reAxis();
+            redraw();
+        })
     }
 
     return {
@@ -138,7 +165,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             periodValuesWithDates: "=",
             names: "=",
             redrawEvent: "=",
-            resetEvent: "="
+            resetEvent: "=",
+            reAxisEvent: '='
         },
         restrict: "E",
         templateUrl: "js/directives/scatterPlotDirective.html"
