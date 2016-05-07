@@ -20,8 +20,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         var rootG, xG, yG;
         var currentCorrCoeff;
 
-        function reset() {
+        function remove() {
             rootG.selectAll("g").remove();
+        }
+
+        function reset() {
+            remove();
 
             x = d3.scale.linear()
                 .range([0, width]);
@@ -174,7 +178,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         scope.redrawEvent.on(function(corrCoeff) {
             reAxis();
             redraw(corrCoeff);
-        })
+        });
+        scope.removeEvent.on(remove);
     }
 
     return {
@@ -186,7 +191,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             periodValuesWithDates: "=",
             names: "=",
             redrawEvent: "=",
-            resetEvent: "="
+            resetEvent: "=",
+            removeEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/scatterPlotDirective.html"

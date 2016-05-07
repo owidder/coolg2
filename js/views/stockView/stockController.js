@@ -101,12 +101,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     periodLengthSliderChangeEvent.on(periodLengthSliderChanged);
     $scope.periodLengthSliderChangeEvent = periodLengthSliderChangeEvent;
 
-    var clickOnChordEvent = new SimpleEvent();
-    clickOnChordEvent.on(function(symbolA, symbolB) {
+    var symbolsSelectedEvent = new SimpleEvent();
+    symbolsSelectedEvent.on(function(symbolA, symbolB) {
         drawWhenInitialized();
         showScatterPlot(symbolA, symbolB);
     });
-    $scope.clickOnChordEvent = clickOnChordEvent;
+    $scope.symbolsSelectedEvent = symbolsSelectedEvent;
 
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
 
@@ -212,6 +212,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         var periodValues1 = stock1.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
         var periodValues2 = stock2.period($scope.current_period_start, $scope.current_period_end, constants.STOCK_PROPERTY_NAME);
         funcs.combineArrays([periodValues1, periodValues2, periodValues1.dates, periodValues2.dates], scatterPlotPeriodValues);
+
+        computePeriod($scope.current_period_start, $scope.current_period_end);
     }
 
     function currentCorrCoeff() {

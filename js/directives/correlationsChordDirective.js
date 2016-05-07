@@ -156,7 +156,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 .on("click", function(d) {
                     selectedSymbolA = scope.objects[d.source.index].symbol;
                     selectedSymbolB = scope.objects[d.target.index].symbol;
-                    scope.clickOnChordEvent.startWhenFirstListenerReady(selectedSymbolA, selectedSymbolB);
+                    scope.symbolsSelectedEvent.startWhenFirstListenerReady(selectedSymbolA, selectedSymbolB);
                 });
 
             chordPathAll.select("title")
@@ -225,7 +225,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             ready: "=",
             redrawEvent: "=",
             newObjectsEvent: "=",
-            clickOnChordEvent: "="
+            symbolsSelectedEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/correlationsChordDirective.html"
