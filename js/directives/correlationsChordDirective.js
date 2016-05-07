@@ -28,6 +28,27 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
         var selectedSymbolA;
         var selectedSymbolB;
 
+        function areAnySymbolsSelected() {
+            return (funcs.isDefined(selectedSymbolA) && funcs.isDefined(selectedSymbolB));
+        }
+
+        function areTheseSymbolsSelected(sym1, sym2) {
+            return (selectedSymbolA == sym1 && selectedSymbolB == sym2) ||
+                (selectedSymbolB == sym1 && selectedSymbolA == sym2);
+        }
+
+        function selectSymbols(sym1, sym2) {
+            selectedSymbolA = sym1;
+            selectedSymbolB = sym2;
+            scope.symbolsSelectedEvent.startWhenFirstListenerReady(selectedSymbolA, selectedSymbolB);
+        }
+
+        function deselectSymbols() {
+            selectedSymbolA = undefined;
+            selectedSymbolB = undefined;
+            scope.symbolsDeselectedEvent.startWhenFirstListenerReady();
+        }
+
         function reset() {
             rootG.selectAll("g").remove();
             groupG = rootG.append("g");
@@ -127,9 +148,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
             function getSelectedClass(d) {
                 var selectedClass = "none";
-                if(funcs.isDefined(selectedSymbolA) && funcs.isDefined(selectedSymbolB)) {
-                    if((selectedSymbolA == scope.objects[d.source.index].symbol && selectedSymbolB == scope.objects[d.target.index].symbol) ||
-                        (selectedSymbolB == scope.objects[d.source.index].symbol && selectedSymbolA == scope.objects[d.target.index].symbol)) {
+                if(areAnySymbolsSelected()) {
+                    if(areTheseSymbolsSelected(scope.objects[d.source.index].symbol, scope.objects[d.target.index].symbol)) {
                         selectedClass = "selected";
                     }
                     else {
@@ -138,6 +158,17 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 }
 
                 return selectedClass;
+            }
+
+            function clickOnChord(d) {
+                var sym1 = scope.objects[d.source.index].symbol;
+                var sym2 = scope.objects[d.target.index].symbol;
+                if(areTheseSymbolsSelected(sym1, sym2)) {
+                    deselectSymbols();
+                }
+                else {
+                    selectSymbols(sym1, sym2);
+                }
             }
 
             var chordPathAll = chordG.selectAll("path")
@@ -153,11 +184,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
                     return clazz;
                 })
-                .on("click", function(d) {
-                    selectedSymbolA = scope.objects[d.source.index].symbol;
-                    selectedSymbolB = scope.objects[d.target.index].symbol;
-                    scope.symbolsSelectedEvent.startWhenFirstListenerReady(selectedSymbolA, selectedSymbolB);
-                });
+                .on("click", clickOnChord);
 
             chordPathAll.select("title")
                 .text(function(d) {
@@ -225,7 +252,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             ready: "=",
             redrawEvent: "=",
             newObjectsEvent: "=",
-            symbolsSelectedEvent: "="
+            symbolsSelectedEvent: "=",
+            symbolsDeselectedEvent: "="
         },
         restrict: "E",
         templateUrl: "js/directives/correlationsChordDirective.html"

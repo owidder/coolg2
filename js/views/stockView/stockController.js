@@ -108,6 +108,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     });
     $scope.symbolsSelectedEvent = symbolsSelectedEvent;
 
+    var symbolsDeselectedEvent = new SimpleEvent();
+    symbolsDeselectedEvent.on(function() {
+        drawWhenInitialized();
+        hideScatterPlot();
+    });
+    $scope.symbolsDeselectedEvent = symbolsDeselectedEvent;
+
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
 
     function setPeriodEnd() {
@@ -197,6 +204,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var scatterPlotRedrawEvent = new SimpleEvent();
     var scatterPlotResetEvent = new SimpleEvent();
+    var scatterPlotRemoveEvent = new SimpleEvent();
 
     var scatterPlotAllValues = [];
     var scatterPlotPeriodValues = [];
@@ -249,9 +257,21 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
         updatePeriodValues();
 
-        scatterPlotResetEvent.startWhenFirstListenerReady(currentCorrCoeff());
+        if(scatterPlotShownFlag) {
+            scatterPlotRedrawEvent.startWhenFirstListenerReady(currentCorrCoeff())
+        }
+        else {
+            scatterPlotResetEvent.startWhenFirstListenerReady(currentCorrCoeff());
+        }
 
         scatterPlotShownFlag = true;
+    }
+
+    function hideScatterPlot() {
+        scatterPlotShownFlag = false;
+        currentShownSymbol1 = undefined;
+        currentShownSymbol2 = undefined;
+        scatterPlotRemoveEvent.startWhenFirstListenerReady();
     }
 
     $scope.current_period_start = constants.START_DATE;
@@ -259,6 +279,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     $scope.scatterPlotRedrawEvent = scatterPlotRedrawEvent;
     $scope.scatterPlotResetEvent = scatterPlotResetEvent;
+    $scope.scatterPlotRemoveEvent = scatterPlotRemoveEvent;
 
     $scope.scatterPlotAllValues = scatterPlotAllValues;
     $scope.scatterPlotPeriodValues = scatterPlotPeriodValues;

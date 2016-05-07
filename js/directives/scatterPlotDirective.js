@@ -22,6 +22,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
         function remove() {
             rootG.selectAll("g").remove();
+            rootG.selectAll("circle").remove();
         }
 
         function reset() {
@@ -60,7 +61,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis)
                 .append("text")
-                .attr("class", "label")
+                .attr("class", "x label")
                 .attr("x", width)
                 .attr("y", -6)
                 .style("text-anchor", "end")
@@ -70,7 +71,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 .attr("class", "y axis")
                 .call(yAxis)
                 .append("text")
-                .attr("class", "label")
+                .attr("class", "y label")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
                 .attr("dy", ".71em")
@@ -99,6 +100,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
             t.selectAll(".x.axis").call(xAxis);
             t.selectAll(".y.axis").call(yAxis);
+            t.select(".x.label").text(scope.names[0]);
+            t.select(".y.label").text(scope.names[1]);
         }
 
         function redraw(corrCoeff) {

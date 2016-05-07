@@ -3,6 +3,7 @@
 bottle.factory("Stock", function(container) {
     var SimplePromise = container.SimplePromise;
     var dateUtil = container.dateUtil;
+    var funcs = container.funcs;
 
     function Stock(symbol, name) {
         var that = this;
@@ -23,13 +24,15 @@ bottle.factory("Stock", function(container) {
         function period(start_yyyy_mm_dd, end_yyyy_mm_dd, propertyName) {
             var period = [];
             period.dates = [];
-            var timeslice = history.filter(function(element) {
-                return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
-            });
-            timeslice.forEach(function(day) {
-                period.push(Number(day[propertyName]));
-                period.dates.push(day.Date);
-            });
+            if(!funcs.isEmpty(history)) {
+                var timeslice = history.filter(function(element) {
+                    return (element.Date >= start_yyyy_mm_dd && element.Date < end_yyyy_mm_dd);
+                });
+                timeslice.forEach(function(day) {
+                    period.push(Number(day[propertyName]));
+                    period.dates.push(day.Date);
+                });
+            }
 
             return period;
         }
