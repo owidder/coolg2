@@ -22,8 +22,20 @@
 
         return zeroArray;
     }
+    
+    function matrixSum(matrix) {
+        var sum = 0;
+        matrix.map(function(arr) {
+            sum += arr.reduce(function(a, b) {
+                return a + b;
+            })
+        });
+
+        return sum;
+    }
 
     math.import({
-        zero2DimArray: zero2DimArray
+        zero2DimArray: zero2DimArray,
+        matrixSum: matrixSum
     });
 })();

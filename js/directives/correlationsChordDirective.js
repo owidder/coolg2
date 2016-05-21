@@ -60,6 +60,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
         function redrawChord(correlationsMatrix) {
 
+            if(math.matrixSum(correlationsMatrix) == 0) {
+                return;
+            }
+
             var chord = d3.layout.chord()
                 .padding(.05)
                 .sortSubgroups(d3.descending)
