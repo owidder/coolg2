@@ -48,6 +48,8 @@
                         start="0"
                         range-min="0"
                         range-max="{{dateSliderMax}}"
+                        left-label="Starte date = 1980-01-01"
+                        right-label="2015-03-01"
                         slider-changed-event-out="dateSliderChangedEvent"
                         value-changed-event-in="dateChangedEvent">
                 </range-slider>
@@ -55,13 +57,16 @@
                         start="{{startPeriodLength}}"
                         range-min="30"
                         range-max="365"
-                        slider-changed-event-out="periodLengthSliderChangeEvent">
+                        left-label="Period length = 30"
+                        right-label="365"
+                        slider-changed-event-out="periodLengthSliderChangeEvent"
+                        value-changed-event-in="periodLengthSliderChangeEvent">
                 </range-slider>
             </div>
         </div>
         <div class="row">
             <div ng-repeat="stock in stockList" class="col s6 m4 l1 stock {{stockSwitches[stock.symbol] ? 'stock-on' : 'stock-off'}} stock-onoff-{{stock.symbol}}" align="center">
-                <a class="xxs waves-effect waves-teal btn-flat" ng-click="switchStockOnOff(stock.symbol)">
+                <a title="{{stock.name}}" class="xxs waves-effect waves-teal btn-flat" ng-click="switchStockOnOff(stock.symbol)">
                     {{stock.symbol}}
                 </a>
             </div>
@@ -76,10 +81,13 @@
                     symbols-selected-event="symbolsSelectedEvent"
                     symbols-deselected-event="symbolsDeselectedEvent"
                     ready="ready"
+                    start-symbol-a="startSymbolA"
+                    start-symbol-b="startSymbolB"
                     objects="currentShownStocks"
                     pos-neg-matrix="posNegMatrix"
                     correlations-matrix="correlationsMatrix">
                 </correlations-chord>
+                Click on any chord to see scatter plot
             </div>
             <div class="col s6 m6 l6" align="center">
                 <scatter-plot

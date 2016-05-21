@@ -1,5 +1,17 @@
 <section>
     <span class="range-field">
-        <input type="range" min="{{rangeMin}}" max="{{rangeMax}}" ng-change="onChange()" ng-model="rangeValue"/>
+        <span class="container">
+            <div class="row">
+                <div clas="col s1">
+                    {{leftLabel}}
+                </div>
+                <div class="col s10">
+                    <input type="range" min="{{rangeMin}}" max="{{rangeMax}}" ng-change="onChange()" ng-model="rangeValue"/>
+                </div>
+                <div clas="col s1">
+                    {{rightLabel}}
+                </div>
+            </div>
+        </span>
     </span>
 </section>

@@ -239,6 +239,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                     .style("opacity", opacity);
             };
         }
+
+        if(!funcs.isEmpty(scope.startSymbolA) && !funcs.isEmpty(scope.startSymbolB)) {
+            selectSymbols(scope.startSymbolA, scope.startSymbolB);
+        }
     }
 
     return {
@@ -250,6 +254,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             correlationsMatrix: "=",
             posNegMatrix: "=",
             ready: "=",
+            startSymbolA: "=",
+            startSymbolB: "=",
             redrawEvent: "=",
             newObjectsEvent: "=",
             symbolsSelectedEvent: "=",

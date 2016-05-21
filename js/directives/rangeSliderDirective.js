@@ -30,6 +30,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("rangeSlider", functi
             start: "@",
             rangeMin: "@",
             rangeMax: "@",
+            leftLabel: "@",
+            rightLabel: "@",
             sliderChangedEventOut: "=",
             valueChangedEventIn: "="
         },

@@ -2,7 +2,8 @@
 
 com_geekAndPoke_coolg.STOCK_CONTROLLER = "stockController";
 
-angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function($scope, $timeout, $interval) {
+angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function(
+    $scope, $timeout, $interval, $routeParams) {
 
     var Stock = bottle.container.Stock;
     var SimplePromise = bottle.container.SimplePromise;
@@ -18,6 +19,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var stockSwitches = {};
     var stockPromises = [];
     var stockList;
+
+    var initPhaseStartedPromise = new SimplePromise();
+    var initPhaseEndedPromise = new SimplePromise();
+
+    var ROUTE_PARAMS_DEMO = "demo";
+    var demoMode = funcs.isDefined($routeParams[ROUTE_PARAMS_DEMO]);
 
     function initStocks() {
         var stock, index = 0;
@@ -102,18 +109,21 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.periodLengthSliderChangeEvent = periodLengthSliderChangeEvent;
 
     var symbolsSelectedEvent = new SimpleEvent();
-    symbolsSelectedEvent.on(function(symbolA, symbolB) {
-        drawWhenInitialized();
-        showScatterPlot(symbolA, symbolB);
-    });
-    $scope.symbolsSelectedEvent = symbolsSelectedEvent;
-
     var symbolsDeselectedEvent = new SimpleEvent();
-    symbolsDeselectedEvent.on(function() {
-        drawWhenInitialized();
-        hideScatterPlot();
-    });
+    $scope.symbolsSelectedEvent = symbolsSelectedEvent;
     $scope.symbolsDeselectedEvent = symbolsDeselectedEvent;
+
+    whenInitialized(function() {
+        symbolsSelectedEvent.on(function(symbolA, symbolB) {
+            draw();
+            showScatterPlot(symbolA, symbolB);
+        });
+
+        symbolsDeselectedEvent.on(function() {
+            draw();
+            hideScatterPlot();
+        });
+    });
 
     $scope.dateSliderMax = dateUtil.daysBetweenDates(constants.START_DATE, constants.END_DATE);
 
@@ -150,10 +160,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         }
     }
 
+    function whenInitialized(fkt) {
+        initPhaseEndedPromise.promise.then(fkt);
+    }
+
     function drawWhenInitialized() {
-        Promise.all(stockPromises).then(function() {
-            draw();
-        });
+        whenInitialized(draw);
     }
 
     function dateSliderChanged(value) {
@@ -188,7 +200,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     }
 
     function init() {
-        $.get("rsrc/stocks.csv", function(data) {
+        var stocksFile = demoMode ? "stocks_demo.csv" : "stocks.csv";
+        $.get("rsrc/" + stocksFile, function(data) {
             stockList = d3.csv.parse(data);
             stockList.sort(funcs.createComparator("symbol"));
             initStockSwitches();
@@ -197,6 +210,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             $scope.current_period_start = constants.START_DATE;
 
             initAfterStockChange();
+
+            initPhaseStartedPromise.resolve();
+            Promise.all(stockPromises).then(function() {
+                initPhaseEndedPromise.resolve();
+            });
         });
     }
 
@@ -274,6 +292,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         scatterPlotRemoveEvent.startWhenFirstListenerReady();
     }
 
+    var ROUTE_PARAMS_START_SYMBOL_A = "symbA";
+    var ROUTE_PARAMS_START_SYMBOL_B = "symbB";
+
+    $scope.startSymbolA = $routeParams[ROUTE_PARAMS_START_SYMBOL_A];
+    $scope.startSymbolB = $routeParams[ROUTE_PARAMS_START_SYMBOL_B];
+
     $scope.current_period_start = constants.START_DATE;
     setPeriodEnd();
 
@@ -294,5 +318,20 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.startPeriodLength = periodLengthInDays;
 
     init();
+
+    if(demoMode) {
+        whenInitialized(function() {
+            var startDateValue = 12000;
+            var startPeriodLengthValue = 300;
+
+            dateChangedEvent.startWhenFirstListenerReady(startDateValue)
+            dateSliderChanged(startDateValue);
+
+            periodLengthSliderChangeEvent.startWhenFirstListenerReady(startPeriodLengthValue);
+            periodLengthSliderChanged(startPeriodLengthValue);
+
+            play();
+        });
+    }
 
 });

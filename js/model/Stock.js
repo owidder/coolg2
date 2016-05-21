@@ -40,6 +40,7 @@ bottle.factory("Stock", function(container) {
         $.get("rsrc/" + symbol + ".csv", function(data) {
             history = d3.csv.parse(data);
             history.sort(dateUtil.createYYYY_MM_DDcomparator("Date"));
+            console.log(symbol + " ready");
             simplePromise.resolve();
         });
 
