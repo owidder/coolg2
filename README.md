@@ -1,2 +1,2 @@
 # coolg
-see https://cdn.rawgit.com/owidder/coolg/1.0/index.html#/stock?demo
+see https://cdn.rawgit.com/owidder/coolg/1.1/index.html#/stock?demo
