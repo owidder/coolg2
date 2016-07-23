@@ -2,6 +2,7 @@
 
 angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", function() {
     var funcs = bottle.container.funcs;
+    var SvgLegend = bottle.container.SvgLegend;
 
     function link(scope) {
 
@@ -9,16 +10,29 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             return scope.posNegMatrix[d.source.index][d.target.index];
         }
 
+        function createLegend(svgElement) {
+            return svgElement.getAttribute("_legend");
+        }
+
+        var svgLegend = new SvgLegend(createLegend);
+
         var width = scope.width,
             height = scope.height,
             innerRadius = Math.min(width, height) * .41,
             outerRadius = innerRadius * 1.1;
 
         var svg = d3.select("#chord").append("svg")
-            .attr("width", width)
-            .attr("height", height)
+            .attr("class", "canvas")
+            .attr("width", width+200)
+            .attr("height", height+200)
+            .on("mousemove", function () {
+                var evt = d3.mouse(this);
+                svgLegend.onMouseMoved(evt[0], evt[1]);
+            })
             .append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        svgLegend.init();
 
         var rootG = svg.append("g");
         var groupG;
@@ -148,8 +162,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             var chordPathEnter = chordData.enter()
                 .append("path");
 
-            chordPathEnter.append("title");
-
             function getSelectedClass(d) {
                 var selectedClass = "none";
                 if(areAnySymbolsSelected()) {
@@ -178,7 +190,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             var chordPathAll = chordG.selectAll("path")
                 .attr("d", d3.svg.chord().radius(innerRadius))
                 .attr("class", function(d) {
-                    var clazz = getSelectedClass(d);
+                    var clazz = "forlegend " + getSelectedClass(d);
                     if(posNeg(d) < 0) {
                         clazz += " chord-neg";
                     }
@@ -188,15 +200,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
                     return clazz;
                 })
-                .on("click", clickOnChord);
-
-            chordPathAll.select("title")
-                .text(function(d) {
+                .attr("_legend", function (d) {
                     var nameA = scope.objects[d.source.index].name;
                     var nameB = scope.objects[d.target.index].name;
                     var value = math.round(d.source.value/1000, 2) * posNeg(d);
                     return nameA + " <-> " + nameB + ": " +  value;
-                });
+                })
+                .on("click", clickOnChord);
 
             chordData.exit().remove();
 

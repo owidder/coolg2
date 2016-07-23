@@ -304,6 +304,23 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         return destination;
     }
 
+    function copyAttributes(attributes, src, dest) {
+        attributes.forEach(function(name) {
+            dest[name] = src[name];
+        });
+    }
+
+    function getLongestString(arrayOfStrings) {
+        var max = 0;
+        arrayOfStrings.forEach(function(string) {
+            if(!isEmpty(string) && string.length > max) {
+                max = string.length;
+            }
+        });
+
+        return max;
+    }
+
     return {
         hashCode: hashCode,
         if: _if,
@@ -332,6 +349,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).factory('funcs', function() {
         createAccessorFunction: createAccessorFunction,
         createComparator: createComparator,
         combineArrays: combineArrays,
-        createArrayOfNthElements: createArrayOfNthElements
+        createArrayOfNthElements: createArrayOfNthElements,
+        copyAttributes: copyAttributes,
+        getLongestString: getLongestString
     };
 });
