@@ -13,6 +13,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var funcs = bottle.container.funcs;
     var dimensions = bottle.container.dimensions;
     var mathUtil = bottle.container.mathUtil;
+    var SvgLegend = bottle.container.SvgLegend;
 
     var stockMap = {};
     var currentShownStocks = [];
@@ -292,8 +293,36 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         scatterPlotRemoveEvent.startWhenFirstListenerReady();
     }
 
+    function createLegend(svgElement) {
+        return svgElement.getAttribute("_legend");
+    }
+
+    var svgLegend = new SvgLegend(createLegend);
+
+    var width = dimensions.width(),
+        height = dimensions.height();
+
+    var svg = d3.select("#mainsvg").append("svg")
+        .attr("class", "canvas")
+        .attr("width", width+200)
+        .attr("height", height+200)
+        .on("mousemove", function () {
+            var evt = d3.mouse(this);
+            svgLegend.onMouseMoved(evt[0], evt[1]);
+        });
+
+    var graphs = svg.append("g")
+        .attr("class", "main canvas");
+
+    var legend = svg.append("g")
+        .attr("class", "legend canvas");
+
+    svgLegend.init();
+
     var ROUTE_PARAMS_START_SYMBOL_A = "symbA";
     var ROUTE_PARAMS_START_SYMBOL_B = "symbB";
+
+    $scope.graphs = graphs;
 
     $scope.startSymbolA = $routeParams[ROUTE_PARAMS_START_SYMBOL_A];
     $scope.startSymbolB = $routeParams[ROUTE_PARAMS_START_SYMBOL_B];

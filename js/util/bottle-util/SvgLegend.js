@@ -3,13 +3,14 @@
 bottle.factory("SvgLegend", function(container) {
     var funcs = container.funcs;
 
-    function SvgLegend(_createEntryFunction, _getLegendDetectorRadiusFunction, _svgSelector, _legendSelector) {
+    function SvgLegend(_createEntryFunction, _getLegendDetectorRadiusFunction, _svgSelector, _forLegendSelector, _legendSelector) {
         var that = this;
-        var svgSelector = _svgSelector || "svg.canvas";
-        var legendSelector = _legendSelector || ".forlegend";
+        var svgSelector = _svgSelector || ".main.canvas";
+        var forLegendSelector = _forLegendSelector || ".forlegend";
+        var legendSelector = _legendSelector || ".legend.canvas";
         var createEntry = _createEntryFunction;
         var getLegendDetectorRadius = _getLegendDetectorRadiusFunction || (function() {return 0});
-        var svg;
+        var svgCanvas, legendCanvas;
 
 
         function getSvgBoundingRectOfElement(selector) {
@@ -44,18 +45,23 @@ bottle.factory("SvgLegend", function(container) {
 
         function getNearbyEntryForlegends(x, y) {
             var adapted = adaptPositionToSvg(x, y);
-            var forlegends = document.querySelectorAll(legendSelector);
+            var forlegends = document.querySelectorAll(forLegendSelector);
             var i, forlegend, boundingRect;
             var nearbyEntryForlegends = [];
             var radius = getLegendDetectorRadius();
+            console.log("x = " + x + ", y = " + y);
+            console.log(adapted);
             for (i = 0; i < forlegends.length; i++) {
                 forlegend = forlegends[i];
                 boundingRect = forlegend.getBoundingClientRect();
+                console.log(boundingRect);
                 if (adapted.x > boundingRect.left - radius && adapted.x < boundingRect.right + radius &&
                     adapted.y > boundingRect.top - radius && adapted.y < boundingRect.bottom + radius) {
                     nearbyEntryForlegends.push(forlegend);
                 }
             }
+
+            console.log("nbl = " + nearbyEntryForlegends.length);
 
             return nearbyEntryForlegends;
         }
@@ -79,7 +85,7 @@ bottle.factory("SvgLegend", function(container) {
             var entryStrList = createLegendEntryList(nearbyEntryForlegends);
             updateLegend(entryStrList);
 
-            svg.select("g.legend")
+            legendCanvas.select("g.legend")
                 .attr("transform", "translate(" + (x + 10) + "," + (y + 10) + ")");
         }
 
@@ -93,23 +99,24 @@ bottle.factory("SvgLegend", function(container) {
         }
 
         function isLegendShown() {
-            return svg.select("g.legend.on").size() > 0;
+            return legendCanvas.select("g.legend.on").size() > 0;
         }
 
         function hideLegend() {
-            var legend = svg.select("g.legend");
+            var legend = legendCanvas.select("g.legend");
             legend.classed("on", false);
             legend.classed("off", true);
         }
 
         function showLegend() {
-            var legend = svg.select("g.legend");
+            var legend = legendCanvas.select("g.legend");
             legend.classed("off", false);
             legend.classed("on", true);
         }
 
         function appendLegend() {
-            var legend = svg.append("g")
+            var legend = legendCanvas
+                .append("g")
                 .attr("class", "legend off");
 
             legend.append("rect")
@@ -127,7 +134,7 @@ bottle.factory("SvgLegend", function(container) {
 
         function updateLegend(entryStrList) {
             var maxLength = funcs.getLongestString(entryStrList);
-            var gLegend = svg.select("g.legend");
+            var gLegend = legendCanvas.select("g.legend");
 
             var legendRect = gLegend.select("rect.legend");
             legendRect.transition()
@@ -163,7 +170,8 @@ bottle.factory("SvgLegend", function(container) {
         }
 
         function init() {
-            svg = d3.select(svgSelector);
+            svgCanvas = d3.select(svgSelector);
+            legendCanvas = d3.select(legendSelector);
             appendLegend();
         }
 

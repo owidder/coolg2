@@ -21,14 +21,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             innerRadius = Math.min(width, height) * .41,
             outerRadius = innerRadius * 1.1;
 
-        var svg = d3.select("#chord").append("svg")
-            .attr("class", "canvas")
-            .attr("width", width+200)
-            .attr("height", height+200)
-            .on("mousemove", function () {
-                var evt = d3.mouse(this);
-                svgLegend.onMouseMoved(evt[0], evt[1]);
-            })
+        var svg = scope.svg
             .append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -262,6 +255,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
     return {
         link: link,
         scope: {
+            svg: "=",
             width: "@",
             height: "@",
             objects: "=",
