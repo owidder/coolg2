@@ -16,18 +16,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
         var svgLegend = new SvgLegend(createLegend);
 
-        var width = scope.width,
-            height = scope.height,
-            innerRadius = Math.min(width, height) * .41,
-            outerRadius = innerRadius * 1.1;
-
-        var svg = scope.svg
+        var svgG = scope.svg
             .append("g")
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            .attr("class", "chord canvas");
 
         svgLegend.init();
 
-        var rootG = svg.append("g");
+        var rootG = svgG.append("g");
         var groupG;
         var tickG;
         var chordG;
@@ -70,6 +65,17 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             if(math.matrixSum(correlationsMatrix) == 0) {
                 return;
             }
+
+            var width = scope.width();
+            var height = scope.height();
+
+            svgG.transition()
+                .duration(1000)
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            
+            var innerRadius = Math.min(width, height) * .41,
+                outerRadius = innerRadius * 1.1;
+
 
             var chord = d3.layout.chord()
                 .padding(.05)
@@ -240,7 +246,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 // Returns an event handler for fading a given chord group.
         function fade(opacity) {
             return function(g, i) {
-                svg.selectAll(".chord path")
+                svgG.selectAll(".chord path")
                     .filter(function(d) { return d.source.index != i && d.target.index != i; })
                     .transition()
                     .style("opacity", opacity);
@@ -256,8 +262,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
         link: link,
         scope: {
             svg: "=",
-            width: "@",
-            height: "@",
+            width: "=",
+            height: "=",
             objects: "=",
             correlationsMatrix: "=",
             posNegMatrix: "=",

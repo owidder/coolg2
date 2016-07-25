@@ -5,15 +5,13 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
     function link(scope) {
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = scope.width - margin.left - margin.right,
-            height = scope.height - margin.top - margin.bottom;
+        var margin = {top: 20, right: 20, bottom: 30, left: 40};
 
-        var svg = d3.select("#scatter").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
+        var svgG = scope.svg
+            .append("g")
+            .attr("class", "scatter canvas");
 
-        rootG = svg.append("g")
+        rootG = svgG.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var x, y, xAxis, yAxis;
@@ -29,10 +27,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             remove();
 
             x = d3.scale.linear()
-                .range([0, width]);
+                .range([0, scope.width()]);
 
             y = d3.scale.linear()
-                .range([height, 0]);
+                .range([scope.height(), 0]);
 
             x.domain(d3.extent(scope.periodValuesWithDates, function(d) {
                 return d[0];
@@ -53,16 +51,16 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             currentCorrCoeff = rootG.append("g")
                 .append("text")
                 .attr("class", "corrCoeff")
-                .attr("x", scope.width/10)
-                .attr("y", scope.height/2);
+                .attr("x", scope.width()/10)
+                .attr("y", scope.height()/2);
 
             xG = rootG.append("g")
                 .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
+                .attr("transform", "translate(0," + scope.height() + ")")
                 .call(xAxis)
                 .append("text")
                 .attr("class", "x label")
-                .attr("x", width)
+                .attr("x", scope.width())
                 .attr("y", -6)
                 .style("text-anchor", "end")
                 .text(scope.names[0]);
@@ -80,7 +78,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         }
 
         function reAxis() {
-            var t = svg.transition();
+            var t = svgG.transition();
 
             x.domain(d3.extent(scope.periodValuesWithDates, function(d) {
                 return d[0];
@@ -109,6 +107,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             var arrB = funcs.createArrayOfNthElements(scope.periodValuesWithDates, 1);
             var meanA = math.mean(arrA);
             var meanB = math.mean(arrB);
+
+            svgG.transition()
+                .duration(1000)
+                .attr("transform", "translate(" + scope.offsetX() + "," + scope.offsetY() + ")");
 
             function redOrGreen(valA, valB) {
                 if((valA <= meanA && valB <= meanB) || (valA >= meanA && valB >= meanB)) {
@@ -188,8 +190,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
     return {
         link: link,
         scope: {
-            width: "@",
-            height: "@",
+            svg: "=",
+            offsetX: "=",
+            offsetY: "=",
+            width: "=",
+            height: "=",
             allValues: "=",
             periodValuesWithDates: "=",
             names: "=",

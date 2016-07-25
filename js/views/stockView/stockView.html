@@ -75,8 +75,8 @@
             <div class="col s6 m6 l6" align="center">
                 <div id="mainsvg"></div>
                 <correlations-chord
-                    width="{{width/2}}"
-                    height="{{height/2}}"
+                    width="width"
+                    height="height"
                     svg="graphs"
                     redraw-event="redrawEvent"
                     new-objects-event="stocksChangedEvent"
@@ -93,8 +93,10 @@
             </div>
             <div class="col s6 m6 l6" align="center">
                 <scatter-plot
-                    width="{{width/2}}"
-                    height="{{height/2}}"
+                    width="width"
+                    height="height"
+                    offsetX="scatterOffsetX"
+                    offsetY="scatterOffsetY"
                     all-values="scatterPlotAllValues"
                     period-values-with-dates="scatterPlotPeriodValues"
                     names="scatterPlotNames"

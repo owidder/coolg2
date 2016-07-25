@@ -341,8 +341,20 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.switchStockOnOff = switchStockOnOff;
     $scope.stockSwitches = stockSwitches;
     $scope.currentShownStocks = currentShownStocks;
-    $scope.width = dimensions.width();
-    $scope.height = dimensions.height();
+
+    $scope.width = function () {
+        return dimensions.width() / 2;
+    };
+    $scope.height = function () {
+        return dimensions.height() / 2;
+    };
+
+    $scope.scatterOffsetX = function() {
+        return dimensions.width() / 2;
+    };
+    $scope.scatterOffsetY = function() {
+        return 0;
+    };
 
     $scope.startPeriodLength = periodLengthInDays;
 
