@@ -5,6 +5,8 @@ com_geekAndPoke_coolg.STOCK_CONTROLLER = "stockController";
 angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_coolg.STOCK_CONTROLLER, function(
     $scope, $timeout, $interval, $routeParams) {
 
+    var DURATION = 2000;
+
     var Stock = bottle.container.Stock;
     var SimplePromise = bottle.container.SimplePromise;
     var SimpleEvent = bottle.container.SimpleEvent;
@@ -50,7 +52,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var correlationsMatrix = [];
     var posNegMatrix = [];
     var ready = new SimplePromise();
-    var redrawEvent = new SimpleEvent();
+    var chordRedrawEvent = new SimpleEvent();
     var periodLengthInDays = 30;
     var stocksChangedFlag = true;
 
@@ -68,7 +70,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.correlationsMatrix = correlationsMatrix;
     $scope.posNegMatrix = posNegMatrix;
 
-    $scope.redrawEvent = redrawEvent;
+    $scope.redrawEvent = chordRedrawEvent;
     $scope.ready = ready.promise;
 
     $scope.pause = pause;
@@ -116,12 +118,12 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     whenInitialized(function() {
         symbolsSelectedEvent.on(function(symbolA, symbolB) {
-            draw();
+            draw(DURATION);
             showScatterPlot(symbolA, symbolB);
         });
 
         symbolsDeselectedEvent.on(function() {
-            draw();
+            draw(DURATION);
             hideScatterPlot();
         });
     });
@@ -132,7 +134,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         $scope.current_period_end = dateUtil.addDaysToDate($scope.current_period_start, periodLengthInDays);
     }
 
-    function draw() {
+    function draw(redrawEventDuration) {
+        if(!funcs.isDefined(redrawEventDuration)) {
+            redrawEventDuration = 0;
+        }
         $timeout(function() {
             setPeriodEnd();
             computePeriod($scope.current_period_start, $scope.current_period_end);
@@ -141,7 +146,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
                 stocksChangedFlag = false;
             }
             else {
-                redrawEvent.startWhenFirstListenerReady();
+                chordRedrawEvent.startWhenFirstListenerReady(redrawEventDuration);
             }
         });
     }
@@ -166,7 +171,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     }
 
     function drawWhenInitialized() {
-        whenInitialized(draw);
+        whenInitialized(function() {
+            draw(DURATION);
+        });
     }
 
     function dateSliderChanged(value) {
@@ -285,7 +292,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
         scatterPlotShownFlag = true;
 
-        redrawEvent.startWhenFirstListenerReady();
+        chordRedrawEvent.startWhenFirstListenerReady(DURATION);
     }
 
     function hideScatterPlot() {
@@ -294,7 +301,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         currentShownSymbol2 = undefined;
         scatterPlotRemoveEvent.startWhenFirstListenerReady();
 
-        redrawEvent.startWhenFirstListenerReady();
+        chordRedrawEvent.startWhenFirstListenerReady(DURATION);
     }
 
     function createLegend(svgElement) {

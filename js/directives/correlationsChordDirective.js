@@ -59,7 +59,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
         }
 
 
-        function redrawChord(correlationsMatrix) {
+        function redrawChord(correlationsMatrix, duration) {
 
             if(math.matrixSum(correlationsMatrix) == 0) {
                 return;
@@ -69,7 +69,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             var height = scope.height();
 
             svgG.transition()
-                .duration(1000)
+                .duration(duration)
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
             var innerRadius = Math.min(width, height) * .41,
@@ -96,6 +96,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 .on("mouseout", fade(1));
 
             var groupPathAll = groupG.selectAll("path")
+                .transition()
+                .duration(duration)
                 .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius));
 
             groupPathData.exit().remove();
@@ -123,6 +125,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 .attr("class", "tick");
 
             var ticksAll = tickGroupsAll.selectAll("g.tick")
+                .transition()
+                .duration(duration)
                 .attr("transform", function(d) {
                     return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
                         + "translate(" + outerRadius + ",0)";
@@ -158,7 +162,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 .data(chord.chords);
 
             var chordPathEnter = chordData.enter()
-                .append("path");
+                .append("path")
+                .on("click", clickOnChord);
 
             function getSelectedClass(d) {
                 var selectedClass = "none";
@@ -186,7 +191,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             }
 
             var chordPathAll = chordG.selectAll("path")
-                .attr("d", d3.svg.chord().radius(innerRadius))
                 .attr("class", function(d) {
                     var clazz = "forlegend " + getSelectedClass(d);
                     if(posNeg(d) < 0) {
@@ -204,19 +208,21 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                     var value = math.round(d.source.value/1000, 2) * posNeg(d);
                     return nameA + " <-> " + nameB + ": " +  value;
                 })
-                .on("click", clickOnChord);
+                .transition()
+                .duration(duration)
+                .attr("d", d3.svg.chord().radius(innerRadius));
 
             chordData.exit().remove();
 
         }
 
-        scope.redrawEvent.on(function() {
-            redrawChord(scope.correlationsMatrix);
+        scope.redrawEvent.on(function(duration) {
+            redrawChord(scope.correlationsMatrix, duration);
         });
 
         scope.newObjectsEvent.on(function() {
             reset();
-            redrawChord(scope.correlationsMatrix);
+            redrawChord(scope.correlationsMatrix, 0);
         });
 
 // Returns an array of tick angles and labels, given a group.

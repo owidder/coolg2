@@ -18,8 +18,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         var currentCorrCoeff;
 
         function remove() {
-            rootG.selectAll("g").remove();
-            rootG.selectAll("circle").remove();
+            svgG.transition()
+                .duration(1000)
+                .attr("transform", "translate(0, 0)")
+                .selectAll(".toremove").remove();
         }
 
         function reset() {
@@ -49,26 +51,26 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
             currentCorrCoeff = rootG.append("g")
                 .append("text")
-                .attr("class", "corrCoeff")
+                .attr("class", "toremove corrCoeff")
                 .attr("x", scope.width()/10)
                 .attr("y", scope.height()/2);
 
             xG = rootG.append("g")
-                .attr("class", "x axis")
+                .attr("class", "toremove x axis")
                 .attr("transform", "translate(0," + scope.height() + ")")
                 .call(xAxis)
                 .append("text")
-                .attr("class", "x label")
+                .attr("class", "toremove x label")
                 .attr("x", scope.width())
                 .attr("y", -6)
                 .style("text-anchor", "end")
                 .text(scope.names[0]);
 
             yG = rootG.append("g")
-                .attr("class", "y axis")
+                .attr("class", "toremove y axis")
                 .call(yAxis)
                 .append("text")
-                .attr("class", "y label")
+                .attr("class", "toremove y label")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
                 .attr("dy", ".71em")
@@ -136,7 +138,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
             var enter = data.enter()
                 .append("circle")
-                .attr("class", "dot")
+                .attr("class", "dot toremove")
                 .attr("r", 3)
                 .call(position);
 
@@ -146,7 +148,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                 .call(position);
 
             all.attr("class", function(d) {
-                return "dot " + "dot-" + redOrGreen(d[0], d[1]);
+                return "toremove dot " + "dot-" + redOrGreen(d[0], d[1]);
             });
 
             enter.append("title");
@@ -162,7 +164,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
             rootG.select(".corrCoeff")
                 .attr("class", function() {
-                    var clazz = "corrCoeff";
+                    var clazz = "toremove corrCoeff";
                     if(corrCoeff < 0) {
                         clazz += " neg";
                     }
