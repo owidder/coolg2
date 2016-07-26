@@ -284,6 +284,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         }
 
         scatterPlotShownFlag = true;
+
+        redrawEvent.startWhenFirstListenerReady();
     }
 
     function hideScatterPlot() {
@@ -291,6 +293,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         currentShownSymbol1 = undefined;
         currentShownSymbol2 = undefined;
         scatterPlotRemoveEvent.startWhenFirstListenerReady();
+
+        redrawEvent.startWhenFirstListenerReady();
     }
 
     function createLegend(svgElement) {
@@ -303,7 +307,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         height = dimensions.height();
 
     var svg = d3.select("#mainsvg").append("svg")
-        .attr("class", "canvas")
+        .attr("class", "svg canvas")
         .attr("width", width+200)
         .attr("height", height+200)
         .on("mousemove", function () {
@@ -343,10 +347,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.currentShownStocks = currentShownStocks;
 
     $scope.width = function () {
-        return dimensions.width() / 2;
+        return scatterPlotShownFlag ? dimensions.width() / 2 : dimensions.width();
     };
     $scope.height = function () {
-        return dimensions.height() / 2;
+        return scatterPlotShownFlag ? dimensions.height() / 2 : dimensions.height();
     };
 
     $scope.scatterOffsetX = function() {

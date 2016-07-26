@@ -8,8 +8,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
         var margin = {top: 20, right: 20, bottom: 30, left: 40};
 
         var svgG = scope.svg
-            .append("g")
-            .attr("class", "scatter canvas");
+            .append("g");
 
         rootG = svgG.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

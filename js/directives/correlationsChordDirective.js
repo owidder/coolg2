@@ -17,8 +17,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
         var svgLegend = new SvgLegend(createLegend);
 
         var svgG = scope.svg
-            .append("g")
-            .attr("class", "chord canvas");
+            .append("g");
 
         svgLegend.init();
 
@@ -72,7 +71,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             svgG.transition()
                 .duration(1000)
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-            
+
             var innerRadius = Math.min(width, height) * .41,
                 outerRadius = innerRadius * 1.1;
 
@@ -247,7 +246,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
         function fade(opacity) {
             return function(g, i) {
                 svgG.selectAll(".chord path")
-                    .filter(function(d) { return d.source.index != i && d.target.index != i; })
+                    .filter(function(d) {
+                        return d.source.index != i && d.target.index != i;
+                    })
                     .transition()
                     .style("opacity", opacity);
             };

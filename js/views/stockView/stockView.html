@@ -72,7 +72,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s6 m6 l6" align="center">
+            <div class="col s12 m12 l12" align="center">
                 <div id="mainsvg"></div>
                 <correlations-chord
                     width="width"
@@ -90,19 +90,18 @@
                     correlations-matrix="correlationsMatrix">
                 </correlations-chord>
                 Click on any chord to see scatter plot
-            </div>
-            <div class="col s6 m6 l6" align="center">
                 <scatter-plot
-                    width="width"
-                    height="height"
-                    offsetX="scatterOffsetX"
-                    offsetY="scatterOffsetY"
-                    all-values="scatterPlotAllValues"
-                    period-values-with-dates="scatterPlotPeriodValues"
-                    names="scatterPlotNames"
-                    redraw-event="scatterPlotRedrawEvent"
-                    reset-event="scatterPlotResetEvent"
-                    remove-event="scatterPlotRemoveEvent">
+                        width="width"
+                        height="height"
+                        svg="graphs"
+                        offset-x="scatterOffsetX"
+                        offset-y="scatterOffsetY"
+                        all-values="scatterPlotAllValues"
+                        period-values-with-dates="scatterPlotPeriodValues"
+                        names="scatterPlotNames"
+                        redraw-event="scatterPlotRedrawEvent"
+                        reset-event="scatterPlotResetEvent"
+                        remove-event="scatterPlotRemoveEvent">
                 </scatter-plot>
             </div>
         </div>

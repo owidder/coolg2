@@ -5,7 +5,7 @@ bottle.factory("SvgLegend", function(container) {
 
     function SvgLegend(_createEntryFunction, _getLegendDetectorRadiusFunction, _svgSelector, _forLegendSelector, _legendSelector) {
         var that = this;
-        var svgSelector = _svgSelector || ".main.canvas";
+        var svgSelector = _svgSelector || ".svg.canvas";
         var forLegendSelector = _forLegendSelector || ".forlegend";
         var legendSelector = _legendSelector || ".legend.canvas";
         var createEntry = _createEntryFunction;
@@ -49,19 +49,14 @@ bottle.factory("SvgLegend", function(container) {
             var i, forlegend, boundingRect;
             var nearbyEntryForlegends = [];
             var radius = getLegendDetectorRadius();
-            console.log("x = " + x + ", y = " + y);
-            console.log(adapted);
             for (i = 0; i < forlegends.length; i++) {
                 forlegend = forlegends[i];
                 boundingRect = forlegend.getBoundingClientRect();
-                console.log(boundingRect);
                 if (adapted.x > boundingRect.left - radius && adapted.x < boundingRect.right + radius &&
                     adapted.y > boundingRect.top - radius && adapted.y < boundingRect.bottom + radius) {
                     nearbyEntryForlegends.push(forlegend);
                 }
             }
-
-            console.log("nbl = " + nearbyEntryForlegends.length);
 
             return nearbyEntryForlegends;
         }
