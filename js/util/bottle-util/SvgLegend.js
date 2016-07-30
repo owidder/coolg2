@@ -3,13 +3,14 @@
 bottle.factory("SvgLegend", function(container) {
     var funcs = container.funcs;
 
-    function SvgLegend(_createEntryFunction, _getLegendDetectorRadiusFunction, _svgSelector, _forLegendSelector, _legendSelector) {
+    function SvgLegend(_createEntryFunction, _findSvgElementsForLegendFunction, _legendDetectorRadius, _svgSelector, _forLegendSelector, _legendSelector) {
         var that = this;
         var svgSelector = _svgSelector || ".svg.canvas";
         var forLegendSelector = _forLegendSelector || ".forlegend";
         var legendSelector = _legendSelector || ".legend.canvas";
         var createEntry = _createEntryFunction;
-        var getLegendDetectorRadius = _getLegendDetectorRadiusFunction || (function() {return 0});
+        var findSvgElementForLegend = _findSvgElementsForLegendFunction || findSvgElementsForLegendViaBoundingRects;
+        var legendDetectorRadius = _legendDetectorRadius || 0;
         var svgCanvas, legendCanvas;
 
 
@@ -43,17 +44,16 @@ bottle.factory("SvgLegend", function(container) {
             return adaptPositionToElement(x, y, svgSelector)
         }
 
-        function getNearbyEntryForlegends(x, y) {
+        function findSvgElementsForLegendViaBoundingRects(x, y) {
             var adapted = adaptPositionToSvg(x, y);
             var forlegends = document.querySelectorAll(forLegendSelector);
             var i, forlegend, boundingRect;
             var nearbyEntryForlegends = [];
-            var radius = getLegendDetectorRadius();
             for (i = 0; i < forlegends.length; i++) {
                 forlegend = forlegends[i];
                 boundingRect = forlegend.getBoundingClientRect();
-                if (adapted.x > boundingRect.left - radius && adapted.x < boundingRect.right + radius &&
-                    adapted.y > boundingRect.top - radius && adapted.y < boundingRect.bottom + radius) {
+                if (adapted.x > boundingRect.left - legendDetectorRadius && adapted.x < boundingRect.right + legendDetectorRadius &&
+                    adapted.y > boundingRect.top - legendDetectorRadius && adapted.y < boundingRect.bottom + legendDetectorRadius) {
                     nearbyEntryForlegends.push(forlegend);
                 }
             }
@@ -76,8 +76,8 @@ bottle.factory("SvgLegend", function(container) {
         }
 
         function onMouseMoved(x, y) {
-            var nearbyEntryForlegends = getNearbyEntryForlegends(x, y);
-            var entryStrList = createLegendEntryList(nearbyEntryForlegends);
+            var svgElementsForLegend = findSvgElementForLegend(x, y);
+            var entryStrList = createLegendEntryList(svgElementsForLegend);
             updateLegend(entryStrList);
 
             legendCanvas.select("g.legend")

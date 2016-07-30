@@ -10,11 +10,22 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             return scope.posNegMatrix[d.source.index][d.target.index];
         }
 
+        var currentChordElementMouseOver;
+
+        function findSvgElementForLegend() {
+            if(funcs.isDefined(currentChordElementMouseOver)) {
+                return [currentChordElementMouseOver];
+            }
+            else {
+                return  [];
+            }
+        }
+
         function createLegend(svgElement) {
             return svgElement.getAttribute("_legend");
         }
 
-        var svgLegend = new SvgLegend(createLegend);
+        var svgLegend = new SvgLegend(createLegend, findSvgElementForLegend);
 
         var svgG = scope.svg
             .append("g");
@@ -163,6 +174,8 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
             var chordPathEnter = chordData.enter()
                 .append("path")
+                .on("mouseover", mouseOverChord)
+                .on("mouseout", mouseOutChord)
                 .on("click", clickOnChord);
 
             function getSelectedClass(d) {
@@ -177,6 +190,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 }
 
                 return selectedClass;
+            }
+
+            function mouseOverChord(element) {
+                currentChordElementMouseOver = element;
+            }
+
+            function mouseOutChord() {
+                currentChordElementMouseOver = undefined;
             }
 
             function clickOnChord(d) {
