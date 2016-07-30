@@ -163,6 +163,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
             var chordPathEnter = chordData.enter()
                 .append("path")
+                .on("mouseover", function() {
+                    mouseOverChord(this);
+                })
+                .on("mouseout", mouseOutChord)
                 .on("click", clickOnChord);
 
             function getSelectedClass(d) {
@@ -177,6 +181,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 }
 
                 return selectedClass;
+            }
+
+            function mouseOverChord(element) {
+                scope.mouseOverEvent.startWhenFirstListenerReady(element);
+            }
+
+            function mouseOutChord() {
+                scope.mouseOverEvent.startWhenFirstListenerReady(undefined);
             }
 
             function clickOnChord(d) {
@@ -279,6 +291,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             startSymbolB: "=",
             redrawEvent: "=",
             newObjectsEvent: "=",
+            mouseOverEvent: "=",
             symbolsSelectedEvent: "=",
             symbolsDeselectedEvent: "="
         },

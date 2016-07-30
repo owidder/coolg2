@@ -116,6 +116,11 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.symbolsSelectedEvent = symbolsSelectedEvent;
     $scope.symbolsDeselectedEvent = symbolsDeselectedEvent;
 
+    var mouseOverEvent = new SimpleEvent();
+    $scope.mouseOverEvent = mouseOverEvent;
+
+    var currentElementUnderMouse;
+
     whenInitialized(function() {
         symbolsSelectedEvent.on(function(symbolA, symbolB) {
             draw(DURATION);
@@ -125,6 +130,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         symbolsDeselectedEvent.on(function() {
             draw(DURATION);
             hideScatterPlot();
+        });
+
+        mouseOverEvent.on(function(element) {
+            currentElementUnderMouse = element;
         });
     });
 
@@ -308,7 +317,16 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         return svgElement.getAttribute("_legend");
     }
 
-    var svgLegend = new SvgLegend(createLegend);
+    function findSvgElementForLegend() {
+        if(funcs.isDefined(currentElementUnderMouse)) {
+            return [currentElementUnderMouse];
+        }
+        else {
+            return  [];
+        }
+    }
+
+    var svgLegend = new SvgLegend(createLegend, findSvgElementForLegend);
 
     var width = dimensions.width(),
         height = dimensions.height();
@@ -319,7 +337,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         .attr("height", height+200)
         .on("mousemove", function () {
             var evt = d3.mouse(this);
-            svgLegend.onMouseMoved(evt[0], evt[1]);
+            svgLegend.doLegend(evt[0], evt[1]);
         });
 
     var graphs = svg.append("g")
