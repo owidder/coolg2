@@ -138,8 +138,17 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
 
             var enter = data.enter()
                 .append("circle")
+                .attr("_legend", function(d) {
+                    var valA = math.round(d[0], 2);
+                    var valB = math.round(d[1], 2);
+                    return scope.names[0] + "(" + d[2] + "): " + valA + " <-> " + scope.names[1]+ "(" + d[3] + "): " + valB;
+                })
                 .attr("class", "dot toremove")
                 .attr("r", 3)
+                .on("mouseover", function() {
+                    mouseOverChord(this);
+                })
+                .on("mouseout", mouseOutChord)
                 .call(position);
 
             var rootGTransition = rootG.transition();
@@ -150,15 +159,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             all.attr("class", function(d) {
                 return "toremove dot " + "dot-" + redOrGreen(d[0], d[1]);
             });
-
-            enter.append("title");
-
-            all.select("title")
-                .text(function(d) {
-                    var valA = math.round(d[0], 2);
-                    var valB = math.round(d[1], 2);
-                    return scope.names[0] + "(" + d[2] + "): " + valA + " <-> " + scope.names[1]+ "(" + d[3] + "): " + valB;
-                });
 
             data.exit().remove();
 
@@ -175,6 +175,14 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
                     return clazz;
                 })
                 .text(corrCoeff);
+        }
+
+        function mouseOverChord(element) {
+            scope.mouseOverEvent.startWhenFirstListenerReady(element);
+        }
+
+        function mouseOutChord() {
+            scope.mouseOverEvent.startWhenFirstListenerReady(undefined);
         }
 
         scope.resetEvent.on(function(corrCoeff) {
@@ -199,6 +207,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("scatterPlot", functi
             allValues: "=",
             periodValuesWithDates: "=",
             names: "=",
+            mouseOverEvent: "=",
             redrawEvent: "=",
             resetEvent: "=",
             removeEvent: "="
