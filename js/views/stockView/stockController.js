@@ -151,7 +151,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
             setPeriodEnd();
             computePeriod($scope.current_period_start, $scope.current_period_end);
             if(stocksChangedFlag) {
-                stocksChangedEvent.startWhenFirstListenerReady();
+                stocksChangedEvent.startWhenFirstListenerReady(redrawEventDuration);
                 stocksChangedFlag = false;
             }
             else {

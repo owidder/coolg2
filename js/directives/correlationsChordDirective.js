@@ -232,9 +232,9 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
             redrawChord(scope.correlationsMatrix, duration);
         });
 
-        scope.newObjectsEvent.on(function() {
+        scope.newObjectsEvent.on(function(duration) {
             reset();
-            redrawChord(scope.correlationsMatrix, 0);
+            redrawChord(scope.correlationsMatrix, duration);
         });
 
 // Returns an array of tick angles and labels, given a group.
