@@ -23,7 +23,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var stockPromises = [];
     var stockList;
 
-    var initPhaseStartedPromise = new SimplePromise();
     var initPhaseEndedPromise = new SimplePromise();
 
     var ROUTE_PARAMS_DEMO = "demo";
@@ -228,7 +227,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
             initAfterStockChange();
 
-            initPhaseStartedPromise.resolve();
             Promise.all(stockPromises).then(function() {
                 initPhaseEndedPromise.resolve();
             });
