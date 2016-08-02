@@ -33,15 +33,15 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
         stockPromises.length = 0;
         currentShownStocks.length = 0;
         stockList.forEach(function(entry) {
+            stock = stockMap[entry.symbol];
+            if(!funcs.isDefined(stock)) {
+                stock = new Stock(entry.symbol, entry.name);
+                stockMap[entry.symbol] = stock;
+                stockPromises.push(stock.ready);
+            }
             if(stockSwitches[entry.symbol]) {
-                stock = stockMap[entry.symbol];
-                if(!funcs.isDefined(stock)) {
-                    stock = new Stock(entry.symbol, entry.name);
-                    stockMap[entry.symbol] = stock;
-                    stockPromises.push(stock.ready);
-                }
-                currentShownStocks.push(stock);
                 stock.index = index++;
+                currentShownStocks.push(stock);
             }
         });
         math.zero2DimArray(index, index, correlationsMatrix);
@@ -242,7 +242,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     var scatterPlotAllValues = [];
     var scatterPlotPeriodValues = [];
     var scatterPlotNames = [];
-    var scatterPlotShownFlag = false;
     var currentShownSymbol1;
     var currentShownSymbol2;
 
@@ -266,7 +265,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     }
 
     function updateScatterPlot() {
-        if(scatterPlotShownFlag) {
+        if($scope.scatterPlotShownFlag) {
             updatePeriodValues();
 
             scatterPlotRedrawEvent.startWhenFirstListenerReady(currentCorrCoeff());
@@ -290,20 +289,21 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
         updatePeriodValues();
 
-        if(scatterPlotShownFlag) {
+        if($scope.scatterPlotShownFlag) {
             scatterPlotRedrawEvent.startWhenFirstListenerReady(currentCorrCoeff())
         }
         else {
             scatterPlotResetEvent.startWhenFirstListenerReady(currentCorrCoeff());
         }
 
-        scatterPlotShownFlag = true;
+        $scope.scatterPlotShownFlag = true;
 
         chordRedrawEvent.startWhenFirstListenerReady(DURATION);
     }
 
     function hideScatterPlot() {
-        scatterPlotShownFlag = false;
+        $scope.scatterPlotShownFlag = false;
+
         currentShownSymbol1 = undefined;
         currentShownSymbol2 = undefined;
         scatterPlotRemoveEvent.startWhenFirstListenerReady();
@@ -370,10 +370,10 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
     $scope.currentShownStocks = currentShownStocks;
 
     $scope.width = function () {
-        return scatterPlotShownFlag ? dimensions.width() / 2 : dimensions.width();
+        return $scope.scatterPlotShownFlag ? dimensions.width() / 2 : dimensions.width();
     };
     $scope.height = function () {
-        return scatterPlotShownFlag ? dimensions.height() / 2 : dimensions.height();
+        return $scope.scatterPlotShownFlag ? dimensions.height() / 2 : dimensions.height();
     };
 
     $scope.scatterOffsetX = function() {
@@ -397,8 +397,6 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
             periodLengthSliderChangeEvent.startWhenFirstListenerReady(startPeriodLengthValue);
             periodLengthSliderChanged(startPeriodLengthValue);
-
-            play();
         });
     }
 

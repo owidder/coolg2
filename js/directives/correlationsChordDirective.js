@@ -70,7 +70,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
             svgG.transition()
                 .duration(duration)
-                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+                .attr("transform", "translate(" + width / 2 + "," + ((height / 2) + 50) + ")");
 
             var innerRadius = Math.min(width, height) * .41,
                 outerRadius = innerRadius * 1.1;
@@ -92,6 +92,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
                 .attr("class", function(d) {
                     return "group + object-" + scope.objects[d.index].symbol;
                 })
+                .attr("d", d3.svg.arc().innerRadius(innerRadius*10).outerRadius(outerRadius*10))
                 .on("mouseover", fade(.1))
                 .on("mouseout", fade(1));
 
@@ -163,6 +164,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).directive("correlationsChord", 
 
             var chordPathEnter = chordData.enter()
                 .append("path")
+                .attr("d", d3.svg.chord().radius(innerRadius/10))
                 .on("mouseover", function() {
                     mouseOverChord(this);
                 })

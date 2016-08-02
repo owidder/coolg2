@@ -73,6 +73,8 @@
         </div>
         <div class="row">
             <div class="col s12 m12 l12" align="center">
+                <span ng-show="!scatterPlotShownFlag">Click on any chord to see scatter plot</span>
+                <span ng-show="scatterPlotShownFlag">Click on selected chord to hide scatter plot</span>
                 <div id="mainsvg"></div>
                 <correlations-chord
                     width="width"
@@ -90,7 +92,6 @@
                     pos-neg-matrix="posNegMatrix"
                     correlations-matrix="correlationsMatrix">
                 </correlations-chord>
-                Click on any chord to see scatter plot
                 <scatter-plot
                         width="width"
                         height="height"
