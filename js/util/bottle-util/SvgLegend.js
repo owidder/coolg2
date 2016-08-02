@@ -134,7 +134,7 @@ bottle.factory("SvgLegend", function(container) {
             var legendRect = gLegend.select("rect.legend");
             legendRect.transition()
                 .attr("height", (entryStrList.length + 2) + "em")
-                .attr("width", (maxLength + 1) * (2 / 3) + "em");
+                .attr("width", (maxLength + 1) * (2) + "em");
 
             var legendText = gLegend.select("text.legend");
             var legendData = legendText.selectAll(".textline")
@@ -142,11 +142,11 @@ bottle.factory("SvgLegend", function(container) {
 
             legendData.enter()
                 .append("tspan")
-                .attr("font-size", "0.7em")
+                .attr("font-size", "2.0em")
                 .attr("class", "textline")
                 .attr("x", "0.3em")
                 .attr("y", function (d, i) {
-                    return (i + 1) * 10;
+                    return (i + 1) * 20;
                 });
 
             legendText.selectAll(".textline")
