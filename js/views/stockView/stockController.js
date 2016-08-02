@@ -332,7 +332,7 @@ angular.module(com_geekAndPoke_coolg.moduleName).controller(com_geekAndPoke_cool
 
     var svg = d3.select("#mainsvg").append("svg")
         .attr("class", "svg canvas")
-        .attr("width", width+700)
+        .attr("width", width+2000)
         .attr("height", height+200)
         .on("mousemove", function () {
             var evt = d3.mouse(this);
