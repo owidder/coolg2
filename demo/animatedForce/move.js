@@ -3,25 +3,6 @@
 function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration) {
     var startMillis = (new Date()).getTime();
 
-    function SimplePromise() {
-        var that = this;
-        var _resolve;
-        var _reject;
-
-        that.promise = new Promise(function(resolve, reject) {
-            _resolve = resolve;
-            _reject = reject;
-        });
-
-        that.resolve = function (data) {
-            _resolve(data);
-        };
-
-        that.reject = function(data) {
-            _reject(data);
-        };
-    }
-
     function hypot(dx, dy) {
         return Math.sqrt(dx*dx + dy*dy);
     }
@@ -100,13 +81,13 @@ function circlePoint(cx, cy, r, angle) {
     };
 }
 
-function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, maxAngle) {
+function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step) {
     var pt = circlePoint(cx, cy, r, currentAngle);
     moveTo(simulation, id, pt.x, pt.y, 1, 1, 1000).then(function() {
-        moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+1, maxAngle);
+        moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+step, step);
     });
 }
 
-function moveOnCircle(simulation, id, cx, cy, r, startAngle) {
-    moveOnCircleRecursive(simulation, id, cx, cy, r, startAngle);
+function moveOnCircle(simulation, id, cx, cy, r, startAngle, step) {
+    moveOnCircleRecursive(simulation, id, cx, cy, r, startAngle, step);
 }

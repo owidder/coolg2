@@ -7,6 +7,7 @@
             src="https://code.jquery.com/jquery-3.1.1.min.js"
             integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
             crossorigin="anonymous"></script>
+    <script src="SimplePromise.js"></script>
     <script src="move.js"></script>
     <style>
         .link {
@@ -258,14 +259,31 @@
 
     drawGraph();
 
+    var w = $(window).width();
+    var h = $(window).height();
+    var r = Math.min(w, h) / 2 - 50;
     setTimeout(function() {
-        var w = $(window).width();
-        var h = $(window).height();
-        var r = Math.min(w, h) / 2 - 50;
-        moveOnCircle(graph.simulation, "#Node-1", w/2, h/2, r, 0);
+        moveOnCircle(graph.simulation, "#Node-1", w/2, h/2, r, 0, 1);
     }, 3000);
+    setTimeout(function() {
+        moveOnCircle(graph.simulation, "#Node-11", w/2, h/2, r, 0, -1);
+    }, 10000);
+    setTimeout(function() {
+        moveOnCircle(graph.simulation, "#Node-6", w/2, h/2, r/2, 0, 10);
+    }, 20000);
+    setTimeout(function() {
+        moveOnCircle(graph.simulation, "#Node-9", w/2, h/2, r/3, 0, -20);
+    }, 30000);
+    setTimeout(function() {
+        moveOnCircle(graph.simulation, "#Node-10", w/2, h/2, r, 0, .5);
+    }, 40000);
+    setTimeout(function() {
+        moveOnCircle(graph.simulation, "#Node-2", w/4, h/4, r/4, 0, -5);
+    }, 50000);
 
 
 </script>
+
+<a href="http://bl.ocks.org/ericcoopey/6c602d7cb14b25c179a4">Based on this post</a>
 </body>
 </html>
