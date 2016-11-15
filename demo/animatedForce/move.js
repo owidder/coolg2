@@ -38,7 +38,7 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
                 length = target - current;
             }
             else {
-                length = (target - current) / 2;
+                length = (target - current) / 50;
             }
 
             return length;
@@ -81,13 +81,22 @@ function circlePoint(cx, cy, r, angle) {
     };
 }
 
-function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step) {
+function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step, stopEvent) {
+    var stop = false;
+    stopEvent.on(function() {
+        stop = true;
+    });
     var pt = circlePoint(cx, cy, r, currentAngle);
     moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000).then(function() {
-        moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+step, step);
+        if(!stop) {
+            moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+step, step);
+        }
     });
 }
 
 function moveOnCircle(simulation, id, cx, cy, r, startAngle, step) {
+    var stopEvent = new SimpleEvent();
     moveOnCircleRecursive(simulation, id, cx, cy, r, startAngle, step);
+
+    return stopEvent;
 }
