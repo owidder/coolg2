@@ -38,7 +38,7 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
                 length = target - current;
             }
             else {
-                length = (target - current) / 5;
+                length = (target - current) / 2;
             }
 
             return length;
@@ -83,7 +83,7 @@ function circlePoint(cx, cy, r, angle) {
 
 function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step) {
     var pt = circlePoint(cx, cy, r, currentAngle);
-    moveTo(simulation, id, pt.x, pt.y, 1, 1, 1000).then(function() {
+    moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000).then(function() {
         moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+step, step);
     });
 }

@@ -236,30 +236,18 @@
 
     function drawGraph() {
 
+        function createNodesAndLinks(max) {
+            var i;
+            for(i = 1; i <= max; i++) {
+                graph.addNode('' + i);
+                if(i > 1) {
+                    graph.addLink('' + (i-1), '' + i, '20');
+                }
+            }
+        }
+
         graph = new myGraph("#svgdiv");
-
-
-        graph.addNode('1');
-        graph.addNode('2');
-        graph.addNode('3');
-        graph.addNode('4');
-        graph.addNode('5');
-        graph.addNode('6');
-        graph.addNode('7');
-        graph.addNode('8');
-        graph.addNode('9');
-        graph.addNode('10');
-        graph.addNode('11');
-        graph.addLink('1', '2', '20');
-        graph.addLink('2', '3', '20');
-        graph.addLink('3', '4', '20');
-        graph.addLink('4', '5', '20');
-        graph.addLink('5', '6', '10');
-        graph.addLink('6', '7', '30');
-        graph.addLink('7', '8', '10');
-        graph.addLink('8', '9', '20');
-        graph.addLink('9', '10', '20');
-        graph.addLink('10', '11', '10');
+        createNodesAndLinks(30);
     }
 
     drawGraph();
@@ -270,6 +258,7 @@
     setTimeout(function() {
         moveOnCircle(graph.simulation, "#Node-1", w/2, h/2, r, 0, 1);
     }, 3000);
+/*
     setTimeout(function() {
         moveOnCircle(graph.simulation, "#Node-11", w/2, h/2, r, 0, -1);
     }, 10000);
@@ -285,6 +274,7 @@
     setTimeout(function() {
         moveOnCircle(graph.simulation, "#Node-2", w/4, h/4, r/4, 0, -5);
     }, 50000);
+*/
 
 
 </script>
