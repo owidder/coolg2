@@ -81,22 +81,24 @@ function circlePoint(cx, cy, r, angle) {
     };
 }
 
-function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step, stopEvent) {
-    var stop = false;
-    stopEvent.on(function() {
-        stop = true;
-    });
+function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step, stopFlag) {
     var pt = circlePoint(cx, cy, r, currentAngle);
     moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000).then(function() {
-        if(!stop) {
-            moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+step, step);
+        if(!stopFlag.active) {
+            moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle+step, step, stopFlag);
         }
     });
 }
 
 function moveOnCircle(simulation, id, cx, cy, r, startAngle, step) {
     var stopEvent = new SimpleEvent();
-    moveOnCircleRecursive(simulation, id, cx, cy, r, startAngle, step);
+    var stopFlag = {
+        active: false
+    };
+    stopEvent.on(function() {
+        stopFlag.active = true;
+    });
+    moveOnCircleRecursive(simulation, id, cx, cy, r, startAngle, step, stopFlag);
 
     return stopEvent;
 }

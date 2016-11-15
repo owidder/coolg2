@@ -3,12 +3,9 @@
 <head>
     <title>Weird dots</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script
-            src="https://code.jquery.com/jquery-3.1.1.min.js"
-            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
     <script src="SimplePromise.js"></script>
     <script src="SimpleEvent.js"></script>
     <script src="move.js"></script>
@@ -236,6 +233,7 @@
     }
 
     var MAX = 30;
+    var ANGLE_STEP = 360 / MAX;
 
     function drawGraph() {
 
@@ -260,28 +258,20 @@
     var r = Math.min(w, h) / 2 - 50;
     setTimeout(function() {
         var i;
+        var stopEvents = [];
         for(i = 1; i <= MAX; i++) {
-            moveOnCircle(graph.simulation, "#Node-" + i, w/2, h/2, r, 360 - i*12, 1);
+            stopEvents.push(moveOnCircle(graph.simulation, "#Node-" + i, w/2, h/2, r, 360 - i*ANGLE_STEP, 1));
         }
-    }, 3000);
-/*
-    setTimeout(function() {
-        moveOnCircle(graph.simulation, "#Node-11", w/2, h/2, r, 0, -1);
-    }, 10000);
-    setTimeout(function() {
-        moveOnCircle(graph.simulation, "#Node-6", w/2, h/2, r/2, 0, 10);
-    }, 20000);
-    setTimeout(function() {
-        moveOnCircle(graph.simulation, "#Node-9", w/2, h/2, r/3, 0, -20);
-    }, 30000);
-    setTimeout(function() {
-        moveOnCircle(graph.simulation, "#Node-10", w/2, h/2, r, 0, .5);
-    }, 40000);
-    setTimeout(function() {
-        moveOnCircle(graph.simulation, "#Node-2", w/4, h/4, r/4, 0, -5);
-    }, 50000);
-*/
 
+        setTimeout(function() {
+            stopEvents.forEach(function(stopEvent) {
+                stopEvent.startWhenFirstListenerReady();
+            });
+            for(i = 1; i <= MAX; i++) {
+                moveTo(graph.simulation, "#Node-" + i, w/2, h/2, 100, 1, 2000);
+            }
+        }, 30000);
+    }, 3000);
 
 </script>
 
