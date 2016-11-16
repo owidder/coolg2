@@ -1,6 +1,6 @@
 'use strict';
 
-function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration) {
+function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration, br) {
     var startMillis = (new Date()).getTime();
 
     function hypot(dx, dy) {
@@ -12,20 +12,15 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
 
         setTimeout(function() {
             simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
+            d.fx = d.x + stepX;
+            d.fy = d.y + stepY;
 
             setTimeout(function() {
-                d.fx += stepX;
-                d.fy += stepY;
-
-                setTimeout(function() {
-                    simulation.alphaTarget(0);
-                    d.fx = null;
-                    d.fy = null;
-                    prom.resolve();
-                }, stepDuration);
-            });
+                simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+                prom.resolve();
+            }, stepDuration);
         });
 
         return prom.promise;
@@ -52,7 +47,6 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
         var stepY = computeStepLength(targetY, d.y);
         var stepLength = hypot(stepX, stepY);
         var stepDuration = 1 / (velocity / stepLength);
-        console.log(stepDuration);
 
         moveOne(d, stepX, stepY, stepDuration).then(function() {
             var millisSince = (new Date()).getTime() - startMillis;

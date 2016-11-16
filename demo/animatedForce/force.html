@@ -201,7 +201,6 @@
 
             function dragstarted(d) {
                 if (!d3.event.active) {
-                    console.log("alphaTarget(0.3).restart()");
                     simulation.alphaTarget(0.3).restart();
                 }
                 d.fx = d.x;
@@ -216,7 +215,6 @@
 
             function dragended(d) {
                 if (!d3.event.active) {
-                    console.log("alphaTarget(0)");
                     simulation.alphaTarget(0);
                 }
                 d.fx = null;
@@ -256,22 +254,39 @@
     var w = $(window).width();
     var h = $(window).height();
     var r = Math.min(w, h) / 2 - 50;
-    setTimeout(function() {
-        var i;
-        var stopEvents = [];
-        for(i = 1; i <= MAX; i++) {
-            stopEvents.push(moveOnCircle(graph.simulation, "#Node-" + i, w/2, h/2, r, 360 - i*ANGLE_STEP, 1));
-        }
+
+    function doTheMarch() {
+        var prom = new SimplePromise();
 
         setTimeout(function() {
-            stopEvents.forEach(function(stopEvent) {
-                stopEvent.startWhenFirstListenerReady();
-            });
+            var i;
+            var stopEvents = [];
             for(i = 1; i <= MAX; i++) {
-                moveTo(graph.simulation, "#Node-" + i, w/2, h/2, 100, 1, 2000);
+                stopEvents.push(moveOnCircle(graph.simulation, "#Node-" + i, w/2, h/2, r, 360 - i*ANGLE_STEP, 1));
             }
-        }, 30000);
-    }, 3000);
+
+            setTimeout(function() {
+                var promises = [];
+                stopEvents.forEach(function(stopEvent) {
+                    stopEvent.startWhenFirstListenerReady();
+                });
+                for(i = 1; i <= MAX; i++) {
+                    promises.push(moveTo(graph.simulation, "#Node-" + i, w/2, h/2, 1000, 1, 10000, true));
+                }
+                Promise.all(promises).then(function() {
+                    prom.resolve();
+                });
+            }, 10000);
+        }, 3000);
+
+        return prom.promise;
+    }
+
+    function marchForever() {
+        doTheMarch().then(marchForever);
+    }
+
+    marchForever();
 
 </script>
 
