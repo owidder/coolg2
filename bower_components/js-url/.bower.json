@@ -1,0 +1,38 @@
+{
+  "name": "js-url",
+  "authors": [
+    "Rob Nova <rob@websanova.com>"
+  ],
+  "description": "A simple url parser for JavaScript.",
+  "keywords": [
+    "js",
+    "javascript",
+    "url",
+    "parser"
+  ],
+  "homepage": "https://github.com/websanova/js-url",
+  "license": "MIT",
+  "main": [
+    "url.js"
+  ],
+  "ignore": [
+    "lib",
+    "gruntfile.js",
+    "index.html",
+    "package.json",
+    "tests.js",
+    "url.jquery.json"
+  ],
+  "dependencies": {},
+  "version": "2.3.1",
+  "_release": "2.3.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.3.1",
+    "commit": "d72bda1acba7a9aebdc4772bce12f933a75ac52d"
+  },
+  "_source": "https://github.com/websanova/js-url.git",
+  "_target": "^2.3.1",
+  "_originalSource": "js-url",
+  "_direct": true
+}

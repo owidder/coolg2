@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Weird dots</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <title>Dancing dots</title>
+    <link rel="stylesheet" href="../../bower_components/Materialize/dist/css/materialize.min.css">
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/js-url/url.min.js"></script>
+    <script src="d3.v4.min.js"></script>
+    <script src="../../bower_components/Materialize/dist/js/materialize.min.js"></script>
     <script src="SimplePromise.js"></script>
     <script src="SimpleEvent.js"></script>
     <script src="move.js"></script>
@@ -31,7 +32,18 @@
 <body>
 <a href="http://bl.ocks.org/ericcoopey/6c602d7cb14b25c179a4">Originally based on this post</a>
 <br>
-<a href="https://github.com/owidder/coolg/tree/2.6/demo/animatedForce">Code</a>
+<a href="https://github.com/owidder/coolg/tree/2.7/demo/animatedForce">Code</a>
+<br>
+Number of dots: <a href="force.html?num=10">10</a>&nbsp;
+<a href="force.html?num=15">15</a>&nbsp;
+<a href="force.html?num=20">20</a>&nbsp;
+<a href="force.html?num=25">25</a>&nbsp;
+<a href="force.html?num=30">30</a>&nbsp;
+<a href="force.html?num=35">35</a>&nbsp;
+<a href="force.html?num=40">40</a>&nbsp;
+<a href="force.html?num=45">45</a>&nbsp;
+<a href="force.html?num=50">50</a>&nbsp;
+(or change the number in the URL param 'num')
 <script>
     var graph;
     function myGraph() {
@@ -230,7 +242,17 @@
         //update();
     }
 
-    var MAX = 30;
+    console.log(url());
+    console.log(url("?num"));
+    var numParam = url("?num");
+    var MAX;
+
+    if(numParam != null && !isNaN(parseInt(numParam))) {
+        MAX = parseInt(numParam);
+    }
+    else {
+        MAX = 30;
+    }
     var ANGLE_STEP = 360 / MAX;
 
     function drawGraph() {
@@ -271,7 +293,7 @@
                     stopEvent.startWhenFirstListenerReady();
                 });
                 for(i = 1; i <= MAX; i++) {
-                    promises.push(moveTo(graph.simulation, "#Node-" + i, w/2, h/2, 1000, 1, 10000, true));
+                    promises.push(moveTo(graph.simulation, "#Node-" + i, w/2, h/2, 1000, 1, 5000, true));
                 }
                 Promise.all(promises).then(function() {
                     prom.resolve();
