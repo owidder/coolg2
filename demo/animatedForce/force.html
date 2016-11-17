@@ -32,7 +32,7 @@
 <body>
 <a href="http://bl.ocks.org/ericcoopey/6c602d7cb14b25c179a4">Originally based on this post</a>
 <br>
-<a href="https://github.com/owidder/coolg/tree/2.7/demo/animatedForce">Code</a>
+<a href="https://github.com/owidder/coolg/tree/2.8/demo/animatedForce">Code</a>
 <br>
 Number of dots: <a href="force.html?num=10">10</a>&nbsp;
 <a href="force.html?num=15">15</a>&nbsp;
@@ -283,8 +283,9 @@ Number of dots: <a href="force.html?num=10">10</a>&nbsp;
         setTimeout(function() {
             var i;
             var stopEvents = [];
+            var step = Math.random() < 0.5 ? 1 : -1;
             for(i = 1; i <= MAX; i++) {
-                stopEvents.push(moveOnCircle(graph.simulation, "#Node-" + i, w/2, h/2, r, 360 - i*ANGLE_STEP, 1));
+                stopEvents.push(moveOnCircle(graph.simulation, "#Node-" + i, w/2, h/2, r, 360 - i*ANGLE_STEP, step));
             }
 
             setTimeout(function() {
