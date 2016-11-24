@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dancing dots</title>
+    <link rel="stylesheet" href="../../bower_components/Materialize/dist/css/materialize.min.css">
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/js-url/url.min.js"></script>
+    <script src="../../lib/d3.v4.min.js"></script>
+    <script src="../../bower_components/Materialize/dist/js/materialize.min.js"></script>
+    <script src="SimplePromise.js"></script>
+    <script src="SimpleEvent.js"></script>
+    <script src="buildGraph.js"></script>
+    <script src="move.js"></script>
+    <style>
+        .link {
+            stroke: #2E2E2E;
+            stroke-width: 2px;
+        }
+
+        .node {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        .textClass {
+            stroke: #323232;
+            font-family: "Lucida Grande", "Droid Sans", Arial, Helvetica, sans-serif;
+            font-weight: normal;
+            stroke-width: .5;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<script>
+
+    var w = $(window).width();
+    var h = $(window).height();
+
+    var buildGraph = new BuildGraph(w, h, "svg", "graph", 10);
+
+    function randomRunColor() {
+        return Math.random() < 0.75 ? "green" : "red";
+    }
+
+    function addRunsRecursively() {
+        buildGraph.addNewRun(new Date().toLocaleString(), randomRunColor());
+        var waitTime = Math.random() * 10000;
+        setTimeout(addRunsRecursively, waitTime);
+    }
+
+    addRunsRecursively();
+
+</script>
+
+<div id="graph"></div>
+
+</body>
+</html>

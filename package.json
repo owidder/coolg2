@@ -1,0 +1,22 @@
+{
+  "name": "coolg",
+  "version": "1.0.0",
+  "description": "see https://cdn.rawgit.com/owidder/coolg/2.1.2/index.html#/stock?demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/owidder/coolg.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/owidder/coolg/issues"
+  },
+  "homepage": "https://github.com/owidder/coolg#readme",
+  "dependencies": {
+    "topojson": "^1.6.27"
+  }
+}

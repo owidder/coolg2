@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="../../bower_components/Materialize/dist/css/materialize.min.css">
     <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../../bower_components/js-url/url.min.js"></script>
-    <script src="d3.v4.min.js"></script>
+    <script src="../../lib/d3.v4.min.js"></script>
     <script src="../../bower_components/Materialize/dist/js/materialize.min.js"></script>
     <script src="SimplePromise.js"></script>
     <script src="SimpleEvent.js"></script>
@@ -189,9 +189,6 @@ Number of dots: <a href="force.html?num=10">10</a>&nbsp;
 
             simulation.on("tick", function () {
 
-                nodes;
-                vis;
-
                 vis.selectAll("g.node").attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
@@ -242,8 +239,6 @@ Number of dots: <a href="force.html?num=10">10</a>&nbsp;
         //update();
     }
 
-    console.log(url());
-    console.log(url("?num"));
     var numParam = url("?num");
     var MAX;
 
