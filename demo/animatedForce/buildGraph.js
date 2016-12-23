@@ -26,7 +26,7 @@ function BuildGraph(width, height, svgId, containerId, radius) {
             return d.id;
         }))
         .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(w/2, h/2));
+        .force("center", d3.forceCenter(width/2, height/2));
 
     var update = function () {
 
@@ -64,11 +64,11 @@ function BuildGraph(width, height, svgId, containerId, radius) {
         nodeEnter.append("svg:circle")
             .attr("r", radius)
             .attr("id", function (d) {
-                return "Node-" + d.id;
+                return d.id;
             })
             .attr("class", "nodeStrokeClass")
             .attr("fill", function(d) {
-                return color(d.color);
+                return d.color;
             })
             .call(d3.drag()
                 .on("start", dragstarted)
@@ -136,5 +136,7 @@ function BuildGraph(width, height, svgId, containerId, radius) {
             links.push({"source": nodes[0], "target": nodes[1], "value": 20});
         }
         update();
-    }
+    };
+
+    this.simulation = simulation;
 }

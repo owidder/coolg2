@@ -60,7 +60,7 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
     }
 
     var moveProm = new SimplePromise();
-    var data = d3.select(id).data()[0];
+    var data = d3.select("#" + id).data()[0];
     moveRecursive(data, 0);
 
     return moveProm.promise;
