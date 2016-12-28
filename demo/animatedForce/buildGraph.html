@@ -46,30 +46,40 @@
         }
 
         var i;
-        var ids = [];
-        var ctr = 0;
         var stopEvents = [];
-        var MAX = 5;
+        var MAX = 2;
         var r = Math.min(w, h) / 2 - 50;
         var ANGLE_STEP = 360 / MAX;
+        var step = Math.random() < 0.5 ? 1 : -1;
 
-        function addRunsRecursively() {
-            var id = "Node-" + ctr++;
+        function addRunsRecursively(ctr, ids) {
+            var p = new SimplePromise();
+            var id = "Node-" + ctr;
             ids.push(id);
             buildGraph.addNewRun(id, randomRunColor());
-            var waitTime = Math.random() * 2000;
-            if(ctr < MAX) {
-                setTimeout(addRunsRecursively, waitTime);
+            var waitTime = Math.random() * 5000;
+            if(ctr < MAX-1) {
+                setTimeout(function() {
+                    addRunsRecursively(ctr+1, ids);
+                    moveTo(buildGraph.simulation, id, w * Math.random(), h * Math.random(), 5000, 1, 2000);
+                }, waitTime);
             }
             else {
-                var step = Math.random() < 0.5 ? 1 : -1;
-                for(i = 0; i < ids.length; i++) {
-                    stopEvents.push(moveOnCircle(buildGraph.simulation, ids[i], w/2, h/2, r, 360 - i*ANGLE_STEP, step));
-                }
+                p.resolve(ids);
             }
+
+            return p.promise;
         }
 
-        addRunsRecursively();
+        addRunsRecursively(0, []).then(function(ids) {
+/*
+            setTimeout(function() {
+                ids.forEach(function(id) {
+                    stopEvents.push(moveOnCircle(buildGraph.simulation, id, w/2, h/2, r, 360 * Math.random(), step));
+                });
+            }, 3000);
+*/
+        })
     }, false);
 </script>
 

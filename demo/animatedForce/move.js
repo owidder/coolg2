@@ -1,6 +1,6 @@
 'use strict';
 
-function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration, br) {
+function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration) {
     var startMillis = (new Date()).getTime();
 
     function hypot(dx, dy) {

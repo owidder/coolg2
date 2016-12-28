@@ -52,44 +52,39 @@ function BuildGraph(width, height, svgId, containerId, radius) {
             });
         link.exit().remove();
 
-        var node = gNodes.selectAll("g.node")
+        var node = gNodes.selectAll("circle.node")
             .data(nodes, function (d) {
                 return d.id;
             });
 
-        var nodeEnter = node.enter().append("g")
-            .attr("class", "node")
-            .call(d3.drag);
-
-        nodeEnter.append("svg:circle")
+        var nodeEnter = node.enter()
+            .append("circle")
             .attr("r", radius)
             .attr("id", function (d) {
                 return d.id;
             })
-            .attr("class", "nodeStrokeClass")
+            .attr("class", "node")
             .attr("fill", function(d) {
                 return d.color;
             })
+            .attr("cx", width/2)
+            .attr("cy", height/2)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        nodeEnter.append("svg:text")
-            .attr("class", "textClass")
-            .attr("x", radius)
-            .attr("y", ".31em")
-            .text(function (d) {
-                return d.id;
-            });
-
         node.exit().remove();
 
         simulation.on("tick", function () {
 
-            vis.selectAll("g.node").attr("transform", function (d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
+            vis.selectAll("circle.node")
+                .attr("cx", function (d) {
+                    return d.x;
+                })
+                .attr("cy", function (d) {
+                    return d.y;
+                });
 
             vis.selectAll("line")
                 .attr("x1", function (d) {
@@ -115,7 +110,6 @@ function BuildGraph(width, height, svgId, containerId, radius) {
         }
 
         function dragged(d) {
-
             d.fx = d3.event.x;
             d.fy = d3.event.y;
         }
