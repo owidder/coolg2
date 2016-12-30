@@ -1,5 +1,29 @@
 'use strict';
 
+function beginMoveForAll(simulation) {
+    var p = new SimplePromise();
+    setTimeout(function () {
+        simulation.alphaTarget(0.3).restart();
+        setTimeout(function () {
+            p.resolve();
+        });
+    });
+
+    return p.promise;
+}
+
+function endMoveForAll(simulation) {
+    var p = new SimplePromise();
+    setTimeout(function () {
+        simulation.alphaTarget(0);
+        setTimeout(function () {
+            p.resolve();
+        });
+    });
+
+    return p.promise;
+}
+
 function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration) {
     var startMillis = (new Date()).getTime();
 
@@ -73,6 +97,18 @@ function circlePoint(cx, cy, r, angle) {
         x: x,
         y: y
     };
+}
+
+function moveAllOnCircleRecursive(simulation, idsArray, cx, cy, r, currentAnglesArray, step) {
+    var movePromises = [];
+    idsArray.forEach(function (id) {
+        var pt = circlePoint(cx, cy, r, currentAnglesArray[id]);
+        movePromises.push(moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000));
+        currentAnglesArray[id] = isNaN(currentAnglesArray[id]) ? step : currentAnglesArray[id] + step;
+    });
+    Promise.all(movePromises).then(function () {
+        moveAllOnCircleRecursive(simulation, idsArray, cx, cy, currentAnglesArray, step);
+    })
 }
 
 function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step, stopFlag) {
