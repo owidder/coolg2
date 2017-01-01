@@ -52,7 +52,7 @@
         var ANGLE_STEP = 360 / MAX;
         var step = Math.random() < 0.5 ? 1 : -1;
 
-        function addRunsRecursively(ctr, ids) {
+        function addRunsRecursively(ctr, ids, movePromises) {
             var p = new SimplePromise();
             var id = "Node-" + ctr;
             ids.push(id);
@@ -60,22 +60,29 @@
             var waitTime = Math.random() * 5000;
             if(ctr < MAX-1) {
                 setTimeout(function() {
-                    addRunsRecursively(ctr+1, ids);
-                    moveTo(buildGraph.simulation, id, w * Math.random(), h * Math.random(), 5000, 1, 2000);
+                    beginMoveForAll(buildGraph.simulation).then(function () {
+                        var prom = moveTo(buildGraph.simulation, id, w * Math.random(), h * Math.random(), 5000, 1, 2000);
+                        movePromises.push(prom);
+                        prom.then(function () {
+                            endMoveForAll(buildGraph.simulation).then(function () {
+                                addRunsRecursively(ctr+1, ids, movePromises);
+                            });
+                        });
+                    })
                 }, waitTime);
             }
             else {
-                p.resolve(ids);
+                Promise.all(movePromises).then(function () {
+                    p.resolve(ids);
+                });
             }
 
             return p.promise;
         }
 
-        addRunsRecursively(0, []).then(function(ids) {
+        addRunsRecursively(0, [], []).then(function(ids) {
             setTimeout(function() {
-                ids.forEach(function(id) {
-                    stopEvents.push(moveOnCircle(buildGraph.simulation, id, w/2, h/2, r, 360 * Math.random(), step));
-                });
+                moveAllOnCircleRecursive(buildGraph.simulation, ids, cx, cy, r, [], step);
             }, 3000);
         })
     }, false);
