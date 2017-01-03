@@ -47,42 +47,42 @@
 
         var i;
         var stopEvents = [];
-        var MAX = 2;
+        var MAX = 10;
         var r = Math.min(w, h) / 2 - 50;
         var ANGLE_STEP = 360 / MAX;
         var step = Math.random() < 0.5 ? 1 : -1;
 
-        function addRunsRecursively(ctr, ids, movePromises) {
-            var p = new SimplePromise();
+        function addRunsRecursively(ctr, ids, recursionEndedPromise) {
+            if(recursionEndedPromise == null) {
+                recursionEndedPromise = new SimplePromise();
+            }
+            if(ids == null) {
+                ids = [];
+            }
+            if(ctr == null) {
+                ctr = 0;
+            }
             var id = "Node-" + ctr;
             ids.push(id);
             buildGraph.addNewRun(id, randomRunColor());
             var waitTime = Math.random() * 5000;
-            if(ctr < MAX-1) {
-                setTimeout(function() {
-                    beginMoveForAll(buildGraph.simulation).then(function () {
-                        var prom = moveTo(buildGraph.simulation, id, w * Math.random(), h * Math.random(), 5000, 1, 2000);
-                        movePromises.push(prom);
-                        prom.then(function () {
-                            endMoveForAll(buildGraph.simulation).then(function () {
-                                addRunsRecursively(ctr+1, ids, movePromises);
-                            });
-                        });
-                    })
-                }, waitTime);
-            }
-            else {
-                Promise.all(movePromises).then(function () {
-                    p.resolve(ids);
+            setTimeout(function() {
+                moveTo(buildGraph.simulation, id, w * Math.random(), h * Math.random(), 5000, 1, 2000).then(function () {
+                    if(ctr < MAX-1) {
+                        addRunsRecursively(ctr+1, ids, recursionEndedPromise);
+                    }
+                    else {
+                        recursionEndedPromise.resolve(ids);
+                    }
                 });
-            }
+            }, waitTime);
 
-            return p.promise;
+            return recursionEndedPromise.promise;
         }
 
-        addRunsRecursively(0, [], []).then(function(ids) {
+        addRunsRecursively().then(function(ids) {
             setTimeout(function() {
-                moveAllOnCircleRecursive(buildGraph.simulation, ids, cx, cy, r, [], step);
+                //moveAllOnCircleRecursive(buildGraph.simulation, ids, cx, cy, r, [], step);
             }, 3000);
         })
     }, false);

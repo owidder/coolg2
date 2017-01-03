@@ -1,9 +1,13 @@
 'use strict';
 
-function beginMoveForAll(simulation) {
+function beginMove(simulation, d) {
     var p = new SimplePromise();
     setTimeout(function () {
         simulation.alphaTarget(0.3).restart();
+        if(d != null) {
+            d.fx = d.x;
+            d.fy = d.y;
+        }
         setTimeout(function () {
             p.resolve();
         });
@@ -12,10 +16,14 @@ function beginMoveForAll(simulation) {
     return p.promise;
 }
 
-function endMoveForAll(simulation) {
+function endMove(simulation, d) {
     var p = new SimplePromise();
     setTimeout(function () {
         simulation.alphaTarget(0);
+        if(d != null) {
+            d.fx = null;
+            d.fy = null;
+        }
         setTimeout(function () {
             p.resolve();
         });
@@ -26,6 +34,7 @@ function endMoveForAll(simulation) {
 
 function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration) {
     var startMillis = (new Date()).getTime();
+    var moveProm = new SimplePromise();
 
     function hypot(dx, dy) {
         return Math.sqrt(dx*dx + dy*dy);
@@ -35,17 +44,10 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
         var prom = new SimplePromise();
 
         setTimeout(function() {
-            simulation.alphaTarget(0.3).restart();
-            d.fx = d.x + stepX;
-            d.fy = d.y + stepY;
-
-            setTimeout(function() {
-                simulation.alphaTarget(0);
-                d.fx = null;
-                d.fy = null;
-                prom.resolve();
-            }, stepDuration);
-        });
+            d.fx += stepX;
+            d.fy += stepY;
+            prom.resolve();
+        }, stepDuration);
 
         return prom.promise;
     }
@@ -83,9 +85,13 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
         });
     }
 
-    var moveProm = new SimplePromise();
     var data = d3.select("#" + id).data()[0];
-    moveRecursive(data, 0);
+    beginMove(simulation, data).then(function () {
+        moveRecursive(data, 0);
+        moveProm.promise.then(function () {
+            endMove(simulation, data);
+        });
+    });
 
     return moveProm.promise;
 }
@@ -100,15 +106,26 @@ function circlePoint(cx, cy, r, angle) {
 }
 
 function moveAllOnCircleRecursive(simulation, idsArray, cx, cy, r, currentAnglesArray, step) {
-    var movePromises = [];
-    idsArray.forEach(function (id) {
-        var pt = circlePoint(cx, cy, r, currentAnglesArray[id]);
-        movePromises.push(moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000));
+    var recursionEndedPromise = new SimplePromise();
+
+    function moveAllRecursive(index) {
+        var id = idsArray[index];
         currentAnglesArray[id] = isNaN(currentAnglesArray[id]) ? step : currentAnglesArray[id] + step;
-    });
-    Promise.all(movePromises).then(function () {
+        var pt = circlePoint(cx, cy, r, currentAnglesArray[id]);
+        moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000).then(function () {
+            if(index+1 < idsArray.length) {
+                moveAllRecursive(index+1);
+            }
+            else {
+                recursionEndedPromise.resolve();
+            }
+        });
+    }
+
+    moveAllRecursive(0);
+    recursionEndedPromise.promise.then(function () {
         moveAllOnCircleRecursive(simulation, idsArray, cx, cy, currentAnglesArray, step);
-    })
+    });
 }
 
 function moveOnCircleRecursive(simulation, id, cx, cy, r, currentAngle, step, stopFlag) {
