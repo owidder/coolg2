@@ -32,9 +32,10 @@ function endMove(simulation, d) {
     return p.promise;
 }
 
-function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration) {
+function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuration, noEnd) {
     var startMillis = (new Date()).getTime();
     var moveProm = new SimplePromise();
+    var finalProm = new SimplePromise();
 
     function hypot(dx, dy) {
         return Math.sqrt(dx*dx + dy*dy);
@@ -89,11 +90,18 @@ function moveTo(simulation, id, targetX, targetY, maxSteps, velocity, maxDuratio
     beginMove(simulation, data).then(function () {
         moveRecursive(data, 0);
         moveProm.promise.then(function () {
-            endMove(simulation, data);
+            if(noEnd == null) {
+                endMove(simulation, data).then(function () {
+                    finalProm.resolve();
+                })
+            }
+            else {
+                finalProm.resolve();
+            }
         });
     });
 
-    return moveProm.promise;
+    return finalProm.promise;
 }
 
 function circlePoint(cx, cy, r, angle) {
@@ -105,14 +113,22 @@ function circlePoint(cx, cy, r, angle) {
     };
 }
 
-function moveAllOnCircleRecursive(simulation, idsArray, cx, cy, r, currentAnglesArray, step) {
+function moveAllOnCircleRecursive(simulation, idsArray, cx, cy, r, step, currentAngles) {
+    if(currentAngles == null) {
+        currentAngles = {};
+    }
+
     var recursionEndedPromise = new SimplePromise();
 
     function moveAllRecursive(index) {
+        if(index == null) {
+            index = 0;
+        }
+
         var id = idsArray[index];
-        currentAnglesArray[id] = isNaN(currentAnglesArray[id]) ? step : currentAnglesArray[id] + step;
-        var pt = circlePoint(cx, cy, r, currentAnglesArray[id]);
-        moveTo(simulation, id, pt.x, pt.y, 5, 1, 1000).then(function () {
+        currentAngles[id] = isNaN(currentAngles[id]) ? step * index : currentAngles[id] + step;
+        var pt = circlePoint(cx, cy, r, currentAngles[id]);
+        moveTo(simulation, id, pt.x, pt.y, 500, 10, 1000).then(function () {
             if(index+1 < idsArray.length) {
                 moveAllRecursive(index+1);
             }
@@ -122,9 +138,9 @@ function moveAllOnCircleRecursive(simulation, idsArray, cx, cy, r, currentAngles
         });
     }
 
-    moveAllRecursive(0);
+    moveAllRecursive();
     recursionEndedPromise.promise.then(function () {
-        moveAllOnCircleRecursive(simulation, idsArray, cx, cy, currentAnglesArray, step);
+        moveAllOnCircleRecursive(simulation, idsArray, cx, cy, r, step, currentAngles);
     });
 }
 

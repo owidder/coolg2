@@ -28,7 +28,7 @@ function BuildGraph(width, height, svgId, containerId, radius) {
         .force("charge", d3.forceManyBody())
         .force("center", d3.forceCenter(width/2, height/2));
 
-    var update = function () {
+    function update() {
 
         simulation.nodes(nodes);
         simulation.force("link").links(links);
@@ -122,15 +122,16 @@ function BuildGraph(width, height, svgId, containerId, radius) {
             d.fy = null;
         }
 
-    };
+    }
 
-    this.addNewRun = function(id, color) {
+    function addNewRun(id, color) {
         nodes.splice(0, 0, {id: id, color: color});
         if(nodes.length > 1) {
             links.push({"source": nodes[0], "target": nodes[1], "value": 20});
         }
-        update();
-    };
+    }
 
+    this.update = update;
+    this.addNewRun = addNewRun;
     this.simulation = simulation;
 }

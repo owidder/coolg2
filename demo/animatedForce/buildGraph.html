@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dancing dots</title>
+    <title>Floating dots</title>
     <link rel="stylesheet" href="../../bower_components/Materialize/dist/css/materialize.min.css">
     <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../../bower_components/js-url/url.min.js"></script>
@@ -45,46 +45,22 @@
             return Math.random() < 0.75 ? "green" : "red";
         }
 
+        var MAX = 100;
+        var r = Math.min(w/2, h/2);
+        var ANGLE_STEP = (360 / MAX) * 10;
+
         var i;
-        var stopEvents = [];
-        var MAX = 10;
-        var r = Math.min(w, h) / 2 - 50;
-        var ANGLE_STEP = 360 / MAX;
-        var step = Math.random() < 0.5 ? 1 : -1;
-
-        function addRunsRecursively(ctr, ids, recursionEndedPromise) {
-            if(recursionEndedPromise == null) {
-                recursionEndedPromise = new SimplePromise();
-            }
-            if(ids == null) {
-                ids = [];
-            }
-            if(ctr == null) {
-                ctr = 0;
-            }
-            var id = "Node-" + ctr;
-            ids.push(id);
-            buildGraph.addNewRun(id, randomRunColor());
-            var waitTime = Math.random() * 5000;
-            setTimeout(function() {
-                moveTo(buildGraph.simulation, id, w * Math.random(), h * Math.random(), 5000, 1, 2000).then(function () {
-                    if(ctr < MAX-1) {
-                        addRunsRecursively(ctr+1, ids, recursionEndedPromise);
-                    }
-                    else {
-                        recursionEndedPromise.resolve(ids);
-                    }
-                });
-            }, waitTime);
-
-            return recursionEndedPromise.promise;
+        var ids = [];
+        for(i = 0; i < MAX; i++) {
+            ids.push("Node-" + i);
+            buildGraph.addNewRun(ids[i], randomRunColor());
         }
 
-        addRunsRecursively().then(function(ids) {
-            setTimeout(function() {
-                //moveAllOnCircleRecursive(buildGraph.simulation, ids, cx, cy, r, [], step);
-            }, 3000);
-        })
+        buildGraph.update();
+
+        setTimeout(function () {
+            //moveAllOnCircleRecursive(buildGraph.simulation, ids, w/2, h/2, r, ANGLE_STEP);
+        }, 2000);
     }, false);
 </script>
 
