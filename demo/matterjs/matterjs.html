@@ -34,7 +34,7 @@
         var engine = Engine.create();
 
         var stackA = Composites.stack(100, 100, 6, 6, 0, 0, function(x, y) {
-            return Bodies.rectangle(x, y, 15, 15);
+            return Bodies.circle(x, y, 15);
         });
         //access stackA elements with:   stackA.bodies[i]   i = 1 through 6x6
 
@@ -76,12 +76,18 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.beginPath();
             for (var i = 0; i < bodies.length; i += 1) {
-                var vertices = bodies[i].vertices;
-                ctx.moveTo(vertices[0].x, vertices[0].y);
-                for (var j = 1; j < vertices.length; j += 1) {
-                    ctx.lineTo(vertices[j].x, vertices[j].y);
+                if(bodies[i].label.indexOf("Circle") == 0) {
+                    ctx.moveTo(bodies[i].position.x, bodies[i].position.y);
+                    ctx.arc(bodies[i].position.x, bodies[i].position.y, bodies[i].circleRadius, bodies[i].angle, bodies[i].angle + (2 * Math.PI));
                 }
-                ctx.lineTo(vertices[0].x, vertices[0].y);
+                else {
+                    var vertices = bodies[i].vertices;
+                    ctx.moveTo(vertices[0].x, vertices[0].y);
+                    for (var j = 1; j < vertices.length; j += 1) {
+                        ctx.lineTo(vertices[j].x, vertices[j].y);
+                    }
+                    ctx.lineTo(vertices[0].x, vertices[0].y);
+                }
             }
             ctx.lineWidth = 1;
             ctx.strokeStyle = '#000000';
