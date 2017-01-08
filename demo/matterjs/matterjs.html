@@ -29,7 +29,8 @@
             World = Matter.World,
             Composites = Matter.Composites,
             Composite = Matter.Composite,
-            Bodies = Matter.Bodies;
+            Bodies = Matter.Bodies,
+            Events = Matter.Events;
 
         // create an engine
         var engine = Engine.create();
@@ -72,7 +73,9 @@
             ctx.canvas.height = window.innerHeight;
         };
 
+        var busy = false;
         function renderCanvas() {
+            busy = true;
             var bodies = Composite.allBodies(engine.world);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (var i = 0; i < bodies.length; i += 1) {
@@ -105,9 +108,17 @@
                 }
                 ctx.stroke();
             }
+            busy = false;
         }
 
-        setInterval(renderCanvas, 5);
+        Events.on(engine, "afterUpdate", function() {
+            if(!busy) {
+                renderCanvas();
+            }
+            else {
+                console.log("busy");
+            }
+        });
     });
 </script>
 </body>
