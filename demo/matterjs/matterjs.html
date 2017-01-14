@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>matter.js</title>
+
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap-grid.css">
+
     <script src="../../bower_components/Matter/build/matter.js"></script>
     <script src="../../bower_components/jquery/dist/jquery.js"></script>
     <script src="../../bower_components/d3/d3.js"></script>
@@ -18,14 +21,36 @@
             top: 0;
             z-index: -1;
         }
+
+        circle.circle {
+            fill: blue;
+        }
+
+        text.circle {
+            fill: white;
+        }
+
+        rect.rect {
+            fill: green;
+        }
     </style>
 </head>
 <body>
 
-<canvas id="canvas" width="800" height="600"></canvas>
-<svg id="svg" width="800" height="600"></svg>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <svg id="svg" width="800" height="600"></svg>
+        </div>
+        <div class="col">
+            <canvas id="canvas" width="800" height="600"></canvas>
+        </div>
+    </div>
+</div>
 
 <script>
+    var PRECISION = 2;
+
     window.addEventListener("DOMContentLoaded", function() {
         var Engine = Matter.Engine,
             World = Matter.World,
@@ -83,11 +108,90 @@
         function renderD3() {
 
         }
-        
+
+        function round(n, p) {
+            var factor = Math.pow(10, p);
+            return Math.round(n * factor) / factor;
+        }
+
+        var renderCirclesD3Busy = false;
         function renderCirclesD3() {
-            var circlesBodies = Composite.allBodies(engine.world).filter(function(body) {
-                return body.label.indexOf("Circle")
-            })
+            renderCirclesD3Busy = true;
+            var circlesBodies = Composite.allBodies(engine.world).filter(isCircleBody);
+            var gCircles = d3.select("g.circles");
+            var data = gCircles.selectAll("circle.circle")
+                .data(circlesBodies, function(d) {
+                    return d.id;
+                });
+
+            data.enter()
+                .append("circle")
+                .attr("r", function (d) {
+                    return d.circleRadius;
+                })
+                .attr("class", "circle");
+
+            data.enter()
+                .append("text")
+                .attr("class", "circle")
+                .text("a");
+
+            gCircles.selectAll("circle.circle")
+//                .transition()
+//                .ease("linear")
+                .attr("cx", function (d) {
+                    return d.position.x;
+                })
+                .attr("cy", function (d) {
+                    return d.position.y;
+                });
+
+            gCircles.selectAll("text.circle")
+//                .transition()
+//                .ease("linear")
+                .attr("x", function(d) {
+                    return d.position.x;
+                })
+                .attr("y", function(d) {
+                    return d.position.y;
+                });
+
+            data.exit().remove();
+
+            renderCirclesD3Busy = false;
+        }
+
+        var renderRectsD3Busy = false;
+        function renderRectsD3() {
+            renderRectsD3Busy = true;
+            var rectBodies = Composite.allBodies(engine.world).filter(isRectBody);
+            var gRects = d3.select("g.rects");
+            var data = gRects.selectAll("rect.rect")
+                .data(rectBodies, function (d) {
+                    return d.id;
+                });
+
+            data.enter()
+                .append("rect")
+                .attr("class", "rect")
+                .attr("width", function (d) {
+                    return d.bounds.max.x - d.bounds.min.x;
+                })
+                .attr("height", function (d) {
+                    return d.bounds.max.y - d.bounds.min.y;
+                });
+
+            gRects.selectAll("rect.rect")
+                .attr("x", function (d) {
+                    return d.bounds.min.x;
+                })
+                .attr("y", function (d) {
+                    return d.bounds.min.y;
+                });
+
+            data.exit().remove();
+
+            renderRectsD3Busy = false;
         }
 
         //render
@@ -131,13 +235,38 @@
             }
             renderCanvasBusy = false;
         }
+        
+/*
+        setInterval(function() {
+//            renderCanvas();
+            renderCirclesD3();
+            renderRectsD3();
+        }, 20);
+*/
 
+        var renderCtr = 0;
         Events.on(engine, "afterUpdate", function() {
-            if(!renderCanvasBusy) {
-                renderCanvas();
-            }
-            else {
-                console.log("busy");
+            if(renderCtr++ % 2 == 0) {
+                if(!renderCanvasBusy) {
+                    //renderCanvas();
+                }
+                else {
+                    console.log("busy canvas");
+                }
+
+                if(!renderCirclesD3Busy) {
+                    renderCirclesD3();
+                }
+                else {
+                    console.log("busy circlesD3");
+                }
+
+                if(!renderRectsD3Busy) {
+                    renderRectsD3();
+                }
+                else {
+                    console.log("busy rectsD3");
+                }
             }
         });
     });
