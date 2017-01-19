@@ -32,7 +32,8 @@
         }
 
         rect.rect {
-            fill: green;
+            fill: lightgreen;
+            stroke: black;
         }
     </style>
 </head>
@@ -50,7 +51,7 @@
 </div>
 
 <script>
-    var PRECISION = 2;
+    var PRECISION = 5;
 
     window.addEventListener("DOMContentLoaded", function() {
         var Engine = Matter.Engine,
@@ -64,7 +65,10 @@
         var engine = Engine.create();
 
         var stackA = Composites.stack(100, 100, 6, 6, 0, 0, function(x, y) {
-            return Bodies.circle(x, y, 15);
+            if(Math.random() < 0.3) {
+                return Bodies.circle(x, y, 15);
+            }
+            return Bodies.rectangle(x, y, 30, 30);
         });
         //access stackA elements with:   stackA.bodies[i]   i = 1 through 6x6
 
@@ -100,136 +104,99 @@
             return body.label.indexOf("Rectangle") == 0;
         }
 
-        d3.select("#svg")
+        function isStatic(body) {
+            return body.isStatic;
+        }
+
+        function isDynamic(body) {
+            return !body.isStatic;
+        }
+
+        var svg = d3.select("#svg");
+
+        svg
             .append("g")
-            .attr("class", "circles")
+            .attr("class", "circles");
+
+        svg
             .append("g")
             .attr("class", "rects");
 
+        svg
+            .append("g")
+            .attr("class", "static");
+
+        svg
+            .append("g")
+            .attr("class", "dynamic");
+
         function renderD3() {
-            renderCirclesD3();
-            renderRectsD3();
-        }
-
-        function round(n, p) {
-            var factor = Math.pow(10, p);
-            return Math.round(n * factor) / factor;
-        }
-
-        function rad2deg(rad) {
-            var deg = (360 / (2*Math.PI)) * rad;
-            return round(deg, 0);
-        }
-
-        var renderCirclesD3Busy = false;
-        function renderCirclesD3() {
-            renderCirclesD3Busy = true;
-            var circlesBodies = Composite.allBodies(engine.world).filter(isCircleBody);
-            var gCircles = d3.select("g.circles");
-            var data = gCircles.selectAll("g.circle")
-                .data(circlesBodies, function(d) {
-                    return d.id;
-                });
-
-            var gEnter = data.enter()
-                .append("g")
-                .attr("class", "circle");
-
-            gEnter
-                .append("circle")
-                .attr("r", function (d) {
-                    return d.circleRadius;
-                })
-                .attr("class", "circle");
-
-            gEnter
-                .append("text")
-                .attr("class", "circle")
-                .attr("x", function(d) {
-                    return 0;
-                })
-                .attr("y", function(d) {
-                    return 0;
-                })
-                .text(function(d) {
-                    return d.id;
-                });
-
-            gCircles.selectAll("g.circle")
-                .attr("transform", function(d) {
-                    return "translate(" + round(d.position.x, 1) + "," + round(d.position.y, 1)
-                        + ") rotate(" + rad2deg(d.angle) + ")";
-                });
-
-            data.exit().remove();
-
-            renderCirclesD3Busy = false;
-        }
-
-        function renderRectsD3() {
-            var rectBodies = Composite.allBodies(engine.world).filter(isRectBody);
-            var gRects = d3.select("g.rects");
-            var data = gRects.selectAll("rect.rect")
-                .data(rectBodies, function (d) {
-                    return d.id;
-                });
-
-            data.enter()
-                .append("rect")
-                .attr("class", "rect")
-                .attr("width", function (d) {
-                    return d.bounds.max.x - d.bounds.min.x;
-                })
-                .attr("height", function (d) {
-                    return d.bounds.max.y - d.bounds.min.y;
-                });
-
-            gRects.selectAll("rect.rect")
-                .attr("x", function (d) {
-                    return d.bounds.min.x;
-                })
-                .attr("y", function (d) {
-                    return d.bounds.min.y;
-                });
-
-            data.exit().remove();
+            renderD3Static();
+            renderD3Dynamic();
         }
 
         //render
         var canvas = $("#canvas")[0];
         var ctx = canvas.getContext('2d');
 
+        function createPathFromBody(d) {
+            var pathStr = "";
+            if(d.vertices.length > 0) {
+                pathStr += "M" + d.vertices[0].x + " " + d.vertices[0].y;
+                if(d.vertices.length > 1) {
+                    var i;
+                    for(i = 1; i < d.vertices.length; i++) {
+                        pathStr += " L" + d.vertices[i].x + " " + d.vertices[i].y;
+                    }
+                }
+            }
+            pathStr += " Z";
+
+            return pathStr;
+        }
+
+        function renderD3Static() {
+            var staticBodies = Composite.allBodies(engine.world).filter(isStatic);
+            var gStatic = svg.select("g.static");
+
+            gStatic.selectAll("path", "static")
+                .data(staticBodies)
+                .enter()
+                .append("path")
+                .attr("class", "static")
+                .attr("d", createPathFromBody);
+        }
+
+        function renderD3Dynamic() {
+            var dynamicBodies = Composite.allBodies(engine.world).filter(isDynamic);
+            var gDynamic = svg.select("g.dynamic");
+
+            var data = gDynamic.selectAll("path", "dynamic")
+                .data(dynamicBodies, function(d) {
+                    return d.id;
+                });
+
+            data.enter()
+                .append("path")
+                .attr("class", "dynamic");
+
+            gDynamic.selectAll("path", "dynamic")
+                .attr("d", createPathFromBody);
+        }
+
         function renderCanvas() {
             var bodies = Composite.allBodies(engine.world);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (var i = 0; i < bodies.length; i += 1) {
                 ctx.beginPath();
-                if(isCircleBody(bodies[i])) {
-                    ctx.moveTo(bodies[i].position.x, bodies[i].position.y);
-                    ctx.arc(bodies[i].position.x, bodies[i].position.y, bodies[i].circleRadius, bodies[i].angle, bodies[i].angle + (2 * Math.PI));
-                    ctx.strokeStyle = 'blue';
-                    ctx.lineWidth = 1;
+                var vertices = bodies[i].vertices;
+                ctx.moveTo(vertices[0].x, vertices[0].y);
+                for (var j = 1; j < vertices.length; j += 1) {
+                    ctx.lineTo(vertices[j].x, vertices[j].y);
                 }
-                else if(isRectBody(bodies[i])) {
-                    ctx.moveTo(bodies[i].bounds.min.x, bodies[i].bounds.min.y);
-                    ctx.rect(bodies[i].bounds.min.x,
-                        bodies[i].bounds.min.y,
-                        bodies[i].bounds.max.x - bodies[i].bounds.min.x,
-                        bodies[i].bounds.max.y - bodies[i].bounds.min.y
-                    );
-                    ctx.strokeStyle = 'green';
-                    ctx.lineWidth = 2;
-                }
-                else {
-                    var vertices = bodies[i].vertices;
-                    ctx.moveTo(vertices[0].x, vertices[0].y);
-                    for (var j = 1; j < vertices.length; j += 1) {
-                        ctx.lineTo(vertices[j].x, vertices[j].y);
-                    }
-                    ctx.lineTo(vertices[0].x, vertices[0].y);
-                    ctx.strokeStyle = 'red';
-                    ctx.lineWidth = 5;
-                }
+                ctx.lineTo(vertices[0].x, vertices[0].y);
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
                 ctx.stroke();
             }
         }
