@@ -9,7 +9,8 @@
     <script src="../../bower_components/Matter/build/matter.js"></script>
     <script src="../../bower_components/jquery/dist/jquery.js"></script>
     <script src="../../bower_components/d3/d3.js"></script>
-    <script src="SimplePromise.js"></script>
+    <script src="./matterD3Renderer.js"></script>
+
     <style>
         body {
             background-color: white;
@@ -51,7 +52,6 @@
 </div>
 
 <script>
-    var PRECISION = 5;
 
     window.addEventListener("DOMContentLoaded", function() {
         var Engine = Matter.Engine,
@@ -96,13 +96,14 @@
         // run the engine
         Engine.run(engine);
 
-        function isCircleBody(body) {
-            return body.label.indexOf("Circle") == 0;
-        }
-
-        function isRectBody(body) {
-            return body.label.indexOf("Rectangle") == 0;
-        }
+        setTimeout(function() {
+            var body = Bodies.rectangle(650, 10, 15, 15);
+            World.add(engine.world, [body]);
+            setTimeout(function () {
+                body.force.x += -.01;
+                Matter.Body.setAngularVelocity(body, 2);
+            }, 500);
+        }, 2000);
 
         function isStatic(body) {
             return body.isStatic;
@@ -114,21 +115,13 @@
 
         var svg = d3.select("#svg");
 
-        svg
-            .append("g")
-            .attr("class", "circles");
-
-        svg
-            .append("g")
-            .attr("class", "rects");
-
-        svg
-            .append("g")
+        var gStatic = svg.append("g")
             .attr("class", "static");
 
-        svg
-            .append("g")
+        var gDynamic = svg.append("g")
             .attr("class", "dynamic");
+
+        var d3Renderer = new MatterD3Renderer(engine, gStatic, gDynamic);
 
         function renderD3() {
             renderD3Static();
@@ -203,7 +196,7 @@
         
         Events.on(engine, "afterUpdate", function() {
             renderCanvas();
-            renderD3();
+            d3Renderer.renderD3();
         });
     });
 </script>

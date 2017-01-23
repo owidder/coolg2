@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    rect.bar {
+        opacity: .5;
+    }
+
+    .grey {
+        fill: grey;
+    }
+
+    .red {
+        fill: red;
+    }
+
+    .green {
+        fill: green;
+    }
+
+    .blue {
+        fill: blue;
+    }
+
+</style>
+<body>
+<div class="panel">
+    <button type="button" onclick="step1()">Draw</button>
+    <button type="button" onclick="step2()">Change values</button>
+    <button type="button" onclick="step3()">Add dataset to end</button>
+    <button type="button" onclick="step4()">Change order</button>
+    <button type="button" onclick="step5()">Remove dataset</button>
+    <button type="button" onclick="step6()">Add dataset between</button>
+    <button type="button" onclick="randomForever()">Random forever</button>
+</div>
+<script src="../../lib/d3.v4.min.js"></script>
+<script>
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+    var gStatic = svg.append("g");
+    var gDynamic = svg.append("g");
+
+    var BAR_WIDTH = 20;
+    var BAR_GAP = 5;
+    var START_HEIGHT = 50;
+    var BOTTOM = 500;
+
+    function drawStatic() {
+        gStatic.append("rect")
+            .attr("class", "static grey")
+            .attr("x", 0)
+            .attr("y", BOTTOM + 10)
+            .attr("width", 300)
+            .attr("height", 20);
+    }
+
+    function translate(index, height) {
+        var x = index * (BAR_WIDTH + BAR_GAP);
+        var y = 500 - height;
+        return "translate(" + x + "," + y + ")";
+    }
+
+    function drawBars(data) {
+
+        function setHeightOfBarByData(selection) {
+            selection
+                    .attr("height", function (d) {
+                        return d.value;
+                    })
+                    .attr("y", function (d) {
+                        return 500 - d.value;
+                    });
+        }
+
+        /////////////////////////////////
+        // SELECT
+        /////////////////////////////////
+
+        var selectionWithData = gDynamic.selectAll("rect.bar")
+                .data(data, function (d) {
+                    return d.key;
+                });
+
+        /////////////////////////////////
+        // ENTER
+        /////////////////////////////////
+
+        selectionWithData.enter()
+                .append("rect")
+                .attr("class", function (d) {
+                    return "bar dynamic " + d.key;
+                })
+                .attr("width", BAR_WIDTH)
+                .attr("x", function(d) {
+                    var index = data.indexOf(d);
+                    return index * (BAR_WIDTH + BAR_GAP);
+                })
+                .attr("height", START_HEIGHT)
+                .attr("y", BOTTOM - START_HEIGHT)
+                .transition()
+                .duration(1000)
+                .call(setHeightOfBarByData);
+
+        /////////////////////////////////
+        // UPDATE
+        /////////////////////////////////
+
+        selectionWithData
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                    var index = data.indexOf(d);
+                    return index * (BAR_WIDTH + BAR_GAP);
+                })
+                .call(setHeightOfBarByData);
+
+        /////////////////////////////////
+        // EXIT
+        /////////////////////////////////
+
+        selectionWithData.exit()
+                .transition()
+                .duration(1000)
+                .attr("height", 0)
+                .attr("y", BOTTOM)
+                .remove();
+    }
+
+    var barData = [
+        {
+            key: "red",
+            value: 100
+        },
+        {
+            key: "green",
+            value: 200
+        },
+        {
+            key: "blue",
+            value: 250
+        }
+    ];
+
+    drawStatic();
+
+    function step1() {
+        drawBars(barData);
+    }
+
+    function step2() {
+        barData[0].value = 400;
+        barData[1].value = 50;
+        barData[2].value = 500;
+        drawBars(barData);
+    }
+
+    function step3() {
+        barData.push({
+            key: "grey",
+            value: 300,
+        });
+        drawBars(barData);
+    }
+
+    function step4() {
+        barData.reverse();
+        drawBars(barData);
+    }
+
+    function step5() {
+        barData.splice(1, 1);
+        drawBars(barData);
+    }
+
+    function step6() {
+        barData.splice(1, 0, {
+            key: "magenta",
+            value: 350
+        });
+        drawBars(barData);
+    }
+
+    function randomForever(t) {
+        setTimeout(function () {
+            barData.map(function(d) {
+                d.value = Math.random() * 500;
+            }, t);
+            drawBars(barData);
+            randomForever(2000);
+        }, t);
+    }
+
+</script>
+</body>
+</html>
