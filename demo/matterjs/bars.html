@@ -33,6 +33,7 @@
     <button type="button" onclick="step6()">Add dataset between</button>
     <button type="button" onclick="randomForever()">Random forever</button>
     <button type="button" onclick="createWorldFromDynamicElements()">Create world</button>
+    <button type="button" onclick="shoot()">Shoot</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
 <script src="../../bower_components/Matter/build/matter.js"></script>
@@ -50,7 +51,8 @@
     var gDynamic = svg.append("g");
 
     var BAR_WIDTH = 20;
-    var BAR_GAP = 5;
+    var BAR_GAP = 15;
+    var BAR_OFFSET = 250;
     var START_HEIGHT = 50;
     var BOTTOM = 500;
 
@@ -61,7 +63,7 @@
     function drawStatic() {
         gStatic.append("rect")
             .attr("class", "body static grey")
-            .attr("x", 0)
+            .attr("x", BAR_OFFSET)
             .attr("y", BOTTOM + 10)
             .attr("width", 300)
             .attr("height", 20);
@@ -116,12 +118,12 @@
 
     function shoot() {
         setTimeout(function() {
-            var body = Bodies.rectangle(650, 10, 15, 15);
-            World.add(engine.world, [body]);
+            var body = Matter.Bodies.rectangle(BAR_OFFSET + 300, 10, 15, 15);
+            Matter.World.add(engine.world, [body]);
             setTimeout(function () {
-                body.force.x += -.01;
+                body.force.x += -.02;
                 Matter.Body.setAngularVelocity(body, 2);
-            }, 500);
+            }, 700);
         }, 10);
     }
 
@@ -135,6 +137,11 @@
                     .attr("y", function (d) {
                         return 500 - d.value;
                     });
+        }
+
+        function barX(d) {
+            var index = data.indexOf(d);
+            return BAR_OFFSET + index * (BAR_WIDTH + BAR_GAP);
         }
 
         /////////////////////////////////
@@ -156,10 +163,7 @@
                     return "bar body dynamic " + d.key;
                 })
                 .attr("width", BAR_WIDTH)
-                .attr("x", function(d) {
-                    var index = data.indexOf(d);
-                    return index * (BAR_WIDTH + BAR_GAP);
-                })
+                .attr("x", barX)
                 .attr("height", START_HEIGHT)
                 .attr("y", BOTTOM - START_HEIGHT)
                 .transition()
@@ -173,10 +177,7 @@
         selectionWithData
                 .transition()
                 .duration(1000)
-                .attr("x", function(d) {
-                    var index = data.indexOf(d);
-                    return index * (BAR_WIDTH + BAR_GAP);
-                })
+                .attr("x", barX)
                 .call(setHeightOfBarByData);
 
         /////////////////////////////////
