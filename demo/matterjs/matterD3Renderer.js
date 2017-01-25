@@ -29,6 +29,23 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         return pathStr;
     }
 
+    function createClassNameFromBody(d, defaultClassName) {
+        if(d.className != null) {
+            return d.className;
+        }
+        else {
+            return "static";
+        }
+    }
+
+    function createClassNameFromBodyForStatic(d) {
+        return createClassNameFromBody(d, "static");
+    }
+
+    function createClassNameFromBodyForDynamic(d) {
+        return createClassNameFromBody(d, "dynamic");
+    }
+
     function renderD3Static() {
         var staticBodies = Matter.Composite.allBodies(engine.world).filter(isStatic);
 
@@ -37,7 +54,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
 
         data.enter()
             .append("path")
-            .attr("class", "static")
+            .attr("class", createClassNameFromBodyForStatic)
             .attr("d", createPathFromBody);
 
         data.exit().remove();
@@ -53,7 +70,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
 
         data.enter()
             .append("path")
-            .attr("class", "dynamic");
+            .attr("class", createClassNameFromBodyForDynamic);
 
         gDynamic.selectAll("path", "dynamic")
             .attr("d", createPathFromBody);
@@ -62,7 +79,11 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
     }
 
     this.constructor.prototype.renderD3 = function() {
-        renderD3Static();
-        renderD3Dynamic();
+        if(gStatic != null) {
+            renderD3Static();
+        }
+        if(gDynamic != null) {
+            renderD3Dynamic();
+        }
     }
 }

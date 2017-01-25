@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <style>
 
-    rect.bar {
+    .bar {
         opacity: .5;
     }
 
@@ -32,8 +32,11 @@
     <button type="button" onclick="step5()">Remove dataset</button>
     <button type="button" onclick="step6()">Add dataset between</button>
     <button type="button" onclick="randomForever()">Random forever</button>
+    <button type="button" onclick="createWorldFromDynamicElements()">Create world</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
+<script src="../../bower_components/Matter/build/matter.js"></script>
+<script src="./matterD3Renderer.js"></script>
 <script>
 
     var width = window.innerWidth;
@@ -51,9 +54,13 @@
     var START_HEIGHT = 50;
     var BOTTOM = 500;
 
+    var engine = Matter.Engine.create();
+
+    var d3Renderer = new MatterD3Renderer(engine, gStatic, gDynamic);
+
     function drawStatic() {
         gStatic.append("rect")
-            .attr("class", "static grey")
+            .attr("class", "body static grey")
             .attr("x", 0)
             .attr("y", BOTTOM + 10)
             .attr("width", 300)
@@ -64,6 +71,58 @@
         var x = index * (BAR_WIDTH + BAR_GAP);
         var y = 500 - height;
         return "translate(" + x + "," + y + ")";
+    }
+
+    function hasClass(element, className) {
+        return element.classList.contains(className);
+    }
+
+    var engineStarted = false;
+    function startEngine() {
+        var d3Renderer;
+        if(!engineStarted) {
+            Matter.Engine.run(engine);
+            d3Renderer = new MatterD3Renderer(engine, undefined, gDynamic);
+            Matter.Events.on(engine, "afterUpdate", function() {
+                d3Renderer.renderD3();
+            });
+        }
+    }
+
+    function createWorldFromDynamicElements() {
+        var elements = document.querySelectorAll("rect.body");
+        elements.forEach(function(element){
+            var svgX = parseFloat(element.getAttribute("x"));
+            var svgY = parseFloat(element.getAttribute("y"));
+            var height = parseFloat(element.getAttribute("height"));
+            var width = parseFloat(element.getAttribute("width"));
+            var y = svgY + height/2;
+            var x = svgX + width/2;
+
+            var isStatic = hasClass(element, "static");
+            var rectBody = Matter.Bodies.rectangle(x, y, width, height, {
+                isStatic: isStatic, className: element.classList.toString()
+            });
+
+            Matter.World.add(engine.world, [rectBody]);
+
+            if(!isStatic) {
+                element.remove();
+            }
+        });
+
+        startEngine();
+    }
+
+    function shoot() {
+        setTimeout(function() {
+            var body = Bodies.rectangle(650, 10, 15, 15);
+            World.add(engine.world, [body]);
+            setTimeout(function () {
+                body.force.x += -.01;
+                Matter.Body.setAngularVelocity(body, 2);
+            }, 500);
+        }, 10);
     }
 
     function drawBars(data) {
@@ -94,7 +153,7 @@
         selectionWithData.enter()
                 .append("rect")
                 .attr("class", function (d) {
-                    return "bar dynamic " + d.key;
+                    return "bar body dynamic " + d.key;
                 })
                 .attr("width", BAR_WIDTH)
                 .attr("x", function(d) {
