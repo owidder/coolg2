@@ -22,30 +22,36 @@
         fill: blue;
     }
 
+    .orange {
+        fill: orange;
+    }
+
+    .cyan {
+        fill: cyan;
+    }
+
+    .lightblue {
+        fill: lightblue;
+    }
+
 </style>
 <body>
 <div class="panel">
-    <button type="button" onclick="step1()">Draw</button>
-    <button type="button" onclick="step2()">Change values</button>
-    <button type="button" onclick="step3()">Add dataset to end</button>
-    <button type="button" onclick="step4()">Change order</button>
-    <button type="button" onclick="step5()">Remove dataset</button>
-    <button type="button" onclick="step6()">Add dataset between</button>
-    <button type="button" onclick="randomForever()">Random forever</button>
-    <button type="button" onclick="createWorldFromDynamicElements()">Create world</button>
-    <button type="button" onclick="shoot()">Shoot</button>
+    <button type="button" onclick="forecast()">Forecast</button>
+    <button type="button" onclick="reality()">Reality</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
 <script src="../../bower_components/Matter/build/matter.js"></script>
 <script src="./matterD3Renderer.js"></script>
+<script src="./SimplePromise.js"></script>
 <script>
 
     var width = window.innerWidth;
     var height = window.innerHeight;
 
     var svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
+        .attr("width", width)
+        .attr("height", height);
 
     var gStatic = svg.append("g");
     var gDynamic = svg.append("g");
@@ -54,7 +60,7 @@
     var BAR_GAP = 15;
     var BAR_OFFSET = 250;
     var START_HEIGHT = 50;
-    var BOTTOM = 500;
+    var BOTTOM = 700;
 
     var engine = Matter.Engine.create();
 
@@ -64,8 +70,8 @@
         gStatic.append("rect")
             .attr("class", "body static grey")
             .attr("x", BAR_OFFSET)
-            .attr("y", BOTTOM + 10)
-            .attr("width", 300)
+            .attr("y", BOTTOM)
+            .attr("width", 600)
             .attr("height", 20);
     }
 
@@ -82,10 +88,10 @@
     var engineStarted = false;
     function startEngine() {
         var d3Renderer;
-        if(!engineStarted) {
+        if (!engineStarted) {
             Matter.Engine.run(engine);
             d3Renderer = new MatterD3Renderer(engine, undefined, gDynamic);
-            Matter.Events.on(engine, "afterUpdate", function() {
+            Matter.Events.on(engine, "afterUpdate", function () {
                 d3Renderer.renderD3();
             });
         }
@@ -93,13 +99,13 @@
 
     function createWorldFromDynamicElements() {
         var elements = document.querySelectorAll("rect.body");
-        elements.forEach(function(element){
+        elements.forEach(function (element) {
             var svgX = parseFloat(element.getAttribute("x"));
             var svgY = parseFloat(element.getAttribute("y"));
             var height = parseFloat(element.getAttribute("height"));
             var width = parseFloat(element.getAttribute("width"));
-            var y = svgY + height/2;
-            var x = svgX + width/2;
+            var y = svgY + height / 2;
+            var x = svgX + width / 2;
 
             var isStatic = hasClass(element, "static");
             var rectBody = Matter.Bodies.rectangle(x, y, width, height, {
@@ -108,7 +114,7 @@
 
             Matter.World.add(engine.world, [rectBody]);
 
-            if(!isStatic) {
+            if (!isStatic) {
                 element.remove();
             }
         });
@@ -117,13 +123,15 @@
     }
 
     function shoot() {
-        setTimeout(function() {
-            var body = Matter.Bodies.rectangle(BAR_OFFSET + 300, 10, 15, 15);
+        setTimeout(function () {
+            var body = Matter.Bodies.rectangle(BAR_OFFSET + 200, 10, 15, 15, {
+                title: "Reality"
+            });
             Matter.World.add(engine.world, [body]);
             setTimeout(function () {
-                body.force.x += -.02;
+                body.force.x += -.022;
                 Matter.Body.setAngularVelocity(body, 2);
-            }, 700);
+            }, 900);
         }, 10);
     }
 
@@ -131,12 +139,12 @@
 
         function setHeightOfBarByData(selection) {
             selection
-                    .attr("height", function (d) {
-                        return d.value;
-                    })
-                    .attr("y", function (d) {
-                        return 500 - d.value;
-                    });
+                .attr("height", function (d) {
+                    return d.value;
+                })
+                .attr("y", function (d) {
+                    return BOTTOM - d.value;
+                });
         }
 
         function barX(d) {
@@ -144,116 +152,57 @@
             return BAR_OFFSET + index * (BAR_WIDTH + BAR_GAP);
         }
 
-        /////////////////////////////////
-        // SELECT
-        /////////////////////////////////
-
         var selectionWithData = gDynamic.selectAll("rect.bar")
-                .data(data, function (d) {
-                    return d.key;
-                });
-
-        /////////////////////////////////
-        // ENTER
-        /////////////////////////////////
+            .data(data, function (d) {
+                return d.key;
+            });
 
         selectionWithData.enter()
-                .append("rect")
-                .attr("class", function (d) {
-                    return "bar body dynamic " + d.key;
-                })
-                .attr("width", BAR_WIDTH)
-                .attr("x", barX)
-                .attr("height", START_HEIGHT)
-                .attr("y", BOTTOM - START_HEIGHT)
-                .transition()
-                .duration(1000)
-                .call(setHeightOfBarByData);
+            .append("rect")
+            .attr("class", function (d) {
+                return "bar body dynamic " + d.key;
+            })
+            .attr("width", BAR_WIDTH)
+            .attr("x", barX)
+            .attr("height", START_HEIGHT)
+            .attr("y", BOTTOM - START_HEIGHT);
 
-        /////////////////////////////////
-        // UPDATE
-        /////////////////////////////////
+        gDynamic.selectAll("rect.bar")
+            .transition()
+            .duration(1000)
+            .call(setHeightOfBarByData);
 
-        selectionWithData
-                .transition()
-                .duration(1000)
-                .attr("x", barX)
-                .call(setHeightOfBarByData);
-
-        /////////////////////////////////
-        // EXIT
-        /////////////////////////////////
-
-        selectionWithData.exit()
-                .transition()
-                .duration(1000)
-                .attr("height", 0)
-                .attr("y", BOTTOM)
-                .remove();
+        selectionWithData.exit().remove();
     }
 
     var barData = [
         {
             key: "red",
-            value: 100
+            value: Math.random() * 500
         },
         {
             key: "green",
-            value: 200
+            value: Math.random() * 500
         },
         {
             key: "blue",
-            value: 250
+            value: Math.random() * 500
+        },
+        {
+            key: "orange",
+            value: Math.random() * 500
         }
     ];
 
     drawStatic();
 
-    function step1() {
+    function forecast() {
         drawBars(barData);
     }
 
-    function step2() {
-        barData[0].value = 400;
-        barData[1].value = 50;
-        barData[2].value = 500;
-        drawBars(barData);
-    }
-
-    function step3() {
-        barData.push({
-            key: "grey",
-            value: 300,
-        });
-        drawBars(barData);
-    }
-
-    function step4() {
-        barData.reverse();
-        drawBars(barData);
-    }
-
-    function step5() {
-        barData.splice(1, 1);
-        drawBars(barData);
-    }
-
-    function step6() {
-        barData.splice(1, 0, {
-            key: "magenta",
-            value: 350
-        });
-        drawBars(barData);
-    }
-
-    function randomForever(t) {
-        setTimeout(function () {
-            barData.map(function(d) {
-                d.value = Math.random() * 500;
-            }, t);
-            drawBars(barData);
-            randomForever(2000);
-        }, t);
+    function reality() {
+        createWorldFromDynamicElements();
+        shoot();
     }
 
 </script>

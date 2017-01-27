@@ -13,6 +13,10 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         return !body.isStatic;
     }
 
+    function hasTitle(body) {
+        return body.title != null;
+    }
+
     function createPathFromBody(d) {
         var pathStr = "";
         if(d.vertices.length > 0) {
@@ -34,7 +38,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
             return d.className;
         }
         else {
-            return "static";
+            return defaultClassName;
         }
     }
 
@@ -49,7 +53,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
     function renderD3Static() {
         var staticBodies = Matter.Composite.allBodies(engine.world).filter(isStatic);
 
-        var data = gStatic.selectAll("path", "static")
+        var data = gStatic.selectAll("path.static")
             .data(staticBodies);
 
         data.enter()
@@ -63,7 +67,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
     function renderD3Dynamic() {
         var dynamicBodies = Matter.Composite.allBodies(engine.world).filter(isDynamic);
 
-        var data = gDynamic.selectAll("path", "dynamic")
+        var data = gDynamic.selectAll("path.dynamic")
             .data(dynamicBodies, function(d) {
                 return d.id;
             });
@@ -72,10 +76,39 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
             .append("path")
             .attr("class", createClassNameFromBodyForDynamic);
 
-        gDynamic.selectAll("path", "dynamic")
+        gDynamic.selectAll("path.dynamic")
             .attr("d", createPathFromBody);
 
         data.exit().remove();
+    }
+
+    function renderD3DynamicTitles() {
+        var bodiesWithTitles = Matter.Composite.allBodies(engine.world).filter(hasTitle);
+
+        if(bodiesWithTitles.length > 0) {
+            var data = gDynamic.selectAll("text.dynamic")
+                .data(bodiesWithTitles, function(d) {
+                    return d.id;
+                });
+
+            data.enter()
+                .append("text")
+                .attr("class", "dynamic")
+                .text(function(d) {
+                    return d.title;
+                });
+
+            gDynamic.selectAll("text.dynamic")
+                .attr("x", function(d) {
+                    var avx = (d.bounds.max.x + d.bounds.min.x) / 2 - 20;
+                    return avx;
+                })
+                .attr("y", function(d) {
+                    var avy = (d.bounds.max.y + d.bounds.min.y) / 2 - 15;
+                    return avy;
+                });
+        }
+
     }
 
     this.constructor.prototype.renderD3 = function() {
@@ -84,6 +117,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         }
         if(gDynamic != null) {
             renderD3Dynamic();
+            renderD3DynamicTitles();
         }
     }
 }
