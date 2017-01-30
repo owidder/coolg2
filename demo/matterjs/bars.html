@@ -71,7 +71,7 @@
             .attr("class", "body static grey")
             .attr("x", BAR_OFFSET)
             .attr("y", BOTTOM)
-            .attr("width", 600)
+            .attr("width", 1000)
             .attr("height", 20);
     }
 
@@ -124,14 +124,12 @@
 
     function shoot() {
         setTimeout(function () {
-            var body = Matter.Bodies.rectangle(BAR_OFFSET + 200, 10, 15, 15, {
+            var body = Matter.Bodies.rectangle(BAR_OFFSET + 1000, 500, 15, 15, {
                 title: "Reality"
             });
             Matter.World.add(engine.world, [body]);
-            setTimeout(function () {
-                body.force.x += -.022;
-                Matter.Body.setAngularVelocity(body, 2);
-            }, 900);
+            body.force.x += -.012;
+            Matter.Body.setAngularVelocity(body, 2);
         }, 10);
     }
 

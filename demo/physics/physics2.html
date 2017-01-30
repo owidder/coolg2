@@ -1,0 +1,255 @@
+
+<!doctype html>
+<html>
+<head>
+    <title>Physics</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap-grid.css">
+
+    <script src="./physicsjs-full.js"></script>
+    <script src="../../bower_components/d3/d3.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.js"></script>
+
+    <style>
+
+        pre {
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <svg id="svg" width="800" height="600"></svg>
+        </div>
+        <div class="col">
+            <pre></pre>
+        </div>
+    </div>
+</div>
+
+<div class="scripts">
+    <script>
+
+        Physics.renderer('ascii', function( parent ){
+
+            var defaults = {
+                width: 200,
+                height: 200,
+                fontSize: 4
+            };
+
+            var svg;
+            var gStatic;
+            var gDynamic;
+
+            function isInside(pos, body){
+                var scratch = Physics.scratchpad()
+                    ,T = scratch.transform().setRotation(body.state.angular.pos).setTranslation(body.state.pos)
+                    ,ret = false
+                    ;
+
+                pos.translateInv(T).rotateInv(T);
+                if (body.geometry.name === 'circle'){
+                    ret = pos.norm() < body.geometry.radius;
+                }
+                else if (body.geometry.name === 'rectangle'){
+                    ret = pos.norm() < body.geometry.height;
+                }
+                else {
+                    throw "unrenderable body type";
+                }
+
+                pos.rotate(T).translate(T);
+                scratch.done();
+                return ret;
+            }
+
+            var newEl = function( node, content ){
+                var el = document.createElement(node || 'div');
+                if (content){
+                    el.innerHTML = content;
+                }
+                return el;
+            };
+
+            function renderDynamicCircles(circleBodies) {
+                var data = gDynamic.selectAll("circle.dynamicbody")
+                    .data(circleBodies);
+
+                data.enter()
+                    .append("circle")
+                    .attr("class", "dynamicbody");
+
+                gDynamic.selectAll("circle.dynamicbody")
+                    .attr("r", function(d) {
+                        return d.radius;
+                    })
+                    .attr("cx", function(d) {
+                        return d.state.pos.x;
+                    })
+                    .attr("cy", function(d) {
+                        return d.state.pos.y;
+                    });
+
+                data.exit().remove();
+            }
+
+            return {
+                init: function( options ){
+
+                    options = Physics.util.extend( defaults, options );
+                    parent.init.call(this, options);
+
+                    var pre = document.querySelector('pre');
+                    pre.style.fontFamily = 'Courier New, Monospace';
+                    pre.style.letterSpacing = '1.5px';
+                    pre.style.fontSize = options.fontSize + 'px';
+                    pre.style.lineHeight = '1';
+                    pre.style.fontWeight = 'bold';
+                    pre.style.width = this.options.width * this.options.fontSize + 'px';
+                    pre.style.height = this.options.height * this.options.fontSize + 'px';
+                    this.el.appendChild(pre);
+                    this.pre = pre;
+
+                    this.els = {};
+
+                    if (this.options.meta){
+                        var stats = newEl();
+                        stats.className = 'pjs-meta';
+                        this.els.fps = newEl('span');
+                        this.els.ipf = newEl('span');
+                        stats.appendChild(newEl('span', 'fps: '));
+                        stats.appendChild(this.els.fps);
+                        stats.appendChild(newEl('br'));
+                        stats.appendChild(newEl('span', 'ipf: '));
+                        stats.appendChild(this.els.ipf);
+
+                        this.el.appendChild(stats);
+                    }
+
+                    svg = d3.select("#svg");
+
+                    gStatic = svg.append("g")
+                        .attr("class", "static");
+
+                    gDynamic = svg.append("g")
+                        .attr("class", "dynamic");
+
+                },
+                render: function(bodies, meta) {
+
+                    this._world.emit('beforeRender', {
+                        renderer: this,
+                        bodies: bodies,
+                        meta: meta
+                    });
+
+                    if (this.options.meta){
+                        this.drawMeta( meta );
+                    }
+
+                    this.drawScene( bodies );
+                },
+
+                drawMeta: function( meta ){
+                    this.els.fps.innerHTML = meta.fps.toFixed(2);
+                    this.els.ipf.innerHTML = meta.ipf;
+                },
+
+                drawScene: function( bodies ){
+
+                    var buffer = '';
+                    var w = this.options.width;
+                    var h = this.options.height;
+                    var scratch = Physics.scratchpad();
+                    var pos = scratch.vector();
+                    var inside = false;
+
+                    for (var y = 0; y < h; y+=1){
+                        for (var x = 0; x < w; x+=1){
+                            inside = false;
+                            pos.set( x, y );
+                            for (var i = 0, l = bodies.length; i < l; i++) {
+                                if ( isInside(pos, bodies[i]) ){
+                                    inside = true;
+                                    break;
+                                }
+                            }
+                            if (inside){
+                                buffer += '@';
+                            } else {
+                                buffer += '.';
+                            }
+                        }
+
+                        buffer += '\n';
+                    }
+                    this.pre.innerHTML = buffer;
+                    scratch.done();
+
+
+                    var circles = bodies.filter(function(body) {
+                        return body.geometry.name == 'circle';
+                    });
+                    renderDynamicCircles(circles);
+                }
+
+            };
+        });
+
+        var world = Physics();
+        world.add( Physics.body('circle', {
+            x: 50,
+            y: 60,
+            vx: .2,
+            radius: 5
+        }));
+
+        world.add( Physics.body('circle', {
+            x: 30,
+            y: 60,
+            radius: 5
+        }));
+
+//        world.add( Physics.body('rectangle', {
+//            x: 70,
+//            y: 20,
+//            width: 30,
+//            height: 30
+//        }));
+
+        var renderer = Physics.renderer('ascii', {
+            el: 'content',
+            width: 100,
+            height: 100,
+            meta: true
+        });
+
+        renderer.el.style.color = '#fff';
+
+        world.add([
+            Physics.behavior('edge-collision-detection', {aabb: Physics.aabb(0, 0, 100, 100)}),
+            Physics.behavior('body-collision-detection'),
+            Physics.behavior('body-impulse-response'),
+            Physics.behavior('sweep-prune'),
+            Physics.behavior('constant-acceleration'),
+            renderer
+        ]);
+
+        world.on('step', function(){
+            world.render();
+        });
+
+        Physics.util.ticker.on(function(t){
+            world.step(t);
+        }).start();
+
+    </script>
+</div>
+</body>
+</html>
