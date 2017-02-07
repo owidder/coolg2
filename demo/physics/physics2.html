@@ -29,11 +29,6 @@
             <div id="viewport">
             </div>
         </div>
-        <div class="col">
-            <div>
-                <pre class="field"></pre>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -123,12 +118,20 @@
                 }
 
                 function rotate(d) {
-                    return "rotate(" + rad2grad(d.state.angular.pos) + " " + d.geometry.height/2 + " " + d.geometry.width/2 + ")"
+                    var rotateCenterX = d.state.pos.x + d.geometry.width/2;
+                    var rotateCenterY = d.state.pos.y + d.geometry.height/2;
+                    return "rotate(" + rad2grad(d.state.angular.pos) + "," + rotateCenterX + "," + rotateCenterY + ")"
                 }
 
                 gDynamic.selectAll("rect.dynamicbody")
+                    .attr("x", function (d) {
+                        return d.state.pos.x;
+                    })
+                    .attr("y", function (d) {
+                        return d.state.pos.y;
+                    })
                     .attr("transform", function (d) {
-                        return translate(d) + " " + rotate(d);
+                        return rotate(d);
                     });
             }
 
@@ -137,16 +140,6 @@
 
                     options = Physics.util.extend(defaults, options);
                     parent.init.call(this, options);
-
-                    var pre = document.querySelector('pre.field');
-                    pre.style.fontFamily = 'Courier New, Monospace';
-                    pre.style.letterSpacing = '1.5px';
-                    pre.style.fontSize = options.fontSize + 'px';
-                    pre.style.lineHeight = '1';
-                    pre.style.fontWeight = 'bold';
-                    pre.style.width = this.options.width * this.options.fontSize + 'px';
-                    pre.style.height = this.options.height * this.options.fontSize + 'px';
-                    this.pre = pre;
 
                     this.els = {};
 
@@ -195,35 +188,6 @@
 
                 drawScene: function (bodies) {
 
-                    var buffer = '';
-                    var w = this.options.width;
-                    var h = this.options.height;
-                    var scratch = Physics.scratchpad();
-                    var pos = scratch.vector();
-                    var inside = false;
-
-                    for (var y = 0; y < h; y += 1) {
-                        for (var x = 0; x < w; x += 1) {
-                            inside = false;
-                            pos.set(x, y);
-                            for (var i = 0, l = bodies.length; i < l; i++) {
-                                if (isInside(pos, bodies[i])) {
-                                    inside = true;
-                                    break;
-                                }
-                            }
-                            if (inside) {
-                                buffer += '@';
-                            } else {
-                                buffer += '.';
-                            }
-                        }
-
-                        buffer += '\n';
-                    }
-                    this.pre.innerHTML = buffer;
-                    scratch.done();
-
                     var circles = bodies.filter(function (body) {
                         return body.geometry.name == 'circle';
                     });
@@ -266,10 +230,6 @@
             meta: true
         });
 
-        var canvasRenderer = Physics.renderer('canvas', {
-            el: 'viewport'
-        });
-
         renderer.el.style.color = '#fff';
 
         world.add([
@@ -278,8 +238,7 @@
             Physics.behavior('body-impulse-response'),
             Physics.behavior('sweep-prune'),
             Physics.behavior('constant-acceleration'),
-            renderer,
-            canvasRenderer
+            renderer
         ]);
 
         world.on('step', function () {

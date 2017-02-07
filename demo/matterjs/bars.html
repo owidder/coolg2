@@ -34,7 +34,15 @@
         fill: lightblue;
     }
 
+    text.dynamic {
+        font-size: .75em;
+    }
+
 </style>
+
+<link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
+      media="screen,projection"/>
+
 <body>
 <div class="panel">
     <button type="button" onclick="forecast()">Forecast</button>
@@ -58,7 +66,7 @@
 
     var BAR_WIDTH = 20;
     var BAR_GAP = 15;
-    var BAR_OFFSET = 250;
+    var BAR_OFFSET = 550;
     var START_HEIGHT = 50;
     var BOTTOM = 700;
 
@@ -69,7 +77,7 @@
     function drawStatic() {
         gStatic.append("rect")
             .attr("class", "body static grey")
-            .attr("x", BAR_OFFSET)
+            .attr("x", BAR_OFFSET - 300)
             .attr("y", BOTTOM)
             .attr("width", 1000)
             .attr("height", 20);
@@ -122,15 +130,21 @@
         startEngine();
     }
 
-    function shoot() {
+    function shoot(ctr) {
+        if(ctr == null) {
+            ctr = 0;
+        }
         setTimeout(function () {
-            var body = Matter.Bodies.rectangle(BAR_OFFSET + 1000, 500, 15, 15, {
+            var body = Matter.Bodies.circle(BAR_OFFSET + 500, 100, 9, {
                 title: "Reality"
             });
             Matter.World.add(engine.world, [body]);
             body.force.x += -.012;
             Matter.Body.setAngularVelocity(body, 2);
-        }, 10);
+            if(ctr < 100) {
+                shoot(++ctr);
+            }
+        }, 100);
     }
 
     function drawBars(data) {
@@ -176,19 +190,23 @@
     var barData = [
         {
             key: "red",
-            value: Math.random() * 500
+            value: Math.random() * 300 + 200
         },
         {
             key: "green",
-            value: Math.random() * 500
+            value: Math.random() * 400 + 300
         },
         {
             key: "blue",
-            value: Math.random() * 500
+            value: Math.random() * 500 + 300
         },
         {
             key: "orange",
-            value: Math.random() * 500
+            value: Math.random() * 600 + 300
+        },
+        {
+            key: "cyan",
+            value: Math.random() * 300 + 500
         }
     ];
 
@@ -198,8 +216,12 @@
         drawBars(barData);
     }
 
+    var worldCreated = false;
     function reality() {
-        createWorldFromDynamicElements();
+        if(!worldCreated) {
+            worldCreated = true;
+            createWorldFromDynamicElements();
+        }
         shoot();
     }
 
