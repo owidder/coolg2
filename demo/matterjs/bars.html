@@ -38,15 +38,22 @@
         font-size: .75em;
     }
 
+    div.panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+    }
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
       media="screen,projection"/>
 
 <body>
+<div class="canvas"></div>
 <div class="panel">
-    <button type="button" onclick="forecast()">Forecast</button>
-    <button type="button" onclick="reality()">Reality</button>
+    <button class="step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
+    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw <r></r>eality</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
 <script src="../../bower_components/Matter/build/matter.js"></script>
@@ -57,18 +64,21 @@
     var width = window.innerWidth;
     var height = window.innerHeight;
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("div.canvas").append("svg")
+        .attr("x", 0)
+        .attr("y", 0)
         .attr("width", width)
         .attr("height", height);
 
     var gStatic = svg.append("g");
     var gDynamic = svg.append("g");
+    var gTank = svg.append("g").attr("class", "tank");
 
     var BAR_WIDTH = 20;
-    var BAR_GAP = 15;
-    var BAR_OFFSET = 550;
+    var BAR_GAP = 25;
+    var BAR_OFFSET = width / 6;
     var START_HEIGHT = 50;
-    var BOTTOM = 700;
+    var BOTTOM = height - 40;
 
     var engine = Matter.Engine.create();
 
@@ -77,7 +87,7 @@
     function drawStatic() {
         gStatic.append("rect")
             .attr("class", "body static grey")
-            .attr("x", BAR_OFFSET - 300)
+            .attr("x", BAR_OFFSET / 2)
             .attr("y", BOTTOM)
             .attr("width", 1000)
             .attr("height", 20);
@@ -128,6 +138,30 @@
         });
 
         startEngine();
+    }
+
+    function move(x, y, el) {
+        var attr = el.attr("transform");
+        attr += " translate(" + x + "," + y + ")";
+        el.attr("transform", attr);
+    }
+
+    function showTank() {
+        d3.xml("tank.svg").mimeType("image/svg+xml").get(function(error, xml) {
+            if (error) throw error;
+            var paths = xml.documentElement.getElementsByTagName("path");
+            gTank.selectAll("path.tank")
+                .data(paths)
+                .enter()
+                .append("path")
+                .attr("d", function (d) {
+                    return d.getAttribute("d");
+                });
+
+            gTank.attr("transform", "scale(.5, .5)");
+
+            move(500, 500, gTank);
+        });
     }
 
     function shoot(ctr) {
@@ -212,17 +246,26 @@
 
     drawStatic();
 
+    function switchToStep2() {
+        d3.select("button.step1")
+            .classed("disabled", true);
+        d3.select("button.step2")
+            .classed("disabled", false);
+    }
+
     function forecast() {
         drawBars(barData);
+        switchToStep2();
     }
 
     var worldCreated = false;
     function reality() {
+        showTank();
         if(!worldCreated) {
             worldCreated = true;
             createWorldFromDynamicElements();
         }
-        shoot();
+        //shoot();
     }
 
 </script>
