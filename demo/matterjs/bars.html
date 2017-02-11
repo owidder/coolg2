@@ -44,6 +44,11 @@
         top: 0;
     }
 
+    rect.debug {
+        stroke: 1;
+        fill: grey;
+    }
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
@@ -53,7 +58,7 @@
 <div class="canvas"></div>
 <div class="panel">
     <button class="step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
-    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw <r></r>eality</button>
+    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
 <script src="../../bower_components/Matter/build/matter.js"></script>
@@ -70,13 +75,16 @@
         .attr("width", width)
         .attr("height", height);
 
+    var gDebug = svg.append("g").attr("class", "debug");
     var gStatic = svg.append("g");
     var gDynamic = svg.append("g");
     var gTank = svg.append("g").attr("class", "tank");
+    var gTankTranslate = gTank.append("g").attr("class", "tank-translate");
+    var gTankScale = gTank.append("g").attr("class", "tank-scale");
 
     var BAR_WIDTH = 20;
     var BAR_GAP = 25;
-    var BAR_OFFSET = width / 6;
+    var BAR_OFFSET = width / 2;
     var START_HEIGHT = 50;
     var BOTTOM = height - 40;
 
@@ -87,9 +95,9 @@
     function drawStatic() {
         gStatic.append("rect")
             .attr("class", "body static grey")
-            .attr("x", BAR_OFFSET / 2)
+            .attr("x", 0)
             .attr("y", BOTTOM)
-            .attr("width", 1000)
+            .attr("width", width * .8)
             .attr("height", 20);
     }
 
@@ -140,10 +148,47 @@
         startEngine();
     }
 
-    function move(x, y, el) {
-        var attr = el.attr("transform");
+    function move(el, x, y) {
+        var attr = el.attr("transform") || "";
         attr += " translate(" + x + "," + y + ")";
         el.attr("transform", attr);
+    }
+
+    function scale(el, x, y) {
+        var attr = el.attr("transform") || "";
+        attr += " scale(" + x + (y != null ? " " + y : "") + ")";
+        el.attr("transform", attr);
+    }
+
+    function drawDebugRect(el) {
+        var rect = el.node().getBoundingClientRect();
+        console.log(rect);
+
+        gDebug.selectAll("rect.debug")
+            .data([rect])
+            .enter()
+            .append("rect")
+            .attr("class", "debug");
+
+        gDebug.selectAll("rect.debug")
+            .attr("x", function (d) {
+                return d.left;
+            })
+            .attr("y", function (d) {
+                return d.top;
+            })
+            .attr("height", function (d) {
+                return d.height;
+            })
+            .attr("width", function (d) {
+                return d.width;
+            })
+    }
+
+    function moveTo(el, x, y) {
+        var rect = el.node().getBoundingClientRect();
+        move(el, -rect.left + x, -rect.bottom + y);
+        rect = el.node().getBoundingClientRect();
     }
 
     function showTank() {
@@ -156,11 +201,10 @@
                 .append("path")
                 .attr("d", function (d) {
                     return d.getAttribute("d");
-                });
+                })
+                .attr("transform", "scale(-.5, .5)");
 
-            gTank.attr("transform", "scale(.5, .5)");
-
-            move(500, 500, gTank);
+            moveTo(gTank, 100, BOTTOM);
         });
     }
 
@@ -265,8 +309,10 @@
             worldCreated = true;
             createWorldFromDynamicElements();
         }
-        //shoot();
+        shoot();
     }
+
+    showTank();
 
 </script>
 </body>
