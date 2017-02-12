@@ -78,15 +78,16 @@
     var gDebug = svg.append("g").attr("class", "debug");
     var gStatic = svg.append("g");
     var gDynamic = svg.append("g");
-    var gTank = svg.append("g").attr("class", "tank");
-    var gTankTranslate = gTank.append("g").attr("class", "tank-translate");
-    var gTankScale = gTank.append("g").attr("class", "tank-scale");
+    var gTank = svg.append("g").attr("class", "tank stay");
 
     var BAR_WIDTH = 20;
     var BAR_GAP = 25;
     var BAR_OFFSET = width / 2;
+    var SHOOT_START_X = BAR_OFFSET - 500;
+    var SHOOT_START_Y = BOTTOM - 80;
     var START_HEIGHT = 50;
     var BOTTOM = height - 40;
+    var TANK_DURATION = 5000;
 
     var engine = Matter.Engine.create();
 
@@ -140,7 +141,7 @@
 
             Matter.World.add(engine.world, [rectBody]);
 
-            if (!isStatic) {
+            if (!isStatic && !hasClass(element, "stay")) {
                 element.remove();
             }
         });
@@ -148,10 +149,18 @@
         startEngine();
     }
 
-    function move(el, x, y) {
+    function move(el, x, y, duration) {
         var attr = el.attr("transform") || "";
         attr += " translate(" + x + "," + y + ")";
-        el.attr("transform", attr);
+        if(duration != null) {
+            el
+                .transition()
+                .duration(duration)
+                .attr("transform", attr);
+        }
+        else {
+            el.attr("transform", attr);
+        }
     }
 
     function scale(el, x, y) {
@@ -185,44 +194,78 @@
             })
     }
 
-    function moveTo(el, x, y) {
+    function moveTo(el, x, y, duration) {
         var rect = el.node().getBoundingClientRect();
-        move(el, -rect.left + x, -rect.bottom + y);
-        rect = el.node().getBoundingClientRect();
+        move(el, -rect.right + x, -rect.bottom + y, duration);
     }
 
-    function showTank() {
-        d3.xml("tank.svg").mimeType("image/svg+xml").get(function(error, xml) {
+    function createTank() {
+        d3.xml("cannon2.svg").mimeType("image/svg+xml").get(function(error, xml) {
             if (error) throw error;
             var paths = xml.documentElement.getElementsByTagName("path");
             gTank.selectAll("path.tank")
                 .data(paths)
                 .enter()
                 .append("path")
+                .attr("class", "stay tank")
                 .attr("d", function (d) {
                     return d.getAttribute("d");
                 })
-                .attr("transform", "scale(-.5, .5)");
+                .attr("transform", "scale(.4, .4)");
 
-            moveTo(gTank, 100, BOTTOM);
+            moveTo(gTank, 0, BOTTOM);
         });
     }
 
+    function showTank() {
+        var tankShown = new SimplePromise();
+        moveTo(gTank, SHOOT_START_X, BOTTOM, TANK_DURATION);
+        setTimeout(function () {
+            tankShown.resolve();
+        }, TANK_DURATION);
+        return tankShown.promise;
+    }
+
+    function hideTank() {
+        moveTo(gTank, 0, BOTTOM, TANK_DURATION);
+    }
+
+    var forecastIsGonePromise = new SimplePromise();
+    function checkIfForecastIsGone() {
+        var bars = document.querySelectorAll(".bar");
+        var forecastIsGone = (bars.length > 0);
+        bars.forEach(function(bar) {
+            var rect = bar.getBoundingClientRect();
+            if(rect.top < width) {
+                forecastIsGone = false;
+            }
+        });
+
+        if(forecastIsGone) {
+            console.log("gone");
+            forecastIsGonePromise.resolve();
+        }
+
+        return forecastIsGone;
+    }
+
+    var duration = 0;
     function shoot(ctr) {
         if(ctr == null) {
             ctr = 0;
         }
         setTimeout(function () {
-            var body = Matter.Bodies.circle(BAR_OFFSET + 500, 100, 9, {
-                title: "Reality"
-            });
+            duration = 3000;
+            var body = Matter.Bodies.circle(SHOOT_START_X, BOTTOM - 100, 25);
             Matter.World.add(engine.world, [body]);
-            body.force.x += -.012;
-            Matter.Body.setAngularVelocity(body, 2);
-            if(ctr < 100) {
+            body.force.x += .35;
+            if(ctr < 9 && !checkIfForecastIsGone()) {
                 shoot(++ctr);
             }
-        }, 100);
+            else {
+                hideTank();
+            }
+        }, duration);
     }
 
     function drawBars(data) {
@@ -304,15 +347,19 @@
 
     var worldCreated = false;
     function reality() {
-        showTank();
-        if(!worldCreated) {
-            worldCreated = true;
-            createWorldFromDynamicElements();
-        }
-        shoot();
+        showTank().then(function () {
+            if(!worldCreated) {
+                worldCreated = true;
+                createWorldFromDynamicElements();
+            }
+            shoot();
+            setInterval(checkIfForecastIsGone, 2000);
+        })
     }
 
-    showTank();
+    createTank();
+
+    forecastIsGonePromise.promise.then(hideTank);
 
 </script>
 </body>
