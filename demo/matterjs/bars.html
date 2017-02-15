@@ -53,6 +53,10 @@
         fill: white;
     }
 
+    path.st0 {
+        fill: white;
+    }
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
@@ -62,7 +66,8 @@
 <div class="canvas"></div>
 <div class="panel">
     <button class="step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
-    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button>
+    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button><p></p>
+    <button class="step3 waves-effect waves-light btn disabled" type="button" onclick="location.reload()" >Step 3: Do it again!!!</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
 <script src="../../bower_components/Matter/build/matter.js"></script>
@@ -88,7 +93,7 @@
     var BAR_WIDTH = 20;
     var BAR_GAP = 25;
     var BAR_OFFSET = width / 2;
-    var SHOOT_START_X = BAR_OFFSET - 500;
+    var SHOOT_START_X = Math.max(BAR_OFFSET - 500, 200);
     var SHOOT_START_Y = BOTTOM - 80;
     var START_HEIGHT = 50;
     var BOTTOM = height - 40;
@@ -199,9 +204,15 @@
             })
     }
 
-    function moveTo(el, x, y, duration) {
+    function moveTo(el, x, y, duration, leftOrRight, topOrBottom) {
+        if(leftOrRight == null) {
+            leftOrRight = "right";
+        }
+        if(topOrBottom == null) {
+            topOrBottom = "bottom";
+        }
         var rect = el.node().getBoundingClientRect();
-        move(el, -rect.right + x, -rect.bottom + y, duration);
+        move(el, -rect[leftOrRight] + x, -rect[topOrBottom] + y, duration);
     }
 
     function createTank() {
@@ -212,7 +223,10 @@
                 .data(paths)
                 .enter()
                 .append("path")
-                .attr("class", "stay tank")
+                .attr("class", function (d) {
+                    var attr = d.getAttribute("class");
+                    return "stay tank" + (attr != null ? " " + attr : "");
+                })
                 .attr("d", function (d) {
                     return d.getAttribute("d");
                 })
@@ -363,6 +377,13 @@
             .classed("disabled", false);
     }
 
+    function switchToStep3() {
+        d3.select("button.step2")
+            .classed("disabled", true);
+        d3.select("button.step3")
+            .classed("disabled", false);
+    }
+
     function forecast() {
         drawBars(barData);
         switchToStep2();
@@ -370,6 +391,7 @@
 
     var worldCreated = false;
     function reality() {
+        switchToStep3();
         showTank().then(function () {
             if(!worldCreated) {
                 worldCreated = true;
