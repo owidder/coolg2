@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .bar {
+        opacity: .5;
+    }
+
+    .grey {
+        fill: grey;
+    }
+
+    .red {
+        fill: red;
+    }
+
+    .green {
+        fill: green;
+    }
+
+    .blue {
+        fill: blue;
+    }
+
+    .orange {
+        fill: orange;
+    }
+
+    .cyan {
+        fill: cyan;
+    }
+
+    .lightblue {
+        fill: lightblue;
+    }
+
+    text.dynamic {
+        font-size: .75em;
+    }
+
+    div.panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+    }
+
+    rect.debug {
+        stroke: 1;
+        fill: grey;
+    }
+
+    text.forecast {
+        fill: white;
+    }
+
+    path.st0 {
+        fill: white;
+    }
+
+    rect.debug {
+        fill: none;
+        stroke: black;
+    }
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
+      media="screen,projection"/>
+
+<body>
+<div class="canvas"></div>
+<div class="panel">
+    <button class="step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
+    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button><p></p>
+    <button class="step3 waves-effect waves-light btn disabled" type="button" onclick="location.reload()" >Step 3: Do it again!!!</button>
+</div>
+<script src="../../lib/d3.v4.min.js"></script>
+<script src="../../bower_components/Matter/build/matter.js"></script>
+<script src="./matterD3Renderer.js"></script>
+<script src="./SimplePromise.js"></script>
+<script>
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var svg = d3.select("div.canvas").append("svg")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height);
+
+    var gDebug = svg.append("g").attr("class", "debug");
+    var gStatic = svg.append("g");
+    var gDynamic = svg.append("g");
+    var gTank = svg.append("g").attr("class", "tank stay");
+    var gDebug = svg.append("g");
+
+    var MIN_HEIGHT = 200;
+    var BAR_WIDTH = 20;
+    var BAR_GAP = 25;
+    var BAR_OFFSET = width / 2;
+    var SHOOT_START_X = Math.max(BAR_OFFSET - 500, 200);
+    var SHOOT_START_Y = BOTTOM - 80;
+    var START_HEIGHT = 50;
+    var BOTTOM = height - 40;
+    var TANK_DURATION = 5000;
+
+    var engine = Matter.Engine.create();
+
+    var d3Renderer = new MatterD3Renderer(engine, gStatic, gDynamic);
+
+    function drawStatic() {
+        gStatic.append("rect")
+            .attr("class", "body static grey")
+            .attr("x", 0)
+            .attr("y", BOTTOM)
+            .attr("width", width * .8)
+            .attr("height", 20);
+    }
+
+    function translate(index, height) {
+        var x = index * (BAR_WIDTH + BAR_GAP);
+        var y = 500 - height;
+        return "translate(" + x + "," + y + ")";
+    }
+
+    function hasClass(element, className) {
+        return element.classList.contains(className);
+    }
+
+    var engineStarted = false;
+    function startEngine() {
+        var d3Renderer;
+        if (!engineStarted) {
+            Matter.Engine.run(engine);
+            d3Renderer = new MatterD3Renderer(engine, undefined, gDynamic);
+            Matter.Events.on(engine, "afterUpdate", function () {
+                d3Renderer.renderD3();
+            });
+        }
+    }
+
+    function createWorldFromDynamicElements() {
+        var elements = document.querySelectorAll("rect.body");
+        elements.forEach(function (element) {
+            var svgX = parseFloat(element.getAttribute("x"));
+            var svgY = parseFloat(element.getAttribute("y"));
+            var height = parseFloat(element.getAttribute("height"));
+            var width = parseFloat(element.getAttribute("width"));
+            var y = svgY + height / 2;
+            var x = svgX + width / 2;
+
+            var rectBody;
+
+            var isStatic = hasClass(element, "static");
+            if(!isStatic && height > width) {
+                var currentY = svgY;
+                var blockHeight;
+                while(currentY < y + height) {
+                    blockHeight = Math.min(width, y + height - currentY);
+                    rectBody = Matter.Bodies.rectangle(x, currentY, width, blockHeight, {
+                        isStatic: isStatic, className: element.classList.toString()
+                    });
+
+                    gDebug.append("rect")
+                        .attr("class", "debug")
+                        .attr("x", x)
+                        .attr("y", currentY)
+                        .attr("width", width)
+                        .attr("height", blockHeight);
+
+                    currentY += blockHeight;
+                    Matter.World.add(engine.world, [rectBody]);
+                }
+            }
+            else {
+                rectBody = Matter.Bodies.rectangle(x, y, width, height, {
+                    isStatic: isStatic, className: element.classList.toString()
+                });
+
+                Matter.World.add(engine.world, [rectBody]);
+            }
+
+            if (!isStatic && !hasClass(element, "stay")) {
+                element.remove();
+            }
+        });
+
+        startEngine();
+    }
+
+    function move(el, x, y, duration) {
+        var attr = el.attr("transform") || "";
+        attr += " translate(" + x + "," + y + ")";
+        if(duration != null) {
+            el
+                .transition()
+                .duration(duration)
+                .attr("transform", attr);
+        }
+        else {
+            el.attr("transform", attr);
+        }
+    }
+
+    function scale(el, x, y) {
+        var attr = el.attr("transform") || "";
+        attr += " scale(" + x + (y != null ? " " + y : "") + ")";
+        el.attr("transform", attr);
+    }
+
+    function drawDebugRect(el) {
+        var rect = el.node().getBoundingClientRect();
+        console.log(rect);
+
+        gDebug.selectAll("rect.debug")
+            .data([rect])
+            .enter()
+            .append("rect")
+            .attr("class", "debug");
+
+        gDebug.selectAll("rect.debug")
+            .attr("x", function (d) {
+                return d.left;
+            })
+            .attr("y", function (d) {
+                return d.top;
+            })
+            .attr("height", function (d) {
+                return d.height;
+            })
+            .attr("width", function (d) {
+                return d.width;
+            })
+    }
+
+    function moveTo(el, x, y, duration, leftOrRight, topOrBottom) {
+        if(leftOrRight == null) {
+            leftOrRight = "right";
+        }
+        if(topOrBottom == null) {
+            topOrBottom = "bottom";
+        }
+        var rect = el.node().getBoundingClientRect();
+        move(el, -rect[leftOrRight] + x, -rect[topOrBottom] + y, duration);
+    }
+
+    function createTank() {
+        d3.xml("cannon2.svg").mimeType("image/svg+xml").get(function(error, xml) {
+            if (error) throw error;
+            var paths = xml.documentElement.getElementsByTagName("path");
+            gTank.selectAll("path.tank")
+                .data(paths)
+                .enter()
+                .append("path")
+                .attr("class", function (d) {
+                    var attr = d.getAttribute("class");
+                    return "stay tank" + (attr != null ? " " + attr : "");
+                })
+                .attr("d", function (d) {
+                    return d.getAttribute("d");
+                })
+                .attr("transform", "scale(.4, .4)");
+
+            moveTo(gTank, 0, BOTTOM);
+        });
+    }
+
+    function showTank() {
+        var tankShown = new SimplePromise();
+        moveTo(gTank, SHOOT_START_X, BOTTOM, TANK_DURATION);
+        setTimeout(function () {
+            tankShown.resolve();
+        }, TANK_DURATION);
+        return tankShown.promise;
+    }
+
+    function hideTank() {
+        moveTo(gTank, 0, BOTTOM, TANK_DURATION);
+    }
+
+    var forecastIsGonePromise = new SimplePromise();
+    function checkIfForecastIsGone() {
+        var bars = document.querySelectorAll(".bar");
+        var forecastIsGone = (bars.length > 0);
+        bars.forEach(function(bar) {
+            var rect = bar.getBoundingClientRect();
+            if(rect.top < MIN_HEIGHT + BOTTOM) {
+                forecastIsGone = false;
+            }
+        });
+
+        if(forecastIsGone) {
+            console.log("gone");
+            forecastIsGonePromise.resolve();
+        }
+
+        return forecastIsGone;
+    }
+
+    var duration = 0;
+    function shoot(ctr) {
+        if(ctr == null) {
+            ctr = 0;
+        }
+        setTimeout(function () {
+            duration = 3000;
+            var body = Matter.Bodies.circle(SHOOT_START_X, BOTTOM - 100, 25);
+            Matter.World.add(engine.world, [body]);
+            body.force.x += .35;
+            if(ctr < 9 && !checkIfForecastIsGone()) {
+                shoot(++ctr);
+            }
+            else {
+                hideTank();
+            }
+        }, duration);
+    }
+
+    function drawBars(data) {
+
+        function setHeightOfBarByData(selection) {
+            selection
+                .attr("height", function (d) {
+                    return d.value;
+                })
+                .attr("y", function (d) {
+                    return BOTTOM - d.value;
+                });
+        }
+
+        function barX(d) {
+            var index = data.indexOf(d);
+            return BAR_OFFSET + index * (BAR_WIDTH + BAR_GAP);
+        }
+
+        var selectionWithData = gDynamic.selectAll("g.barg")
+            .data(data, function (d) {
+                return d.key;
+            });
+
+        var gEnter = selectionWithData.enter()
+            .append("g")
+            .attr("class", "barg");
+
+        gEnter
+            .append("rect")
+            .attr("class", function (d) {
+                return "bar body dynamic " + d.key;
+            })
+            .attr("width", BAR_WIDTH)
+            .attr("x", barX)
+            .attr("height", START_HEIGHT)
+            .attr("y", BOTTOM - START_HEIGHT);
+
+        gEnter
+            .append("text")
+            .attr("class", "forecast")
+            .text(function (d) {
+                return d.title;
+            })
+            .attr("x", barX)
+            .attr("y", BOTTOM + 15);
+
+        gDynamic.selectAll("rect.bar")
+            .transition()
+            .duration(1000)
+            .call(setHeightOfBarByData);
+
+        selectionWithData.exit().remove();
+    }
+
+    var barData = [
+        {
+            title: "2017",
+            key: "red",
+            value: Math.random() * MIN_HEIGHT + 500
+        },
+        {
+            title: "2018",
+            key: "green",
+            value: Math.random() * MIN_HEIGHT + 500
+        },
+        {
+            title: "2019",
+            key: "blue",
+            value: Math.random() * MIN_HEIGHT + 500
+        },
+        {
+            title: "2020",
+            key: "orange",
+            value: Math.random() * MIN_HEIGHT + 500
+        },
+        {
+            title: "2021",
+            key: "cyan",
+            value: Math.random() * MIN_HEIGHT + 500
+        }
+    ];
+
+    drawStatic();
+
+    function switchToStep2() {
+        d3.select("button.step1")
+            .classed("disabled", true);
+        d3.select("button.step2")
+            .classed("disabled", false);
+    }
+
+    function switchToStep3() {
+        d3.select("button.step2")
+            .classed("disabled", true);
+        d3.select("button.step3")
+            .classed("disabled", false);
+    }
+
+    function forecast() {
+        drawBars(barData);
+        switchToStep2();
+    }
+
+    var worldCreated = false;
+    function reality() {
+        switchToStep3();
+        showTank().then(function () {
+            if(!worldCreated) {
+                worldCreated = true;
+                createWorldFromDynamicElements();
+            }
+            shoot();
+            setInterval(checkIfForecastIsGone, 2000);
+        })
+    }
+
+    createTank();
+
+    forecastIsGonePromise.promise.then(hideTank);
+
+</script>
+</body>
+</html>
