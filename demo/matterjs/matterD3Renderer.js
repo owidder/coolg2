@@ -35,7 +35,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
 
     function createClassNameFromBody(d, defaultClassName) {
         if(d.className != null) {
-            return d.className;
+            return d.className + " " + defaultClassName;
         }
         else {
             return defaultClassName;
@@ -111,6 +111,8 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
 
     }
 
+    var renderCounter = 0;
+
     this.constructor.prototype.renderD3 = function() {
         if(gStatic != null) {
             renderD3Static();
@@ -118,6 +120,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         if(gDynamic != null) {
             renderD3Dynamic();
             renderD3DynamicTitles();
+            renderCounter++;
         }
     }
 }

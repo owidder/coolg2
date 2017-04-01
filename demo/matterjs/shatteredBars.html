@@ -3,7 +3,7 @@
 <style>
 
     .bar {
-        opacity: .5;
+        opacity: 1;
     }
 
     .grey {
@@ -62,6 +62,14 @@
         stroke: black;
     }
 
+/*
+    path.dynamic {
+        stroke: black;
+        stroke-width: 1px;
+        fill: none;
+    }
+*/
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
@@ -96,7 +104,7 @@
     var gDebug = svg.append("g");
 
     var MIN_HEIGHT = 200;
-    var BAR_WIDTH = 20;
+    var BAR_WIDTH = 50;
     var BAR_GAP = 25;
     var BAR_OFFSET = width / 2;
     var SHOOT_START_X = Math.max(BAR_OFFSET - 500, 200);
@@ -104,10 +112,10 @@
     var START_HEIGHT = 50;
     var BOTTOM = height - 40;
     var TANK_DURATION = 5000;
+    var BLOCK_HEIGHT = 20;
+    var BLOCK_WIDTH = 20;
 
     var engine = Matter.Engine.create();
-
-    var d3Renderer = new MatterD3Renderer(engine, gStatic, gDynamic);
 
     function drawStatic() {
         gStatic.append("rect")
@@ -154,23 +162,25 @@
 
             var isStatic = hasClass(element, "static");
             if(!isStatic && height > width) {
-                var currentY = svgY;
-                var blockHeight;
-                while(currentY < y + height) {
-                    blockHeight = Math.min(width, y + height - currentY);
-                    rectBody = Matter.Bodies.rectangle(x, currentY, width, blockHeight, {
-                        isStatic: isStatic, className: element.classList.toString()
-                    });
+                var currentX, currentY = svgY;
+                var blockHeight = Math.min(height, BLOCK_HEIGHT);
+                var blockWidth = Math.min(width, BLOCK_WIDTH);
+                var currentBlockHeight, currentBlockWidth;
+                while(currentY < svgY + height) {
+                    currentBlockHeight = Math.min(blockHeight, svgY + height - currentY);
+                    currentX = svgX;
+                    while(currentX < svgX + width) {
+                        currentBlockWidth = Math.min(blockWidth, svgX + width - currentX);
+                        rectBody = Matter.Bodies.rectangle(currentX + currentBlockWidth / 2,
+                            currentY + currentBlockHeight / 2,
+                            currentBlockWidth,
+                            currentBlockHeight,
+                            {isStatic: isStatic, className: element.classList.toString()});
+                        Matter.World.add(engine.world, [rectBody]);
+                        currentX += currentBlockWidth;
+                    }
 
-                    gDebug.append("rect")
-                        .attr("class", "debug")
-                        .attr("x", x)
-                        .attr("y", currentY)
-                        .attr("width", width)
-                        .attr("height", blockHeight);
-
-                    currentY += blockHeight;
-                    Matter.World.add(engine.world, [rectBody]);
+                    currentY += currentBlockHeight;
                 }
             }
             else {
@@ -207,31 +217,6 @@
         var attr = el.attr("transform") || "";
         attr += " scale(" + x + (y != null ? " " + y : "") + ")";
         el.attr("transform", attr);
-    }
-
-    function drawDebugRect(el) {
-        var rect = el.node().getBoundingClientRect();
-        console.log(rect);
-
-        gDebug.selectAll("rect.debug")
-            .data([rect])
-            .enter()
-            .append("rect")
-            .attr("class", "debug");
-
-        gDebug.selectAll("rect.debug")
-            .attr("x", function (d) {
-                return d.left;
-            })
-            .attr("y", function (d) {
-                return d.top;
-            })
-            .attr("height", function (d) {
-                return d.height;
-            })
-            .attr("width", function (d) {
-                return d.width;
-            })
     }
 
     function moveTo(el, x, y, duration, leftOrRight, topOrBottom) {
@@ -308,7 +293,7 @@
             var body = Matter.Bodies.circle(SHOOT_START_X, BOTTOM - 100, 25);
             Matter.World.add(engine.world, [body]);
             body.force.x += .35;
-            if(ctr < 9 && !checkIfForecastIsGone()) {
+            if(ctr < 1 && !checkIfForecastIsGone()) {
                 shoot(++ctr);
             }
             else {
@@ -427,8 +412,10 @@
                 worldCreated = true;
                 createWorldFromDynamicElements();
             }
-            shoot();
-            setInterval(checkIfForecastIsGone, 2000);
+            setTimeout(function () {
+                shoot();
+                setInterval(checkIfForecastIsGone, 2000);
+            }, 10000);
         })
     }
 
