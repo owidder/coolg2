@@ -97,14 +97,12 @@
         .attr("width", width)
         .attr("height", height);
 
-    var gDebug = svg.append("g").attr("class", "debug");
     var gStatic = svg.append("g");
     var gDynamic = svg.append("g");
     var gTank = svg.append("g").attr("class", "tank stay");
-    var gDebug = svg.append("g");
 
     var MIN_HEIGHT = 200;
-    var BAR_WIDTH = 50;
+    var BAR_WIDTH = 30;
     var BAR_GAP = 25;
     var BAR_OFFSET = width / 2;
     var SHOOT_START_X = Math.max(BAR_OFFSET - 500, 200);
@@ -112,8 +110,9 @@
     var START_HEIGHT = 50;
     var BOTTOM = height - 40;
     var TANK_DURATION = 5000;
-    var BLOCK_HEIGHT = 20;
-    var BLOCK_WIDTH = 20;
+    var BLOCK_HEIGHT = 150;
+    var BLOCK_WIDTH = 100;
+    var ADD_TO_HEIGHT = 500;
 
     var engine = Matter.Engine.create();
 
@@ -166,6 +165,7 @@
                 var blockHeight = Math.min(height, BLOCK_HEIGHT);
                 var blockWidth = Math.min(width, BLOCK_WIDTH);
                 var currentBlockHeight, currentBlockWidth;
+                var bodyList = [];
                 while(currentY < svgY + height) {
                     currentBlockHeight = Math.min(blockHeight, svgY + height - currentY);
                     currentX = svgX;
@@ -176,12 +176,13 @@
                             currentBlockWidth,
                             currentBlockHeight,
                             {isStatic: isStatic, className: element.classList.toString()});
-                        Matter.World.add(engine.world, [rectBody]);
+                        bodyList.push(rectBody);
                         currentX += currentBlockWidth;
                     }
 
                     currentY += currentBlockHeight;
                 }
+                Matter.World.add(engine.world, bodyList);
             }
             else {
                 rectBody = Matter.Bodies.rectangle(x, y, width, height, {
@@ -359,27 +360,27 @@
         {
             title: "2017",
             key: "red",
-            value: Math.random() * MIN_HEIGHT + 500
+            value: Math.random() * MIN_HEIGHT + ADD_TO_HEIGHT
         },
         {
             title: "2018",
             key: "green",
-            value: Math.random() * MIN_HEIGHT + 500
+            value: Math.random() * MIN_HEIGHT + ADD_TO_HEIGHT
         },
         {
             title: "2019",
             key: "blue",
-            value: Math.random() * MIN_HEIGHT + 500
+            value: Math.random() * MIN_HEIGHT + ADD_TO_HEIGHT
         },
         {
             title: "2020",
             key: "orange",
-            value: Math.random() * MIN_HEIGHT + 500
+            value: Math.random() * MIN_HEIGHT + ADD_TO_HEIGHT
         },
         {
             title: "2021",
             key: "cyan",
-            value: Math.random() * MIN_HEIGHT + 500
+            value: Math.random() * MIN_HEIGHT + ADD_TO_HEIGHT
         }
     ];
 
@@ -415,7 +416,7 @@
             setTimeout(function () {
                 shoot();
                 setInterval(checkIfForecastIsGone, 2000);
-            }, 10000);
+            }, 500);
         })
     }
 
