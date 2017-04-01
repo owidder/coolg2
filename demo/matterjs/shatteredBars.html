@@ -317,7 +317,7 @@
 
         function barX(d) {
             var index = data.indexOf(d);
-            return BAR_OFFSET + index * (BAR_WIDTH + BAR_GAP);
+            return BAR_OFFSET + index * (BAR_WIDTH + BAR_GAP) + (BAR_WIDTH)/2;
         }
 
         var selectionWithData = gDynamic.selectAll("g.barg")
@@ -339,21 +339,36 @@
             .attr("height", START_HEIGHT)
             .attr("y", BOTTOM - START_HEIGHT);
 
-        gEnter
-            .append("text")
-            .attr("class", "forecast")
-            .text(function (d) {
-                return d.title;
-            })
-            .attr("x", barX)
-            .attr("y", BOTTOM + 15);
-
         gDynamic.selectAll("rect.bar")
             .transition()
             .duration(1000)
             .call(setHeightOfBarByData);
 
         selectionWithData.exit().remove();
+
+        var xaxis = d3.scaleBand().rangeRound([BAR_OFFSET, BAR_OFFSET + data.length * (BAR_WIDTH + BAR_GAP)]).padding(0.1);
+        var yaxis = d3.scaleLinear().rangeRound([height, 0]);
+        xaxis.domain(data.map(function(d) {
+            return d.title;
+        }));
+        yaxis.domain([0, d3.max(data, function(d) {
+            return d.value;
+        })]);
+
+        gStatic.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + (height-30) + ")")
+            .call(d3.axisBottom(xaxis));
+
+        gStatic.append("g")
+            .attr("class", "axis axis--y")
+            .attr("transform", "translate(0," + BAR_OFFSET + ") rotate(-90)")
+            .call(d3.axisLeft(yaxis).ticks(10))
+            .append("text")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "end")
+            .text("Revenue");
     }
 
     var barData = [
@@ -384,7 +399,7 @@
         }
     ];
 
-    drawStatic();
+    //drawStatic();
 
     function switchToStep2() {
         d3.select("button.step1")
