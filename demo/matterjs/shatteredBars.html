@@ -127,13 +127,11 @@
     var BAR_GAP = 35;
     var BAR_OFFSET = width / 3;
     var SHOOT_START_X = Math.max(BAR_OFFSET - 500, 200);
-    var SHOOT_START_Y = BOTTOM - 80;
     var START_HEIGHT = 50;
     var BOTTOM = height - 40;
     var TANK_DURATION = 5000;
     var BLOCK_HEIGHT = 150;
     var BLOCK_WIDTH = 100;
-    var ADD_TO_HEIGHT = 500;
 
     var engine = Matter.Engine.create();
 
@@ -334,17 +332,17 @@
 
         gStatic.append("g")
             .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + (height-30) + ")")
+            .attr("transform", "translate(0," + (height-START_HEIGHT+15) + ")")
             .call(d3.axisBottom(xaxis));
 
         gStatic.append("g")
             .attr("class", "axis axis--y")
-            .attr("transform", "translate(" + BAR_OFFSET + "," + (-30) + ")")
+            .attr("transform", "translate(" + BAR_OFFSET + "," + (-START_HEIGHT+15) + ")")
             .call(d3.axisLeft(yaxis).ticks(10))
             .append("text")
             .attr("class", "axis")
             .attr("transform", "rotate(-90)")
-            .attr("y", -30)
+            .attr("y", -START_HEIGHT)
             .attr("x", -height)
             .attr("text-anchor", "start")
             .text("Revenue (Mio.)");
