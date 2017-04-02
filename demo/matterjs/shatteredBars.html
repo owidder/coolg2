@@ -66,6 +66,11 @@
         fill: none;
     }
 
+    text.axis {
+        font-size: 2em;
+        fill: black;
+    }
+
 /*
     path.dynamic {
         stroke: black;
@@ -309,13 +314,11 @@
 
     function drawAxes(data) {
         var xaxis = d3.scaleBand().rangeRound([BAR_OFFSET, BAR_OFFSET + data.length * (BAR_WIDTH + BAR_GAP)]).padding(0.1);
-        var yaxis = d3.scaleLinear().rangeRound([height, 0]);
+        var yaxis = d3.scaleLinear().rangeRound([height, 100]);
         xaxis.domain(data.map(function(d) {
             return d.title;
         }));
-        yaxis.domain([0, d3.max(data, function(d) {
-            return d.value;
-        })]);
+        yaxis.domain([0, 800]);
 
         gStatic.append("g")
             .attr("class", "axis axis--x")
@@ -327,11 +330,12 @@
             .attr("transform", "translate(" + BAR_OFFSET + "," + (-30) + ")")
             .call(d3.axisLeft(yaxis).ticks(10))
             .append("text")
+            .attr("class", "axis")
             .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", "0.71em")
-            .attr("text-anchor", "end")
-            .text("Revenue");
+            .attr("y", -30)
+            .attr("x", -height)
+            .attr("text-anchor", "start")
+            .text("Revenue (Mio.)");
     }
 
     function drawBars(data) {
