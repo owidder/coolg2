@@ -361,7 +361,7 @@
             var body = Matter.Bodies.circle(SHOOT_START_X, BOTTOM - 100, 25);
             Matter.World.add(engine.world, [body]);
             body.force.x += .35;
-            if(ctr < 1 && !checkIfForecastIsGone()) {
+            if(ctr < 2 && !checkIfForecastIsGone()) {
                 shoot(++ctr);
             }
             else {
@@ -371,6 +371,13 @@
     }
 
     function drawAxes(data) {
+        gStatic.append("text")
+            .attr("x", BAR_OFFSET + 20)
+            .attr("y", 50)
+            .attr("style", "font-size: 3em;")
+            .attr("fill", "grey")
+            .text("Forecast");
+
         var xaxis = d3.scaleBand().rangeRound([BAR_OFFSET, BAR_OFFSET + data.length * (BAR_WIDTH + BAR_GAP)]).padding(0.1);
         var yaxis = d3.scaleLinear().rangeRound([height, 100]);
         xaxis.domain(data.map(function(d) {
