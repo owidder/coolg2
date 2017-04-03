@@ -91,6 +91,51 @@
     }
 */
 
+    button:not(.disabled) {
+        background-color: #004A7F;
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        border: none;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        font-family: Arial;
+        font-size: 20px;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+    }
+    @-webkit-keyframes glowing {
+        0% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+        50% { background-color: #FF0000; -webkit-box-shadow: 0 0 40px #FF0000; }
+        100% { background-color: #B20000; -webkit-box-shadow: 0 0 3px #B20000; }
+    }
+
+    @-moz-keyframes glowing {
+        0% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+        50% { background-color: #FF0000; -moz-box-shadow: 0 0 40px #FF0000; }
+        100% { background-color: #B20000; -moz-box-shadow: 0 0 3px #B20000; }
+    }
+
+    @-o-keyframes glowing {
+        0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+        50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+        100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+    }
+
+    @keyframes glowing {
+        0% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+        50% { background-color: #FF0000; box-shadow: 0 0 40px #FF0000; }
+        100% { background-color: #B20000; box-shadow: 0 0 3px #B20000; }
+    }
+
+    button:not(.disabled) {
+        -webkit-animation: glowing 1500ms infinite;
+        -moz-animation: glowing 1500ms infinite;
+        -o-animation: glowing 1500ms infinite;
+        animation: glowing 1500ms infinite;
+    }
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="../../bower_components/Materialize/dist/css/materialize.css"
@@ -99,9 +144,9 @@
 <body>
 <div class="canvas"></div>
 <div class="panel">
-    <button class="step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
-    <button class="step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button><p></p>
-    <button class="step3 waves-effect waves-light btn disabled" type="button" onclick="location.reload()" >Step 3: Do it again!!!</button>
+    <button class="button step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
+    <button class="button step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button><p></p>
+    <button class="button step3 waves-effect waves-light btn disabled" type="button" onclick="location.reload()" >Step 3: Do it again!!!</button>
 </div>
 <script src="../../lib/d3.v4.min.js"></script>
 <script src="../../bower_components/Matter/build/matter.js"></script>
