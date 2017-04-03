@@ -332,25 +332,6 @@
         moveTo(gTank, 0, BOTTOM, TANK_DURATION);
     }
 
-    var forecastIsGonePromise = new SimplePromise();
-    function checkIfForecastIsGone() {
-        var bars = document.querySelectorAll(".bar");
-        var forecastIsGone = (bars.length > 0);
-        bars.forEach(function(bar) {
-            var rect = bar.getBoundingClientRect();
-            if(rect.top < MIN_HEIGHT + BOTTOM) {
-                forecastIsGone = false;
-            }
-        });
-
-        if(forecastIsGone) {
-            console.log("gone");
-            forecastIsGonePromise.resolve();
-        }
-
-        return forecastIsGone;
-    }
-
     var duration = 0;
     function shoot(ctr) {
         if(ctr == null) {
@@ -361,11 +342,13 @@
             var body = Matter.Bodies.circle(SHOOT_START_X, BOTTOM - 100, 25);
             Matter.World.add(engine.world, [body]);
             body.force.x += .35;
-            if(ctr < 2 && !checkIfForecastIsGone()) {
+            if(ctr < 4) {
                 shoot(++ctr);
             }
             else {
                 hideTank();
+                d3.select("button.step3")
+                    .classed("disabled", false);
             }
         }, duration);
     }
@@ -397,7 +380,7 @@
             .append("text")
             .attr("class", "axis")
             .attr("transform", "rotate(-90)")
-            .attr("y", -BOTTOM)
+            .attr("y", -BOTTOM_OFFSET)
             .attr("x", -height)
             .attr("text-anchor", "start")
             .text("Revenue (Mio.)");
@@ -518,7 +501,8 @@
 
     var worldCreated = false;
     function reality() {
-        switchToStep3();
+        d3.select("button.step2")
+            .classed("disabled", true);
         showTank().then(function () {
             if(!worldCreated) {
                 worldCreated = true;
@@ -526,15 +510,12 @@
             }
             setTimeout(function () {
                 shoot();
-                setInterval(checkIfForecastIsGone, 2000);
             }, 500);
         })
     }
 
     createTank();
     drawAxes(barData);
-
-    forecastIsGonePromise.promise.then(hideTank);
 
 </script>
 </body>
